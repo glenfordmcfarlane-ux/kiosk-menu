@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>Kiosk Menu</title>
+  <style>
+    html, body { height:100%; margin:0; font-family: Arial, sans-serif; background:#111; }
+    .wrap { height:100%; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:14px; padding:18px; box-sizing:border-box; }
+    .btn {
+      display:flex; align-items:center; justify-content:center;
+      text-decoration:none; color:#fff; font-size:34px; font-weight:700;
+      border-radius:18px; border:2px solid rgba(255,255,255,.15);
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+      user-select:none; -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .small { font-size:22px; font-weight:600; opacity:.9; margin-top:10px; display:block; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="btn" href="https://supremeventures.com/latest-results/" target="_self">
+      Latest Results
+    </a>
+    <a class="btn" href="https://supremeventures.com/past-results/" target="_self">
+      Past Results
+    </a>
+    <a class="btn" href="https://supremeventures.com/" target="_self">
+      Page 3 <span class="small">(edit later)</span>
+    </a>
+    <a class="btn" href="https://supremeventures.com/" target="_self">
+      Page 4 <span class="small">(edit later)</span>
+    </a>
+  </div>
+</body>
+</html>
