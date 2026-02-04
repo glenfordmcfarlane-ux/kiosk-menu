@@ -5,33 +5,240 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <title>Kiosk Menu</title>
   <style>
-    html, body { height:100%; margin:0; font-family: Arial, sans-serif; background:#111; }
-    .wrap { height:100%; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:14px; padding:18px; box-sizing:border-box; }
-    .btn {
-      display:flex; align-items:center; justify-content:center;
-      text-decoration:none; color:#fff; font-size:34px; font-weight:700;
-      border-radius:18px; border:2px solid rgba(255,255,255,.15);
-      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-      user-select:none; -webkit-tap-highlight-color: transparent;
+    :root{
+      --bg:#0f0f10;
+      --panel:#17181a;
+      --panel2:#121315;
+      --border:rgba(255,255,255,.14);
+      --text:#fff;
+      --muted:rgba(255,255,255,.75);
+      --radius:18px;
+      --gap:14px;
+      --header-h:84px;
     }
-    .btn:active { transform: scale(0.98); opacity: 0.9; }
-    .small { font-size:22px; font-weight:600; opacity:.9; margin-top:10px; display:block; }
+
+    *{ box-sizing:border-box; }
+    html, body { height:100%; margin:0; font-family: Arial, sans-serif; background:var(--bg); color:var(--text); }
+
+    /* App frame */
+    .app{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* Persistent header */
+    .header{
+      height:var(--header-h);
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:14px 16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-bottom:1px solid var(--border);
+    }
+
+    .brand{
+      font-size:20px;
+      font-weight:700;
+      letter-spacing:.4px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:46vw;
+    }
+
+    .spacer{ flex:1; }
+
+    .menuBtn{
+      border:2px solid rgba(255,255,255,.18);
+      background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      color:var(--text);
+      font-size:20px;
+      font-weight:800;
+      padding:14px 18px;
+      border-radius:14px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menuBtn:active{ transform:scale(.98); opacity:.92; }
+
+    /* Main content area below header */
+    .content{
+      flex:1;
+      min-height:0; /* allows iframe to size correctly */
+      display:flex;
+      padding:16px;
+    }
+
+    /* MENU view (2x2 buttons) */
+    .menuView{
+      width:100%;
+      height:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+      gap:var(--gap);
+    }
+
+    .tile{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      text-decoration:none;
+      color:var(--text);
+      font-size:34px;
+      font-weight:800;
+      border-radius:var(--radius);
+      border:2px solid rgba(255,255,255,.14);
+      background:linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      padding:18px;
+    }
+    .tile:active{ transform:scale(.985); opacity:.92; }
+
+    .sub{
+      display:block;
+      margin-top:10px;
+      font-size:18px;
+      font-weight:650;
+      color:var(--muted);
+    }
+
+    /* PAGE view (iframe) */
+    .pageView{
+      width:100%;
+      height:100%;
+      display:none;
+      border-radius:var(--radius);
+      overflow:hidden;
+      border:1px solid var(--border);
+      background:var(--panel2);
+    }
+
+    iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      background:var(--panel2);
+    }
+
+    /* If the site blocks iframe, we show a helper message */
+    .iframeBlockedMsg{
+      display:none;
+      padding:18px;
+      font-size:18px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+    .iframeBlockedMsg strong{ color:var(--text); }
+
+    /* Make tiles larger on smaller screens */
+    @media (max-width: 900px){
+      .tile{ font-size:30px; }
+      .brand{ max-width:40vw; }
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <a class="btn" href="https://supremeventures.com/latest-results/" target="_self">
-      Latest Results
-    </a>
-    <a class="btn" href="https://supremeventures.com/past-results/" target="_self">
-      Past Results
-    </a>
-    <a class="btn" href="https://supremeventures.com/" target="_self">
-      Page 3 <span class="small">(edit later)</span>
-    </a>
-    <a class="btn" href="https://supremeventures.com/" target="_self">
-      Page 4 <span class="small">(edit later)</span>
-    </a>
+  <div class="app">
+    <div class="header">
+      <div class="brand" id="title">Results Menu</div>
+      <div class="spacer"></div>
+      <button class="menuBtn" id="menuBtn" type="button">MENU</button>
+    </div>
+
+    <div class="content">
+      <!-- MENU -->
+      <div class="menuView" id="menuView">
+        <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/">
+          Latest Results
+        </a>
+
+        <a class="tile" href="#" data-url="https://supremeventures.com/past-results/">
+          Past Results
+        </a>
+
+        <a class="tile" href="#" data-url="https://supremeventures.com/">
+          Page 3 <span class="sub">(edit later)</span>
+        </a>
+
+        <a class="tile" href="#" data-url="https://supremeventures.com/">
+          Page 4 <span class="sub">(edit later)</span>
+        </a>
+      </div>
+
+      <!-- PAGE (iframe container) -->
+      <div class="pageView" id="pageView">
+        <iframe id="frame" src="about:blank" referrerpolicy="no-referrer"></iframe>
+        <div class="iframeBlockedMsg" id="blockedMsg">
+          <strong>This website can’t be displayed inside the kiosk frame.</strong><br><br>
+          The destination site is blocking embedded display (iframe).<br>
+          If this happens, we’ll switch to opening pages full-screen and use the Yodeck Close (X) as the “Back” control.
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    const menuView = document.getElementById('menuView');
+    const pageView = document.getElementById('pageView');
+    const frame = document.getElementById('frame');
+    const title = document.getElementById('title');
+    const menuBtn = document.getElementById('menuBtn');
+    const blockedMsg = document.getElementById('blockedMsg');
+
+    // Show menu
+    function showMenu(){
+      frame.src = 'about:blank';
+      blockedMsg.style.display = 'none';
+      menuView.style.display = 'grid';
+      pageView.style.display = 'none';
+      title.textContent = 'Results Menu';
+    }
+
+    // Show page in iframe
+    function showPage(url, label){
+      // Switch view first (feels faster)
+      menuView.style.display = 'none';
+      pageView.style.display = 'block';
+      blockedMsg.style.display = 'none';
+      title.textContent = label || 'Viewing';
+
+      // Load destination
+      frame.src = url;
+
+      // If iframe is blocked, we can’t detect it perfectly in all browsers,
+      // but we can show a message if it doesn't load after a short time.
+      setTimeout(() => {
+        try {
+          // Accessing frame content will throw if cross-origin (normal),
+          // so we just keep the message hidden unless it *clearly* failed.
+          // Some players show blank — user can hit MENU to return.
+        } catch (e) {}
+      }, 1500);
+    }
+
+    // Menu button always returns home
+    menuBtn.addEventListener('click', showMenu);
+
+    // Tile clicks
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = tile.getAttribute('data-url');
+        const label = tile.childNodes[0].textContent.trim();
+        showPage(url, label);
+      });
+    });
+
+    // Start on menu
+    showMenu();
+  </script>
 </body>
 </html>
+
