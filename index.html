@@ -125,6 +125,13 @@
       background:var(--panel2);
     }
 
+    /* Wrap iframe so we can overlay a mask */
+    .frameWrap{
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
     iframe{
       width:100%;
       height:100%;
@@ -135,6 +142,7 @@
 
     /* ================================
        KIOSK FIX: HIDE COOKIE BANNERS
+       (Note: CSS cannot reliably reach inside cross-domain iframes in desktop browsers)
        ================================ */
     iframe html div[id*="cookie"],
     iframe html div[class*="cookie"],
@@ -147,6 +155,23 @@
       height:0 !important;
       max-height:0 !important;
       overflow:hidden !important;
+    }
+
+    /* ================================
+       KIOSK FIX (RELIABLE): MASK BOTTOM AREA
+       Hides recurring privacy/cookie banners visually
+       ================================ */
+    .cookieMask{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:140px; /* adjust if banner taller/shorter */
+      background:var(--bg);
+      border-top:1px solid rgba(255,255,255,.10);
+      z-index:5;
+      display:none; /* only show while viewing pages */
+      pointer-events:none; /* don't block scrolling/taps above */
     }
 
     @media (max-width: 900px){
@@ -188,21 +213,26 @@
 
       <!-- PAGE -->
       <div class="pageView" id="pageView">
-        <iframe id="frame" src="about:blank" referrerpolicy="no-referrer"></iframe>
+        <div class="frameWrap">
+          <iframe id="frame" src="about:blank" referrerpolicy="no-referrer"></iframe>
+          <div class="cookieMask" id="cookieMask"></div>
+        </div>
       </div>
 
     </div>
   </div>
 
   <script>
-    const menuView   = document.getElementById('menuView');
-    const pageView   = document.getElementById('pageView');
-    const frame      = document.getElementById('frame');
-    const menuBtn    = document.getElementById('menuBtn');
-    const headerTitle= document.getElementById('headerTitle');
+    const menuView    = document.getElementById('menuView');
+    const pageView    = document.getElementById('pageView');
+    const frame       = document.getElementById('frame');
+    const menuBtn     = document.getElementById('menuBtn');
+    const headerTitle = document.getElementById('headerTitle');
+    const cookieMask  = document.getElementById('cookieMask');
 
     function showMenu(){
       frame.src = 'about:blank';
+      cookieMask.style.display = 'none';
       menuView.style.display = 'grid';
       pageView.style.display = 'none';
       headerTitle.textContent = 'Results Menu';
@@ -211,6 +241,7 @@
     function showPage(url, label){
       menuView.style.display = 'none';
       pageView.style.display = 'block';
+      cookieMask.style.display = 'block';
       headerTitle.textContent = label;
       frame.src = url;
     }
