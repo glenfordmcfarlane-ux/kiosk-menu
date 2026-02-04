@@ -7,15 +7,23 @@
 
   <style>
     :root{
-      --bg:#0f0f10;
-      --panel:#17181a;
-      --panel2:#121315;
+      /* Supreme Ventures inspired palette */
+      --sv-green:#0b7a3b;         /* primary */
+      --sv-green-dark:#075c2c;    /* deeper */
+      --sv-gold:#f2c300;          /* accent */
+      --sv-offwhite:#f6f7f8;
+
+      --bg:#071e12;              /* kiosk backdrop */
+      --panel:#0b2a19;
+      --panel2:#0b1a12;
       --border:rgba(255,255,255,.14);
       --text:#ffffff;
-      --muted:rgba(255,255,255,.75);
-      --radius:18px;
-      --gap:14px;
-      --header-h:84px;
+      --muted:rgba(255,255,255,.78);
+
+      --radius:20px;
+      --gap:16px;
+      --header-h:86px;
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
     }
 
     *{ box-sizing:border-box; }
@@ -23,7 +31,9 @@
       height:100%;
       margin:0;
       font-family: Arial, sans-serif;
-      background:var(--bg);
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(242,195,0,.10), transparent 55%),
+                  radial-gradient(1200px 800px at 80% 20%, rgba(11,122,59,.22), transparent 50%),
+                  linear-gradient(180deg, #06160e, var(--bg));
       color:var(--text);
     }
 
@@ -34,39 +44,54 @@
       flex-direction:column;
     }
 
-    /* Persistent header */
+    /* Header */
     .header{
       height:var(--header-h);
       display:flex;
       align-items:center;
       gap:14px;
       padding:14px 18px;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-      border-bottom:1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)),
+        linear-gradient(90deg, rgba(11,122,59,.25), rgba(242,195,0,.10));
+      border-bottom:1px solid rgba(255,255,255,.12);
+      position:relative;
+    }
+
+    /* thin accent line */
+    .header::after{
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height:3px;
+      background: linear-gradient(90deg, var(--sv-green), var(--sv-gold));
+      opacity:.95;
     }
 
     .title{
       font-size:22px;
-      font-weight:800;
+      font-weight:900;
+      letter-spacing:.3px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width:50vw;
+      max-width:55vw;
     }
 
     .spacer{ flex:1; }
 
     .menuBtn{
-      border:2px solid rgba(255,255,255,.18);
-      background:linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+      border:2px solid rgba(242,195,0,.55);
+      background: linear-gradient(135deg, rgba(242,195,0,.26), rgba(255,255,255,.06));
       color:var(--text);
-      font-size:20px;
-      font-weight:800;
-      padding:14px 22px;
+      font-size:18px;
+      font-weight:900;
+      padding:12px 18px;
       border-radius:14px;
       cursor:pointer;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 10px 26px rgba(0,0,0,.35);
     }
     .menuBtn:active{ transform:scale(.98); opacity:.92; }
 
@@ -74,7 +99,7 @@
     .content{
       flex:1;
       min-height:0;
-      padding:16px;
+      padding:18px;
       display:flex;
     }
 
@@ -89,29 +114,74 @@
     }
 
     .tile{
+      position:relative;
       display:flex;
       align-items:center;
       justify-content:center;
       text-align:center;
       text-decoration:none;
       color:var(--text);
-      font-size:34px;
-      font-weight:800;
+
       border-radius:var(--radius);
-      border:2px solid rgba(255,255,255,.16);
-      background:linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+
+      background:
+        radial-gradient(900px 500px at 20% 20%, rgba(242,195,0,.12), transparent 45%),
+        linear-gradient(135deg, rgba(11,122,59,.70), rgba(7,92,44,.85));
+      box-shadow: var(--shadow);
+
       user-select:none;
       -webkit-tap-highlight-color: transparent;
-      padding:20px;
+      padding:22px;
+      overflow:hidden;
+      transform: translateZ(0);
     }
-    .tile:active{ transform:scale(.985); opacity:.92; }
+
+    /* subtle shine */
+    .tile::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: linear-gradient(120deg, rgba(255,255,255,.10), transparent 50%);
+      transform: rotate(12deg);
+      opacity:.35;
+      pointer-events:none;
+    }
+
+    /* accent corner badge */
+    .tile::after{
+      content:"";
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:14px;
+      height:14px;
+      border-radius:50%;
+      background: var(--sv-gold);
+      box-shadow: 0 0 0 6px rgba(242,195,0,.15);
+      opacity:.95;
+    }
+
+    .tile:active{
+      transform:scale(.985);
+      opacity:.95;
+    }
+
+    .tileTitle{
+      font-size:34px;
+      font-weight:1000;
+      line-height:1.05;
+      letter-spacing:.2px;
+      text-shadow: 0 10px 18px rgba(0,0,0,.35);
+    }
 
     .sub{
       display:block;
       margin-top:10px;
       font-size:18px;
-      font-weight:650;
-      color:var(--muted);
+      font-weight:700;
+      color:rgba(255,255,255,.85);
+      text-shadow: 0 8px 16px rgba(0,0,0,.25);
     }
 
     /* PAGE VIEW */
@@ -121,11 +191,11 @@
       display:none;
       border-radius:var(--radius);
       overflow:hidden;
-      border:1px solid var(--border);
+      border:1px solid rgba(255,255,255,.12);
       background:var(--panel2);
+      box-shadow: var(--shadow);
     }
 
-    /* Wrap iframe so we can overlay a mask */
     .frameWrap{
       position: relative;
       width: 100%;
@@ -140,43 +210,23 @@
       position:relative;
     }
 
-    /* ================================
-       KIOSK FIX: HIDE COOKIE BANNERS
-       (Note: CSS cannot reliably reach inside cross-domain iframes in desktop browsers)
-       ================================ */
-    iframe html div[id*="cookie"],
-    iframe html div[class*="cookie"],
-    iframe html div[id*="consent"],
-    iframe html div[class*="consent"],
-    iframe html div[id*="privacy"],
-    iframe html div[class*="privacy"] {
-      display:none !important;
-      visibility:hidden !important;
-      height:0 !important;
-      max-height:0 !important;
-      overflow:hidden !important;
-    }
-
-    /* ================================
-       KIOSK FIX (RELIABLE): MASK BOTTOM AREA
-       Hides recurring privacy/cookie banners visually
-       ================================ */
+    /* Cookie mask */
     .cookieMask{
       position:absolute;
       left:0;
       right:0;
       bottom:0;
-      height:140px; /* adjust if banner taller/shorter */
-      background:var(--bg);
+      height:140px; /* adjust if needed */
+      background: linear-gradient(180deg, rgba(6,22,14,.0), rgba(6,22,14,.92) 30%, rgba(6,22,14,1));
       border-top:1px solid rgba(255,255,255,.10);
       z-index:5;
-      display:none; /* only show while viewing pages */
-      pointer-events:none; /* don't block scrolling/taps above */
+      display:none;
+      pointer-events:none;
     }
 
     @media (max-width: 900px){
-      .tile{ font-size:30px; }
-      .title{ max-width:40vw; }
+      .tileTitle{ font-size:30px; }
+      .title{ max-width:45vw; }
     }
   </style>
 </head>
@@ -185,7 +235,7 @@
   <div class="app">
 
     <div class="header">
-      <div class="title" id="headerTitle">Results Menu</div>
+      <div class="title" id="headerTitle">Supreme Ventures Results</div>
       <div class="spacer"></div>
       <button class="menuBtn" id="menuBtn" type="button">MENU</button>
     </div>
@@ -195,19 +245,31 @@
       <!-- MENU -->
       <div class="menuView" id="menuView">
         <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/">
-          Latest Results
+          <div>
+            <div class="tileTitle">Latest Results</div>
+            <span class="sub">View today’s draw results</span>
+          </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/past-results/">
-          Past Results
+          <div>
+            <div class="tileTitle">Past Results</div>
+            <span class="sub">Search previous draws</span>
+          </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/">
-          Page 3 <span class="sub">(edit later)</span>
+          <div>
+            <div class="tileTitle">Games</div>
+            <span class="sub">Browse available games</span>
+          </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/">
-          Page 4 <span class="sub">(edit later)</span>
+          <div>
+            <div class="tileTitle">Investor Center</div>
+            <span class="sub">Company information</span>
+          </div>
         </a>
       </div>
 
@@ -235,7 +297,7 @@
       cookieMask.style.display = 'none';
       menuView.style.display = 'grid';
       pageView.style.display = 'none';
-      headerTitle.textContent = 'Results Menu';
+      headerTitle.textContent = 'Supreme Ventures Results';
     }
 
     function showPage(url, label){
@@ -252,7 +314,8 @@
       tile.addEventListener('click', e => {
         e.preventDefault();
         const url   = tile.getAttribute('data-url');
-        const label = tile.childNodes[0].textContent.trim();
+        // label: use the visible title text
+        const label = tile.querySelector('.tileTitle')?.textContent?.trim() || 'Viewing';
         showPage(url, label);
       });
     });
