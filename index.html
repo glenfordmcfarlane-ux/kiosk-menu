@@ -20,7 +20,10 @@
 
       --radius:20px;
       --gap:18px;
-      --header-h:86px;
+
+      /* ✅ UPDATED: taller header to block website nav in iframe */
+      --header-h:150px;  /* try 170px if you want more blocking */
+
       --shadow:0 14px 40px rgba(0,0,0,.45);
     }
 
@@ -50,7 +53,10 @@
       display:flex;
       align-items:center;
       gap:14px;
-      padding:12px 18px;
+
+      /* ✅ UPDATED: more padding to suit taller header */
+      padding:18px 22px;
+
       background:
         linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)),
         linear-gradient(90deg, rgba(11,122,59,.35), rgba(242,195,0,.15));
@@ -58,6 +64,7 @@
       position:relative;
     }
 
+    /* gold/green line */
     .header::after{
       content:"";
       position:absolute;
@@ -68,6 +75,18 @@
       background:linear-gradient(90deg, var(--sv-green), var(--sv-gold));
     }
 
+    /* ✅ NEW: subtle fade into the iframe content */
+    .header::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:-18px;
+      height:36px;
+      background:linear-gradient(to bottom, rgba(7,30,18,1), rgba(7,30,18,0));
+      pointer-events:none;
+    }
+
     .title{
       font-size:22px;
       font-weight:900;
@@ -75,35 +94,33 @@
       white-space:nowrap;
     }
 
-    /* ======= LOGO STRIP (new) ======= */
+    /* ======= LOGO STRIP ======= */
     .logoStrip{
       flex:1;
       display:flex;
       align-items:center;
       gap:10px;
       padding:0 6px;
-      overflow:hidden;              /* keeps it clean on kiosk */
+      overflow:hidden;
     }
 
-    /* if you prefer scrolling instead of shrinking, change overflow:hidden to overflow:auto */
     .logoStripInner{
       width:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:14px;
+      gap:16px;
       min-width:0;
     }
 
+    /* ✅ UPDATED: slightly larger logos */
     .gameLogo{
-      height:52px;                  /* adjust if you want bigger */
+      height:64px;            /* was 52px */
       width:auto;
       object-fit:contain;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));
       opacity:.98;
     }
-
-    .spacer{ flex:0; } /* not used now but kept harmless */
 
     .menuBtn{
       flex:0 0 auto;
@@ -254,8 +271,8 @@
 
     @media (max-width:900px){
       .tileTitle{ font-size:30px; }
-      .title{ display:none; } /* on small screens, prioritize logos */
-      .gameLogo{ height:24px; }
+      .title{ display:none; }
+      .gameLogo{ height:34px; }
     }
   </style>
 </head>
@@ -266,10 +283,8 @@
     <div class="header">
       <div class="title" id="headerTitle">Supreme Ventures Results</div>
 
-      <!-- NEW: game logos across the top -->
       <div class="logoStrip" aria-label="Game logos">
         <div class="logoStripInner">
-          <!-- IMPORTANT: filenames MUST match repo exactly (case + .png) -->
           <img class="gameLogo" src="./cpot-150x150.png"       alt="Cash Pot" />
           <img class="gameLogo" src="./dollaz-150x150.png"     alt="Dollaz" />
           <img class="gameLogo" src="./hotpick-150x150.png"    alt="Hot Pick" />
@@ -290,7 +305,6 @@
 
     <div class="content">
 
-      <!-- MENU -->
       <div class="menuView" id="menuView">
         <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/">
           <div>
@@ -321,7 +335,6 @@
         </a>
       </div>
 
-      <!-- PAGE -->
       <div class="pageView" id="pageView">
         <div class="frameWrap">
           <iframe id="frame" src="about:blank" referrerpolicy="no-referrer"></iframe>
@@ -342,7 +355,6 @@
     const headerTitle = document.getElementById('headerTitle');
     const cookieMask  = document.getElementById('cookieMask');
 
-    // If any top logos fail to load, hide them (prevents broken icon clutter)
     document.querySelectorAll('.gameLogo').forEach(img => {
       img.addEventListener('error', () => { img.style.display = 'none'; });
     });
