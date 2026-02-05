@@ -77,7 +77,28 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width:55vw;
+      max-width:34vw; /* ✅ reduced to make room for logo strip */
+    }
+
+    /* ✅ NEW: game logos row in header */
+    .logoStrip{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      max-width:46vw;
+      overflow:hidden;
+      padding:0 6px;
+    }
+
+    .logoStrip img{
+      height:44px;
+      width:auto;
+      object-fit:contain;
+      opacity:.98;
+      filter:drop-shadow(0 2px 6px rgba(0,0,0,.35));
+      user-select:none;
+      -webkit-user-drag:none;
+      pointer-events:none; /* kiosk-safe: prevents accidental drag */
     }
 
     .spacer{ flex:1; }
@@ -209,7 +230,7 @@
       bottom:0;
       height:120px;
 
-      /* ✅ UPDATED: light/white banner so logo is visible */
+      /* ✅ light/white banner so logo is visible */
       background:linear-gradient(180deg, #ffffff, #f7f7f7);
       border-top:4px solid var(--sv-gold);
       box-shadow:0 -10px 22px rgba(0,0,0,.18);
@@ -226,7 +247,7 @@
     }
 
     .cookieMask img{
-      height:52px;              /* slightly larger for visibility */
+      height:52px;
       max-width:260px;
       object-fit:contain;
       opacity:1;
@@ -236,6 +257,7 @@
     @media (max-width:900px){
       .tileTitle{ font-size:30px; }
       .title{ max-width:45vw; }
+      .logoStrip{ display:none; } /* ✅ hide strip on small screens */
     }
   </style>
 </head>
@@ -245,6 +267,23 @@
 
     <div class="header">
       <div class="title" id="headerTitle">Supreme Ventures Results</div>
+
+      <!-- ✅ NEW: Game logos across top banner -->
+      <div class="logoStrip" aria-label="Supreme Ventures games">
+        <img src="logos/cpot-150x150.png" alt="Cash Pot">
+        <img src="logos/dollaz-150x150.png" alt="Dollaz">
+        <img src="logos/hotpick-150x150.png" alt="Hot Pick">
+        <img src="logos/JustBet-150x150.png" alt="Just Bet">
+        <img src="logos/lotto-150x150.png" alt="Lotto">
+        <img src="logos/lucky5-150x150.png" alt="Lucky 5">
+        <img src="logos/mtime-150x150.png" alt="Midday Time">
+        <img src="logos/pick2-150x150.png" alt="Pick 2">
+        <img src="logos/pick3-150x150.png" alt="Pick 3">
+        <img src="logos/pick4-150x150.png" alt="Pick 4">
+        <img src="logos/superlotto-150x150.png" alt="Super Lotto">
+        <img src="logos/topdraw-150x150.png" alt="Top Draw">
+      </div>
+
       <div class="spacer"></div>
       <button class="menuBtn" id="menuBtn">MENU</button>
     </div>
@@ -287,10 +326,7 @@
         <div class="frameWrap">
           <iframe id="frame" src="about:blank" referrerpolicy="no-referrer"></iframe>
           <div class="cookieMask" id="cookieMask">
-            <img
-              src="sv-logo.png"
-              alt="Supreme Ventures Group"
-            />
+            <img src="sv-logo.png" alt="Supreme Ventures Group" />
           </div>
         </div>
       </div>
