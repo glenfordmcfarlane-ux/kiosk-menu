@@ -208,8 +208,12 @@
       right:0;
       bottom:0;
       height:120px;
-      background:#0b7a3b;
-      border-top:3px solid #f2c300;
+
+      /* ✅ UPDATED: light/white banner so logo is visible */
+      background:linear-gradient(180deg, #ffffff, #f7f7f7);
+      border-top:4px solid var(--sv-gold);
+      box-shadow:0 -10px 22px rgba(0,0,0,.18);
+
       z-index:5;
       display:none;
       pointer-events:none;
@@ -217,11 +221,16 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      gap:14px;
+      padding:12px 18px;
     }
 
     .cookieMask img{
-      height:48px;
-      opacity:.95;
+      height:52px;              /* slightly larger for visibility */
+      max-width:260px;
+      object-fit:contain;
+      opacity:1;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
 
     @media (max-width:900px){
