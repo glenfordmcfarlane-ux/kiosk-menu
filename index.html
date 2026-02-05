@@ -20,11 +20,10 @@
 
       --radius:20px;
       --gap:18px;
-
-      /* ✅ UPDATED: taller header to block website nav in iframe */
-      --header-h:150px;  /* try 170px if you want more blocking */
-
+      --header-h:104px;              /* ✅ increased */
       --shadow:0 14px 40px rgba(0,0,0,.45);
+
+      --iframe-top-mask:140px;       /* ✅ NEW: covers the site's sticky header inside iframe */
     }
 
     *{ box-sizing:border-box; }
@@ -52,11 +51,8 @@
       min-height:var(--header-h);
       display:flex;
       align-items:center;
-      gap:14px;
-
-      /* ✅ UPDATED: more padding to suit taller header */
-      padding:18px 22px;
-
+      gap:16px;
+      padding:14px 20px;
       background:
         linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)),
         linear-gradient(90deg, rgba(11,122,59,.35), rgba(242,195,0,.15));
@@ -64,7 +60,6 @@
       position:relative;
     }
 
-    /* gold/green line */
     .header::after{
       content:"";
       position:absolute;
@@ -75,23 +70,12 @@
       background:linear-gradient(90deg, var(--sv-green), var(--sv-gold));
     }
 
-    /* ✅ NEW: subtle fade into the iframe content */
-    .header::before{
-      content:"";
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:-18px;
-      height:36px;
-      background:linear-gradient(to bottom, rgba(7,30,18,1), rgba(7,30,18,0));
-      pointer-events:none;
-    }
-
     .title{
       font-size:22px;
       font-weight:900;
       letter-spacing:.3px;
       white-space:nowrap;
+      flex:0 0 auto;
     }
 
     /* ======= LOGO STRIP ======= */
@@ -99,9 +83,8 @@
       flex:1;
       display:flex;
       align-items:center;
-      gap:10px;
-      padding:0 6px;
       overflow:hidden;
+      padding:0 6px;
     }
 
     .logoStripInner{
@@ -109,13 +92,12 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:16px;
+      gap:18px;                 /* ✅ slightly more spacing */
       min-width:0;
     }
 
-    /* ✅ UPDATED: slightly larger logos */
     .gameLogo{
-      height:64px;            /* was 52px */
+      height:62px;              /* ✅ increased */
       width:auto;
       object-fit:contain;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));
@@ -129,7 +111,7 @@
       color:#fff;
       font-size:18px;
       font-weight:900;
-      padding:12px 20px;
+      padding:12px 22px;
       border-radius:14px;
       cursor:pointer;
       user-select:none;
@@ -229,6 +211,7 @@
       position:relative;
       width:100%;
       height:100%;
+      background:#fff;
     }
 
     iframe{
@@ -236,6 +219,36 @@
       height:100%;
       border:0;
       background:#fff;
+    }
+
+    /* ================= TOP MASK (NEW) =================
+       Covers the Supreme Ventures sticky nav/header inside the iframe.
+       Also blocks clicks to the site menu underneath. */
+    .topMask{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:var(--iframe-top-mask);
+      z-index:6;
+      display:none;
+
+      /* Choose a style you prefer: white or green */
+      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
+      border-bottom:4px solid var(--sv-gold);
+      box-shadow:0 10px 22px rgba(0,0,0,.18);
+
+      pointer-events:auto; /* ✅ blocks clicks to the website header under it */
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+    }
+
+    .topMask img{
+      height:56px;
+      width:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
     }
 
     /* ================= COOKIE MASK ================= */
@@ -254,7 +267,6 @@
       display:none;
       pointer-events:none;
 
-      display:flex;
       align-items:center;
       justify-content:center;
       gap:14px;
@@ -273,6 +285,7 @@
       .tileTitle{ font-size:30px; }
       .title{ display:none; }
       .gameLogo{ height:34px; }
+      :root{ --header-h:92px; }
     }
   </style>
 </head>
@@ -305,6 +318,7 @@
 
     <div class="content">
 
+      <!-- MENU -->
       <div class="menuView" id="menuView">
         <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/">
           <div>
@@ -335,9 +349,17 @@
         </a>
       </div>
 
+      <!-- PAGE -->
       <div class="pageView" id="pageView">
         <div class="frameWrap">
           <iframe id="frame" src="about:blank" referrerpolicy="no-referrer"></iframe>
+
+          <!-- ✅ NEW: covers sticky header/nav inside iframe -->
+          <div class="topMask" id="topMask">
+            <img src="./sv-logo.png" alt="Supreme Ventures Group" />
+          </div>
+
+          <!-- Cookie/privacy mask at bottom -->
           <div class="cookieMask" id="cookieMask">
             <img src="./sv-logo.png" alt="Supreme Ventures Group" />
           </div>
@@ -354,7 +376,9 @@
     const menuBtn     = document.getElementById('menuBtn');
     const headerTitle = document.getElementById('headerTitle');
     const cookieMask  = document.getElementById('cookieMask');
+    const topMask     = document.getElementById('topMask');
 
+    // If any top logos fail to load, hide them (prevents broken icon clutter)
     document.querySelectorAll('.gameLogo').forEach(img => {
       img.addEventListener('error', () => { img.style.display = 'none'; });
     });
@@ -362,6 +386,7 @@
     function showMenu(){
       frame.src = 'about:blank';
       cookieMask.style.display = 'none';
+      topMask.style.display = 'none';
       menuView.style.display = 'grid';
       pageView.style.display = 'none';
       headerTitle.textContent = 'Supreme Ventures Results';
@@ -371,6 +396,7 @@
       menuView.style.display = 'none';
       pageView.style.display = 'block';
       cookieMask.style.display = 'flex';
+      topMask.style.display = 'flex';   // ✅ show top mask when browsing site
       headerTitle.textContent = label;
       frame.src = url;
     }
