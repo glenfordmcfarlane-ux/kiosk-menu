@@ -191,7 +191,9 @@
       gap:var(--gap);
     }
 
-    /* ================= 3D BEVELLED TILE (UPGRADED + COMPLETE) ================= */
+    /* ================= CONTOURED TILE (MATCHES + / - STYLE) =================
+       Idea: a slightly darker outer "bezel" + a recessed inner face + a gloss highlight.
+       This reads much closer to the pill-style raised controls you shared. */
     .tile{
       position:relative;
       display:flex;
@@ -200,89 +202,120 @@
       text-align:center;
       text-decoration:none;
       color:#fff;
-
-      border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,.18);
-
-      background:
-        radial-gradient(900px 500px at 20% 20%, rgba(242,195,0,.14), transparent 45%),
-        linear-gradient(160deg, #0f8a45 0%, #0b7a3b 45%, #075c2c 100%);
-
-      padding:24px;
       user-select:none;
       -webkit-tap-highlight-color:transparent;
 
-      /* 3D layered shadow */
+      border-radius:32px;
+      padding:0; /* inner face handles padding */
+
+      /* Outer bezel (subtle dark rim) */
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.28));
+
+      /* Outer lift shadow (raised) */
       box-shadow:
-        0 10px 0 #064a25,
-        0 22px 45px rgba(0,0,0,.55);
+        0 18px 36px rgba(0,0,0,.72),
+        0 2px 0 rgba(255,255,255,.06) inset;
 
       transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
     }
 
-    /* Top glossy bevel */
+    /* Inner face */
     .tile::before{
       content:"";
       position:absolute;
-      top:0;
-      left:0;
-      right:0;
-      height:45%;
-      border-radius:var(--radius) var(--radius) 0 0;
-      background:linear-gradient(to bottom, rgba(255,255,255,.18), rgba(255,255,255,0));
-      pointer-events:none;
+      inset:3px;                 /* bezel thickness */
+      border-radius:29px;
+
+      background:
+        radial-gradient(circle at 28% 22%, rgba(70, 220, 140, .95) 0%, rgba(24, 170, 90, .95) 30%, rgba(11, 122, 59, .98) 58%, rgba(7, 92, 44, 1) 100%);
+
+      /* Inner contour (convex) */
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,.35),
+        inset 0 -16px 24px rgba(0,0,0,.45);
+
+      z-index:0;
     }
 
-    /* Gold indicator dot */
+    /* Gloss highlight band (top, like the iOS-style controls) */
     .tile::after{
       content:"";
       position:absolute;
-      top:14px;
-      right:14px;
+      left:7px;
+      right:7px;
+      top:7px;
+      height:42%;
+      border-radius:26px;
+      background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
+      filter:blur(.2px);
+      z-index:1;
+      pointer-events:none;
+    }
+
+    /* Gold indicator dot moved to a real element for flexibility */
+    .tile .dot{
+      position:absolute;
+      top:16px;
+      right:16px;
       width:14px;
       height:14px;
       border-radius:50%;
       background:var(--sv-gold);
-      box-shadow:0 0 0 6px rgba(242,195,0,.18);
+      box-shadow:0 0 0 6px rgba(242,195,0,.15);
+      z-index:3;
+    }
+
+    .tileContent{
+      position:relative;
+      z-index:2;
+      padding:24px;
     }
 
     .tile:hover{
-      transform:translateY(-6px);
+      transform:translateY(-5px);
       box-shadow:
-        0 14px 0 #064a25,
-        0 30px 60px rgba(0,0,0,.65);
+        0 24px 50px rgba(0,0,0,.78),
+        0 2px 0 rgba(255,255,255,.06) inset;
       filter:saturate(1.05);
     }
 
+    /* Pressed becomes slightly concave (like the + / - example) */
     .tile:active{
-      transform:translateY(8px) scale(var(--tap));
+      transform:translateY(6px) scale(var(--tap));
       box-shadow:
-        0 4px 0 #064a25,
-        0 10px 20px rgba(0,0,0,.35);
+        0 10px 22px rgba(0,0,0,.6),
+        inset 0 3px 10px rgba(0,0,0,.35);
       filter:saturate(.98);
+    }
+
+    .tile:active::before{
+      box-shadow:
+        inset 10px 10px 18px rgba(0,0,0,.48),
+        inset -6px -6px 12px rgba(255,255,255,.10);
     }
 
     .tile:focus-visible{
       outline:none;
       box-shadow:
-        0 10px 0 #064a25,
-        0 22px 45px rgba(0,0,0,.55),
+        0 18px 36px rgba(0,0,0,.72),
+        0 2px 0 rgba(255,255,255,.06) inset,
         var(--focus);
     }
 
     .tileTitle{
-      font-size:34px;
+      font-size:44px;
       font-weight:900;
-      line-height:1.1;
+      line-height:1.05;
       text-shadow:0 10px 18px rgba(0,0,0,.35);
     }
 
     .sub{
       display:block;
       margin-top:10px;
-      font-size:18px;
-      font-weight:700;
-      color:rgba(255,255,255,.85);
+      font-size:20px;
+      font-weight:800;
+      color:rgba(255,255,255,.88);
     }
 
     /* ================= PAGE VIEW ================= */
@@ -325,7 +358,7 @@
       border-bottom:4px solid var(--sv-gold);
       box-shadow:0 10px 22px rgba(0,0,0,.18);
 
-      pointer-events:auto; /* blocks clicks to the website header under it */
+      pointer-events:auto;
       align-items:center;
       justify-content:center;
       padding:10px 14px;
@@ -393,7 +426,7 @@
 
     /* ================= RESPONSIVE ================= */
     @media (max-width:900px){
-      .tileTitle{ font-size:30px; }
+      .tileTitle{ font-size:34px; }
       .title{ display:none; }
       .gameLogo{ height:54px; }
       :root{ --header-h:92px; }
@@ -437,28 +470,32 @@
       <!-- MENU -->
       <nav class="menuView" id="menuView" aria-label="Main menu">
         <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" aria-label="Open Latest Results">
-          <div>
+          <span class="dot" aria-hidden="true"></span>
+          <div class="tileContent">
             <div class="tileTitle">Latest Results</div>
             <span class="sub">View today’s draw results</span>
           </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" aria-label="Open Past Results">
-          <div>
+          <span class="dot" aria-hidden="true"></span>
+          <div class="tileContent">
             <div class="tileTitle">Past Results</div>
             <span class="sub">Search previous draws</span>
           </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/games/" aria-label="Open Games">
-          <div>
+          <span class="dot" aria-hidden="true"></span>
+          <div class="tileContent">
             <div class="tileTitle">Games</div>
             <span class="sub">Browse available games</span>
           </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/investor-centre/" aria-label="Open Investor Center">
-          <div>
+          <span class="dot" aria-hidden="true"></span>
+          <div class="tileContent">
             <div class="tileTitle">Investor Center</div>
             <span class="sub">Company information</span>
           </div>
@@ -470,7 +507,7 @@
         <div class="frameWrap">
           <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
 
-          <!-- Loading overlay (helps kiosk users) -->
+          <!-- Loading overlay -->
           <div class="loading" id="loading" aria-hidden="true">
             <div class="spinner" aria-label="Loading"></div>
           </div>
@@ -512,12 +549,10 @@
     function setIdleTimer(){
       if (idleTimer) clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
-        // Only return if we're on a page
         if (pageView.style.display === 'block') showMenu();
       }, IDLE_TIMEOUT_MS);
     }
 
-    // reset timer on user activity
     ['click','touchstart','mousemove','keydown'].forEach(evt => {
       window.addEventListener(evt, setIdleTimer, { passive:true });
     });
@@ -547,20 +582,13 @@
       menuBtn.setAttribute('aria-pressed', 'false');
 
       showLoading(true);
-      // cache-buster for kiosk refresh behavior (optional but helpful)
       const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
       frame.src = url + bust;
     }
 
-    // Hide loading when iframe finishes navigating
-    frame.addEventListener('load', () => {
-      showLoading(false);
-    });
-
-    // MENU button always returns to menu
+    frame.addEventListener('load', () => showLoading(false));
     menuBtn.addEventListener('click', showMenu);
 
-    // Tile click
     document.querySelectorAll('.tile').forEach(tile => {
       tile.addEventListener('click', e => {
         e.preventDefault();
@@ -570,19 +598,13 @@
       });
     });
 
-    // Keyboard: ESC returns to menu
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') showMenu();
     });
 
-    // Start
     showMenu();
     setIdleTimer();
   </script>
-
-</body>
-</html>
-
 
 </body>
 </html>
