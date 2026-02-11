@@ -8,433 +8,410 @@
 
   <style>
     :root{
-      --sv-green:#0b7a3b;
-      --sv-green-dark:#075c2c;
-      --sv-gold:#f2c300;
+      --sv-green:#0b7a3b;                    /* Brand green */
+      --sv-green-dark:#075c2c;              /* Brand dark green */
+      --sv-gold:#f2c300;                    /* Brand gold */
 
-      --bg:#071e12;
-      --panel:#0b2a19;
-      --panel2:#0b1a12;
-      --border:rgba(255,255,255,.14);
-      --text:#ffffff;
-      --muted:rgba(255,255,255,.78);
+      --bg:#071e12;                         /* App background base */
+      --panel:#0b2a19;                      /* Panel color (unused but kept) */
+      --panel2:#0b1a12;                     /* Darker panel */
+      --border:rgba(255,255,255,.14);       /* Hairline borders */
+      --text:#ffffff;                       /* Main text color */
+      --muted:rgba(255,255,255,.78);        /* Muted text color */
 
-      --radius:20px;
-      --gap:18px;
-      --header-h:104px;
-      --shadow:0 14px 40px rgba(0,0,0,.45);
+      --radius:20px;                        /* Global radius */
+      --gap:18px;                           /* Grid gap */
+      --header-h:104px;                     /* Header height */
+      --shadow:0 14px 40px rgba(0,0,0,.45); /* Global shadow */
 
-      /* Covers the site sticky header inside iframe */
-      --iframe-top-mask:140px;
+      --iframe-top-mask:140px;              /* Covers sticky header inside iframe */
 
-      /* Kiosk comfort */
-      --focus: 0 0 0 4px rgba(242,195,0,.45);
-      --tap: 0.985;
+      --focus: 0 0 0 4px rgba(242,195,0,.45); /* Focus ring */
+      --tap: 0.985;                         /* Tap scale */
+
+      /* ===== Bevel controls (easy tuning) ===== */
+      --bevel: 3px;                         /* Bezel thickness (increase for thicker rim) */
+      --bevel-radius: 32px;                 /* Outer radius of tile */
+      --face-radius: 29px;                  /* Inner face radius (usually outer - bevel) */
     }
 
-    *{ box-sizing:border-box; }
+    *{ box-sizing:border-box; }             /* Predictable sizing */
 
     html, body{
-      height:100%;
-      margin:0;
-      font-family: "Trebuchet MS", Trebuchet, Verdana, sans-serif;
+      height:100%;                          /* Full height app */
+      margin:0;                             /* Remove default margin */
+      font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif; /* Kiosk-friendly font */
       background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(242,195,0,.10), transparent 55%),
-        radial-gradient(1200px 800px at 80% 20%, rgba(11,122,59,.25), transparent 50%),
-        linear-gradient(180deg, #06160e, var(--bg));
-      color:var(--text);
-      overscroll-behavior:none;
+        radial-gradient(1200px 800px at 20% 10%, rgba(242,195,0,.10), transparent 55%), /* Soft gold glow */
+        radial-gradient(1200px 800px at 80% 20%, rgba(11,122,59,.25), transparent 50%), /* Soft green glow */
+        linear-gradient(180deg, #06160e, var(--bg));                                    /* Base gradient */
+      color:var(--text);                    /* Text color */
+      overscroll-behavior:none;             /* Prevent bounce in kiosk */
     }
 
     /* ================= APP ================= */
     .app{
-      height:100%;
-      display:flex;
-      flex-direction:column;
+      height:100%;                          /* Fill viewport */
+      display:flex;                         /* Column layout */
+      flex-direction:column;                /* Header on top */
     }
 
     /* ================= HEADER ================= */
     .header{
-      min-height:var(--header-h);
-      display:flex;
-      align-items:center;
-      gap:16px;
-      padding:14px 20px;
+      min-height:var(--header-h);           /* Fixed-ish header height */
+      display:flex;                         /* Horizontal alignment */
+      align-items:center;                   /* Vertically center */
+      gap:16px;                             /* Space between items */
+      padding:14px 20px;                    /* Header padding */
       background:
-        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)),
-        linear-gradient(90deg, rgba(11,122,59,.35), rgba(242,195,0,.15));
-      border-bottom:1px solid rgba(255,255,255,.12);
-      position:relative;
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)), /* Light sheen */
+        linear-gradient(90deg, rgba(11,122,59,.35), rgba(242,195,0,.15));      /* Brand wash */
+      border-bottom:1px solid rgba(255,255,255,.12); /* Bottom line */
+      position:relative;                    /* For accent bar */
     }
 
     .header::after{
-      content:"";
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:0;
-      height:3px;
-      background:linear-gradient(90deg, var(--sv-green), var(--sv-gold));
+      content:"";                           /* Accent bar */
+      position:absolute;                    /* Stick to bottom */
+      left:0; right:0; bottom:0;            /* Full width */
+      height:3px;                           /* Bar height */
+      background:linear-gradient(90deg, var(--sv-green), var(--sv-gold)); /* Green->Gold */
     }
 
     .title{
-      font-size:22px;
-      font-weight:900;
-      letter-spacing:.3px;
-      white-space:nowrap;
-      flex:0 0 auto;
+      font-size:22px;                       /* Title size */
+      font-weight:900;                      /* Bold */
+      letter-spacing:.3px;                  /* Slight tracking */
+      white-space:nowrap;                   /* Keep single line */
+      flex:0 0 auto;                        /* Don’t stretch */
     }
 
     /* ======= LOGO STRIP ======= */
     .logoStrip{
-      flex:1;
-      display:flex;
-      align-items:center;
-      overflow:hidden;
-      padding:0 6px;
-      min-width:0;
+      flex:1;                               /* Take remaining space */
+      display:flex;                         /* Horizontal */
+      align-items:center;                   /* Center */
+      overflow:hidden;                      /* Hide overflow */
+      padding:0 6px;                        /* Side padding */
+      min-width:0;                          /* Allow shrink */
     }
 
     .logoStripInner{
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:18px;
-      min-width:0;
+      width:100%;                           /* Full width */
+      display:flex;                         /* Horizontal row */
+      align-items:center;                   /* Center */
+      justify-content:center;               /* Center logos */
+      gap:18px;                             /* Space between logos */
+      min-width:0;                          /* Allow shrink */
     }
 
     .gameLogo{
-      height:82px;
-      width:auto;
-      object-fit:contain;
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));
-      opacity:.98;
+      height:82px;                          /* Logo height */
+      width:auto;                           /* Keep aspect */
+      object-fit:contain;                   /* Fit nicely */
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.25)); /* Pop */
+      opacity:.98;                          /* Slightly softer */
     }
 
     /* ================= MENU BUTTON (3D) ================= */
     .menuBtn{
-      flex:0 0 auto;
-
-      border:2px solid rgba(242,195,0,.92);
-      background:linear-gradient(145deg, #ffe06a, #caa800);
-      color:#1a1a1a;
-
-      font-size:18px;
-      font-weight:900;
-      letter-spacing:.3px;
-
-      padding:14px 28px;
-      border-radius:16px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color:transparent;
-
-      position:relative;
+      flex:0 0 auto;                        /* Fixed width */
+      border:2px solid rgba(242,195,0,.92); /* Gold rim */
+      background:linear-gradient(145deg, #ffe06a, #caa800); /* Gold face */
+      color:#1a1a1a;                        /* Dark text */
+      font-size:18px;                       /* Button text */
+      font-weight:900;                      /* Bold */
+      letter-spacing:.3px;                  /* Tracking */
+      padding:14px 28px;                    /* Button padding */
+      border-radius:16px;                   /* Rounded */
+      cursor:pointer;                       /* Pointer */
+      user-select:none;                     /* No select */
+      -webkit-tap-highlight-color:transparent; /* No tap glow */
+      position:relative;                    /* For gloss */
       box-shadow:
-        0 7px 0 #9e8500,
-        0 18px 34px rgba(0,0,0,.45);
-      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+        0 7px 0 #9e8500,                    /* Hard base edge */
+        0 18px 34px rgba(0,0,0,.45);        /* Soft shadow */
+      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease; /* Smooth */
     }
 
     .menuBtn::before{
-      content:"";
-      position:absolute;
-      left:6px;
-      right:6px;
-      top:6px;
-      height:44%;
-      border-radius:12px;
-      background:linear-gradient(to bottom, rgba(255,255,255,.35), rgba(255,255,255,0));
-      pointer-events:none;
+      content:"";                           /* Gloss highlight */
+      position:absolute;                    /* Inside */
+      left:6px; right:6px; top:6px;         /* Inset */
+      height:44%;                           /* Top band */
+      border-radius:12px;                   /* Match rounding */
+      background:linear-gradient(to bottom, rgba(255,255,255,.35), rgba(255,255,255,0)); /* Shine */
+      pointer-events:none;                  /* Ignore clicks */
     }
 
     .menuBtn:hover{
-      transform:translateY(-3px);
+      transform:translateY(-3px);           /* Lift */
       box-shadow:
-        0 10px 0 #9e8500,
-        0 24px 46px rgba(0,0,0,.55);
-      filter:saturate(1.05);
+        0 10px 0 #9e8500,                   /* Deeper edge */
+        0 24px 46px rgba(0,0,0,.55);        /* Bigger shadow */
+      filter:saturate(1.05);                /* Slight pop */
     }
 
     .menuBtn:active{
-      transform:translateY(5px);
+      transform:translateY(5px);            /* Press down */
       box-shadow:
-        0 3px 0 #9e8500,
-        0 10px 18px rgba(0,0,0,.35);
-      filter:saturate(.98);
+        0 3px 0 #9e8500,                    /* Smaller edge */
+        0 10px 18px rgba(0,0,0,.35);        /* Smaller shadow */
+      filter:saturate(.98);                 /* Slight soften */
     }
 
     .menuBtn:focus-visible{
-      outline:none;
+      outline:none;                         /* Remove default outline */
       box-shadow:
-        0 7px 0 #9e8500,
-        0 18px 34px rgba(0,0,0,.45),
-        var(--focus);
+        0 7px 0 #9e8500,                    /* Keep 3D */
+        0 18px 34px rgba(0,0,0,.45),        /* Keep shadow */
+        var(--focus);                        /* Add focus ring */
     }
 
     /* ================= CONTENT ================= */
     .content{
-      flex:1;
-      min-height:0;
-      padding:18px;
-      display:flex;
+      flex:1;                               /* Fill remaining space */
+      min-height:0;                         /* Allow children to size */
+      padding:18px;                         /* Outer padding */
+      display:flex;                         /* Holds menu/page */
     }
 
     /* ================= MENU ================= */
     .menuView{
-      width:100%;
-      height:100%;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      grid-template-rows:1fr 1fr;
-      gap:var(--gap);
+      width:100%;                           /* Full width */
+      height:100%;                          /* Full height */
+      display:grid;                         /* 2x2 grid */
+      grid-template-columns:1fr 1fr;        /* Two columns */
+      grid-template-rows:1fr 1fr;           /* Two rows */
+      gap:var(--gap);                       /* Spacing */
     }
 
-    /* ================= CONTOURED TILE (MATCHES + / - STYLE) =================
-       Idea: a slightly darker outer "bezel" + a recessed inner face + a gloss highlight.
-       This reads much closer to the pill-style raised controls you shared. */
+    /* ================= CONTOURED TILE (MATCHES + / - STYLE) ================= */
     .tile{
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      text-decoration:none;
-      color:#fff;
-      user-select:none;
-      -webkit-tap-highlight-color:transparent;
+      position:relative;                    /* Needed for pseudo-elements */
+      display:flex;                         /* Center content */
+      align-items:center;                   /* Center vertically */
+      justify-content:center;               /* Center horizontally */
+      text-align:center;                    /* Center text */
+      text-decoration:none;                 /* No underline */
+      color:#fff;                           /* White text */
+      user-select:none;                     /* No select */
+      -webkit-tap-highlight-color:transparent; /* No tap glow */
 
-      border-radius:32px;
-      padding:0; /* inner face handles padding */
+      border-radius:var(--bevel-radius);    /* Outer roundness */
+      padding:0;                            /* Inner face handles padding */
 
-      /* Outer bezel (subtle dark rim) */
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.28));
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.28)); /* Outer bezel rim */
 
-      /* Outer lift shadow (raised) */
       box-shadow:
-        0 18px 36px rgba(0,0,0,.72),
-        0 2px 0 rgba(255,255,255,.06) inset;
+        0 18px 36px rgba(0,0,0,.72),        /* Raised outer shadow */
+        inset 0 2px 0 rgba(255,255,255,.06);/* Tiny inner line */
 
-      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease; /* Smooth */
     }
 
-    /* Inner face */
+    /* Inner face (this is where bevel thickness is controlled) */
     .tile::before{
-      content:"";
-      position:absolute;
-      inset:3px;                 /* bezel thickness */
-      border-radius:29px;
+      content:"";                           /* Create inner surface */
+      position:absolute;                    /* Fill inside */
+      inset:var(--bevel);                   /* ✅ Bevel thickness (increase this) */
+      border-radius:var(--face-radius);     /* Inner rounding */
 
       background:
-        radial-gradient(circle at 28% 22%, rgba(70, 220, 140, .95) 0%, rgba(24, 170, 90, .95) 30%, rgba(11, 122, 59, .98) 58%, rgba(7, 92, 44, 1) 100%);
+        radial-gradient(circle at 28% 22%, rgba(70,220,140,.95) 0%, rgba(24,170,90,.95) 30%, rgba(11,122,59,.98) 58%, rgba(7,92,44,1) 100%); /* Green face gradient */
 
-      /* Inner contour (convex) */
       box-shadow:
-        inset 0 2px 6px rgba(255,255,255,.35),
-        inset 0 -16px 24px rgba(0,0,0,.45);
+        inset 0 2px 6px rgba(255,255,255,.35), /* Inner top highlight */
+        inset 0 -16px 24px rgba(0,0,0,.45);    /* Inner bottom depth */
 
-      z-index:0;
+      z-index:0;                            /* Behind content */
     }
 
-    /* Gloss highlight band (top, like the iOS-style controls) */
+    /* Gloss highlight band (top shine) */
     .tile::after{
-      content:"";
-      position:absolute;
-      left:7px;
-      right:7px;
-      top:7px;
-      height:42%;
-      border-radius:26px;
-      background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
-      filter:blur(.2px);
-      z-index:1;
-      pointer-events:none;
+      content:"";                           /* Shine layer */
+      position:absolute;                    /* Place at top */
+      left:7px; right:7px; top:7px;         /* Inset from edges */
+      height:42%;                           /* Height of shine */
+      border-radius:26px;                   /* Rounded shine */
+      background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0)); /* Shine fade */
+      filter:blur(.2px);                    /* Soften edge */
+      z-index:1;                            /* Above face */
+      pointer-events:none;                  /* Ignore touch */
     }
 
-    /* Gold indicator dot moved to a real element for flexibility */
+    /* Gold indicator dot */
     .tile .dot{
-      position:absolute;
-      top:16px;
-      right:16px;
-      width:14px;
-      height:14px;
-      border-radius:50%;
-      background:var(--sv-gold);
-      box-shadow:0 0 0 6px rgba(242,195,0,.15);
-      z-index:3;
+      position:absolute;                    /* Place in corner */
+      top:16px; right:16px;                 /* Corner position */
+      width:14px; height:14px;              /* Size */
+      border-radius:50%;                    /* Circle */
+      background:var(--sv-gold);            /* Gold */
+      box-shadow:0 0 0 6px rgba(242,195,0,.15); /* Soft halo */
+      z-index:3;                            /* Above everything */
     }
 
+    /* Content wrapper so text sits above the face */
     .tileContent{
-      position:relative;
-      z-index:2;
-      padding:24px;
+      position:relative;                    /* Create stacking context */
+      z-index:2;                            /* Above face + gloss */
+      padding:24px;                         /* Inner padding */
     }
 
+    /* Hover lift */
     .tile:hover{
-      transform:translateY(-5px);
+      transform:translateY(-5px);           /* Lift */
       box-shadow:
-        0 24px 50px rgba(0,0,0,.78),
-        0 2px 0 rgba(255,255,255,.06) inset;
-      filter:saturate(1.05);
+        0 24px 50px rgba(0,0,0,.78),        /* Bigger shadow */
+        inset 0 2px 0 rgba(255,255,255,.06);/* Keep rim line */
+      filter:saturate(1.05);                /* Slight pop */
     }
 
-    /* Pressed becomes slightly concave (like the + / - example) */
+    /* Pressed becomes slightly concave */
     .tile:active{
-      transform:translateY(6px) scale(var(--tap));
+      transform:translateY(6px) scale(var(--tap)); /* Press down */
       box-shadow:
-        0 10px 22px rgba(0,0,0,.6),
-        inset 0 3px 10px rgba(0,0,0,.35);
-      filter:saturate(.98);
+        0 10px 22px rgba(0,0,0,.6),         /* Smaller shadow */
+        inset 0 3px 10px rgba(0,0,0,.35);   /* Inner concave */
+      filter:saturate(.98);                 /* Slight soften */
     }
 
+    /* Make the inner face look more concave when pressed */
     .tile:active::before{
       box-shadow:
-        inset 10px 10px 18px rgba(0,0,0,.48),
-        inset -6px -6px 12px rgba(255,255,255,.10);
+        inset 10px 10px 18px rgba(0,0,0,.48), /* Dark corner */
+        inset -6px -6px 12px rgba(255,255,255,.10); /* Light opposite */
     }
 
+    /* Keyboard focus ring */
     .tile:focus-visible{
-      outline:none;
+      outline:none;                         /* Remove default */
       box-shadow:
-        0 18px 36px rgba(0,0,0,.72),
-        0 2px 0 rgba(255,255,255,.06) inset,
-        var(--focus);
+        0 18px 36px rgba(0,0,0,.72),        /* Keep raised look */
+        inset 0 2px 0 rgba(255,255,255,.06),/* Keep rim line */
+        var(--focus);                        /* Add focus ring */
     }
 
     .tileTitle{
-      font-size:44px;
-      font-weight:900;
-      line-height:1.05;
-      text-shadow:0 10px 18px rgba(0,0,0,.35);
+      font-size:44px;                       /* Headline size */
+      font-weight:900;                      /* Bold */
+      line-height:1.05;                     /* Tight */
+      text-shadow:0 10px 18px rgba(0,0,0,.35); /* Depth */
     }
 
     .sub{
-      display:block;
-      margin-top:10px;
-      font-size:20px;
-      font-weight:800;
-      color:rgba(255,255,255,.88);
+      display:block;                        /* New line */
+      margin-top:10px;                      /* Space */
+      font-size:20px;                       /* Sub size */
+      font-weight:800;                      /* Strong */
+      color:rgba(255,255,255,.88);          /* Slightly muted */
     }
 
     /* ================= PAGE VIEW ================= */
     .pageView{
-      width:100%;
-      height:100%;
-      display:none;
-      border-radius:var(--radius);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);
-      background:var(--panel2);
-      box-shadow:var(--shadow);
+      width:100%;                           /* Full size */
+      height:100%;                          /* Full size */
+      display:none;                         /* Hidden by default */
+      border-radius:var(--radius);          /* Rounded */
+      overflow:hidden;                      /* Clip */
+      border:1px solid rgba(255,255,255,.12);/* Border */
+      background:var(--panel2);             /* Back */
+      box-shadow:var(--shadow);             /* Shadow */
     }
 
     .frameWrap{
-      position:relative;
-      width:100%;
-      height:100%;
-      background:#fff;
+      position:relative;                    /* For overlays */
+      width:100%; height:100%;              /* Fill */
+      background:#fff;                      /* White base */
     }
 
     iframe{
-      width:100%;
-      height:100%;
-      border:0;
-      background:#fff;
+      width:100%; height:100%;              /* Fill */
+      border:0;                             /* No border */
+      background:#fff;                      /* White */
     }
 
     /* ================= TOP MASK ================= */
     .topMask{
-      position:absolute;
-      top:0;
-      left:0;
-      right:0;
-      height:var(--iframe-top-mask);
-      z-index:6;
-      display:none;
-
-      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
-      border-bottom:4px solid var(--sv-gold);
-      box-shadow:0 10px 22px rgba(0,0,0,.18);
-
-      pointer-events:auto;
-      align-items:center;
-      justify-content:center;
-      padding:10px 14px;
+      position:absolute;                    /* Overlay */
+      top:0; left:0; right:0;               /* Full width */
+      height:var(--iframe-top-mask);        /* Cover amount */
+      z-index:6;                            /* Above iframe */
+      display:none;                         /* Off by default */
+      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%); /* Light */
+      border-bottom:4px solid var(--sv-gold); /* Gold line */
+      box-shadow:0 10px 22px rgba(0,0,0,.18); /* Shadow */
+      pointer-events:auto;                  /* Block clicks under */
+      align-items:center;                   /* Center */
+      justify-content:center;               /* Center */
+      padding:10px 14px;                    /* Padding */
     }
 
     .topMask img{
-      height:56px;
-      width:auto;
-      object-fit:contain;
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
+      height:56px;                          /* Logo height */
+      width:auto;                           /* Keep ratio */
+      object-fit:contain;                   /* Fit */
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); /* Soft shadow */
     }
 
     /* ================= COOKIE MASK ================= */
     .cookieMask{
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:0;
-      height:120px;
-
-      background:linear-gradient(180deg, #ffffff, #f7f7f7);
-      border-top:4px solid var(--sv-gold);
-      box-shadow:0 -10px 22px rgba(0,0,0,.18);
-
-      z-index:5;
-      display:none;
-      pointer-events:none;
-
-      align-items:center;
-      justify-content:center;
-      gap:14px;
-      padding:12px 18px;
+      position:absolute;                    /* Overlay */
+      left:0; right:0; bottom:0;            /* Bottom */
+      height:120px;                         /* Mask height */
+      background:linear-gradient(180deg, #ffffff, #f7f7f7); /* Light */
+      border-top:4px solid var(--sv-gold);  /* Gold line */
+      box-shadow:0 -10px 22px rgba(0,0,0,.18); /* Shadow */
+      z-index:5;                            /* Above iframe */
+      display:none;                         /* Off by default */
+      pointer-events:none;                  /* Let touches pass */
+      align-items:center;                   /* Center */
+      justify-content:center;               /* Center */
+      gap:14px;                             /* Space */
+      padding:12px 18px;                    /* Padding */
     }
 
     .cookieMask img{
-      height:52px;
-      max-width:260px;
-      object-fit:contain;
-      opacity:1;
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
+      height:52px;                          /* Logo height */
+      max-width:260px;                      /* Limit */
+      object-fit:contain;                   /* Fit */
+      opacity:1;                            /* Full */
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15)); /* Shadow */
     }
 
     /* ================= LOADING OVERLAY ================= */
     .loading{
-      position:absolute;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:7;
-      background:rgba(255,255,255,.72);
-      backdrop-filter: blur(2px);
+      position:absolute;                    /* Overlay */
+      inset:0;                              /* Fill */
+      display:none;                         /* Off by default */
+      align-items:center;                   /* Center */
+      justify-content:center;               /* Center */
+      z-index:7;                            /* Top layer */
+      background:rgba(255,255,255,.72);     /* Frosted */
+      backdrop-filter: blur(2px);           /* Blur */
     }
 
     .spinner{
-      width:58px;
-      height:58px;
-      border-radius:50%;
-      border:7px solid rgba(0,0,0,.15);
-      border-top-color: rgba(11,122,59,.9);
-      animation: spin 0.9s linear infinite;
+      width:58px; height:58px;              /* Size */
+      border-radius:50%;                    /* Circle */
+      border:7px solid rgba(0,0,0,.15);     /* Track */
+      border-top-color: rgba(11,122,59,.9); /* Green head */
+      animation: spin .9s linear infinite;  /* Spin */
     }
 
-    @keyframes spin{ to{ transform:rotate(360deg); } }
+    @keyframes spin{ to{ transform:rotate(360deg); } } /* Spinner keyframes */
 
     /* ================= RESPONSIVE ================= */
     @media (max-width:900px){
-      .tileTitle{ font-size:34px; }
-      .title{ display:none; }
-      .gameLogo{ height:54px; }
-      :root{ --header-h:92px; }
+      .tileTitle{ font-size:34px; }         /* Smaller title */
+      .title{ display:none; }              /* Hide header text */
+      .gameLogo{ height:54px; }            /* Smaller logos */
+      :root{ --header-h:92px; }            /* Shorter header */
     }
 
     @media (max-width:680px){
-      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; }
-      .tile{ min-height:160px; }
+      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; } /* Stack tiles */
+      .tile{ min-height:160px; }           /* Ensure tap size */
     }
   </style>
 </head>
@@ -528,82 +505,86 @@
   </div>
 
   <script>
-    const menuView    = document.getElementById('menuView');
-    const pageView    = document.getElementById('pageView');
-    const frame       = document.getElementById('frame');
-    const menuBtn     = document.getElementById('menuBtn');
-    const headerTitle = document.getElementById('headerTitle');
-    const cookieMask  = document.getElementById('cookieMask');
-    const topMask     = document.getElementById('topMask');
-    const loading     = document.getElementById('loading');
+    // ===== Element references =====
+    const menuView    = document.getElementById('menuView');      // Menu grid container
+    const pageView    = document.getElementById('pageView');      // Iframe container
+    const frame       = document.getElementById('frame');         // The iframe
+    const menuBtn     = document.getElementById('menuBtn');       // MENU button
+    const headerTitle = document.getElementById('headerTitle');   // Header title text
+    const cookieMask  = document.getElementById('cookieMask');    // Bottom cookie mask
+    const topMask     = document.getElementById('topMask');       // Top header mask
+    const loading     = document.getElementById('loading');       // Loading overlay
 
     // ===== KIOSK SETTINGS =====
-    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes -> returns to menu
-    let idleTimer = null;
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000;                        // 2 minutes -> auto-return to menu
+    let idleTimer = null;                                         // Idle timeout handle
 
     // If any top logos fail to load, hide them (prevents broken icon clutter)
     document.querySelectorAll('.gameLogo').forEach(img => {
-      img.addEventListener('error', () => { img.style.display = 'none'; });
+      img.addEventListener('error', () => { img.style.display = 'none'; }); // Hide broken logos
     });
 
-    function setIdleTimer(){
-      if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => {
-        if (pageView.style.display === 'block') showMenu();
-      }, IDLE_TIMEOUT_MS);
+    function setIdleTimer(){                                      // Reset and start the idle timer
+      if (idleTimer) clearTimeout(idleTimer);                     // Clear existing timer
+      idleTimer = setTimeout(() => {                              // Start a new timer
+        if (pageView.style.display === 'block') showMenu();       // If browsing, return to menu
+      }, IDLE_TIMEOUT_MS);                                        // After timeout
     }
 
+    // Reset timer on user activity (touch/kiosk friendly)
     ['click','touchstart','mousemove','keydown'].forEach(evt => {
-      window.addEventListener(evt, setIdleTimer, { passive:true });
+      window.addEventListener(evt, setIdleTimer, { passive:true }); // Passive for better scrolling performance
     });
 
-    function showLoading(on){
-      loading.style.display = on ? 'flex' : 'none';
-      loading.setAttribute('aria-hidden', on ? 'false' : 'true');
+    function showLoading(on){                                     // Toggle loading overlay
+      loading.style.display = on ? 'flex' : 'none';               // Show/hide overlay
+      loading.setAttribute('aria-hidden', on ? 'false' : 'true'); // Accessibility state
     }
 
-    function showMenu(){
-      showLoading(false);
-      frame.src = 'about:blank';
-      cookieMask.style.display = 'none';
-      topMask.style.display = 'none';
-      menuView.style.display = 'grid';
-      pageView.style.display = 'none';
-      headerTitle.textContent = 'Supreme Ventures Results';
-      menuBtn.setAttribute('aria-pressed', 'true');
+    function showMenu(){                                          // Return to main menu
+      showLoading(false);                                         // Ensure loader off
+      frame.src = 'about:blank';                                  // Clear iframe
+      cookieMask.style.display = 'none';                          // Hide bottom mask
+      topMask.style.display = 'none';                             // Hide top mask
+      menuView.style.display = 'grid';                            // Show menu grid
+      pageView.style.display = 'none';                            // Hide iframe view
+      headerTitle.textContent = 'Supreme Ventures Results';       // Reset title
+      menuBtn.setAttribute('aria-pressed', 'true');               // State
     }
 
-    function showPage(url, label){
-      menuView.style.display = 'none';
-      pageView.style.display = 'block';
-      cookieMask.style.display = 'flex';
-      topMask.style.display = 'flex';
-      headerTitle.textContent = label;
-      menuBtn.setAttribute('aria-pressed', 'false');
+    function showPage(url, label){                                // Navigate to a site page
+      menuView.style.display = 'none';                            // Hide menu
+      pageView.style.display = 'block';                           // Show iframe view
+      cookieMask.style.display = 'flex';                          // Show bottom mask
+      topMask.style.display = 'flex';                             // Show top mask
+      headerTitle.textContent = label;                            // Update title
+      menuBtn.setAttribute('aria-pressed', 'false');              // State
 
-      showLoading(true);
-      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
-      frame.src = url + bust;
+      showLoading(true);                                          // Show loading overlay
+      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now(); // Cache-buster
+      frame.src = url + bust;                                     // Load page
     }
 
-    frame.addEventListener('load', () => showLoading(false));
-    menuBtn.addEventListener('click', showMenu);
+    frame.addEventListener('load', () => showLoading(false));     // Hide loader when iframe loads
+    menuBtn.addEventListener('click', showMenu);                  // MENU button returns home
 
+    // Tile click -> open corresponding URL
     document.querySelectorAll('.tile').forEach(tile => {
       tile.addEventListener('click', e => {
-        e.preventDefault();
-        const url = tile.dataset.url;
-        const label = tile.querySelector('.tileTitle').textContent.trim();
-        showPage(url, label);
+        e.preventDefault();                                       // Prevent default anchor behavior
+        const url = tile.dataset.url;                             // URL to load
+        const label = tile.querySelector('.tileTitle').textContent.trim(); // Title to show
+        showPage(url, label);                                     // Navigate
       });
     });
 
+    // Keyboard: ESC returns to menu
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') showMenu();
+      if (e.key === 'Escape') showMenu();                         // Escape -> menu
     });
 
-    showMenu();
-    setIdleTimer();
+    showMenu();                                                   // Start in menu mode
+    setIdleTimer();                                               // Start idle timer
   </script>
 
 </body>
