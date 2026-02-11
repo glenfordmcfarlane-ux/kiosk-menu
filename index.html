@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0b7a3b" />
   <title>Supreme Ventures Results Kiosk</title>
 
   <style>
@@ -20,10 +21,15 @@
 
       --radius:20px;
       --gap:18px;
-      --header-h:104px;              /* ✅ increased */
+      --header-h:104px;
       --shadow:0 14px 40px rgba(0,0,0,.45);
 
-      --iframe-top-mask:140px;       /* ✅ NEW: covers the site's sticky header inside iframe */
+      /* Covers the site sticky header inside iframe */
+      --iframe-top-mask:140px;
+
+      /* Kiosk comfort */
+      --focus: 0 0 0 4px rgba(242,195,0,.45);
+      --tap: 0.985;
     }
 
     *{ box-sizing:border-box; }
@@ -37,6 +43,7 @@
         radial-gradient(1200px 800px at 80% 20%, rgba(11,122,59,.25), transparent 50%),
         linear-gradient(180deg, #06160e, var(--bg));
       color:var(--text);
+      overscroll-behavior:none;
     }
 
     /* ================= APP ================= */
@@ -85,6 +92,7 @@
       align-items:center;
       overflow:hidden;
       padding:0 6px;
+      min-width:0;
     }
 
     .logoStripInner{
@@ -92,36 +100,77 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:18px;                 /* ✅ slightly more spacing */
+      gap:18px;
       min-width:0;
     }
 
     .gameLogo{
-      height:82px;              /* ✅ increased */
+      height:82px;
       width:auto;
       object-fit:contain;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));
       opacity:.98;
     }
 
+    /* ================= MENU BUTTON (3D) ================= */
     .menuBtn{
       flex:0 0 auto;
-      border:2px solid rgba(242,195,0,.7);
-      background:linear-gradient(135deg, rgba(242,195,0,.35), rgba(255,255,255,.06));
-      color:#fff;
+
+      border:2px solid rgba(242,195,0,.92);
+      background:linear-gradient(145deg, #ffe06a, #caa800);
+      color:#1a1a1a;
+
       font-size:18px;
       font-weight:900;
-      padding:12px 22px;
-      border-radius:14px;
+      letter-spacing:.3px;
+
+      padding:14px 28px;
+      border-radius:16px;
       cursor:pointer;
       user-select:none;
-      box-shadow:0 10px 26px rgba(0,0,0,.35);
       -webkit-tap-highlight-color:transparent;
+
+      position:relative;
+      box-shadow:
+        0 7px 0 #9e8500,
+        0 18px 34px rgba(0,0,0,.45);
+      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+
+    .menuBtn::before{
+      content:"";
+      position:absolute;
+      left:6px;
+      right:6px;
+      top:6px;
+      height:44%;
+      border-radius:12px;
+      background:linear-gradient(to bottom, rgba(255,255,255,.35), rgba(255,255,255,0));
+      pointer-events:none;
+    }
+
+    .menuBtn:hover{
+      transform:translateY(-3px);
+      box-shadow:
+        0 10px 0 #9e8500,
+        0 24px 46px rgba(0,0,0,.55);
+      filter:saturate(1.05);
     }
 
     .menuBtn:active{
-      transform:scale(.98);
-      opacity:.92;
+      transform:translateY(5px);
+      box-shadow:
+        0 3px 0 #9e8500,
+        0 10px 18px rgba(0,0,0,.35);
+      filter:saturate(.98);
+    }
+
+    .menuBtn:focus-visible{
+      outline:none;
+      box-shadow:
+        0 7px 0 #9e8500,
+        0 18px 34px rgba(0,0,0,.45),
+        var(--focus);
     }
 
     /* ================= CONTENT ================= */
@@ -142,6 +191,7 @@
       gap:var(--gap);
     }
 
+    /* ================= 3D BEVELLED TILE (UPGRADED + COMPLETE) ================= */
     .tile{
       position:relative;
       display:flex;
@@ -152,17 +202,38 @@
       color:#fff;
 
       border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,.15);
+      border:1px solid rgba(255,255,255,.18);
+
       background:
         radial-gradient(900px 500px at 20% 20%, rgba(242,195,0,.14), transparent 45%),
-        linear-gradient(135deg, rgba(11,122,59,.75), rgba(7,92,44,.90));
-      box-shadow:var(--shadow);
+        linear-gradient(160deg, #0f8a45 0%, #0b7a3b 45%, #075c2c 100%);
 
       padding:24px;
       user-select:none;
       -webkit-tap-highlight-color:transparent;
+
+      /* 3D layered shadow */
+      box-shadow:
+        0 10px 0 #064a25,
+        0 22px 45px rgba(0,0,0,.55);
+
+      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
     }
 
+    /* Top glossy bevel */
+    .tile::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:45%;
+      border-radius:var(--radius) var(--radius) 0 0;
+      background:linear-gradient(to bottom, rgba(255,255,255,.18), rgba(255,255,255,0));
+      pointer-events:none;
+    }
+
+    /* Gold indicator dot */
     .tile::after{
       content:"";
       position:absolute;
@@ -175,9 +246,28 @@
       box-shadow:0 0 0 6px rgba(242,195,0,.18);
     }
 
+    .tile:hover{
+      transform:translateY(-6px);
+      box-shadow:
+        0 14px 0 #064a25,
+        0 30px 60px rgba(0,0,0,.65);
+      filter:saturate(1.05);
+    }
+
     .tile:active{
-      transform:scale(.985);
-      opacity:.95;
+      transform:translateY(8px) scale(var(--tap));
+      box-shadow:
+        0 4px 0 #064a25,
+        0 10px 20px rgba(0,0,0,.35);
+      filter:saturate(.98);
+    }
+
+    .tile:focus-visible{
+      outline:none;
+      box-shadow:
+        0 10px 0 #064a25,
+        0 22px 45px rgba(0,0,0,.55),
+        var(--focus);
     }
 
     .tileTitle{
@@ -221,9 +311,7 @@
       background:#fff;
     }
 
-    /* ================= TOP MASK (NEW) =================
-       Covers the Supreme Ventures sticky nav/header inside the iframe.
-       Also blocks clicks to the site menu underneath. */
+    /* ================= TOP MASK ================= */
     .topMask{
       position:absolute;
       top:0;
@@ -233,12 +321,11 @@
       z-index:6;
       display:none;
 
-      /* Choose a style you prefer: white or green */
       background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
       border-bottom:4px solid var(--sv-gold);
       box-shadow:0 10px 22px rgba(0,0,0,.18);
 
-      pointer-events:auto; /* ✅ blocks clicks to the website header under it */
+      pointer-events:auto; /* blocks clicks to the website header under it */
       align-items:center;
       justify-content:center;
       padding:10px 14px;
@@ -281,11 +368,40 @@
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
 
+    /* ================= LOADING OVERLAY ================= */
+    .loading{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:7;
+      background:rgba(255,255,255,.72);
+      backdrop-filter: blur(2px);
+    }
+
+    .spinner{
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      border:7px solid rgba(0,0,0,.15);
+      border-top-color: rgba(11,122,59,.9);
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
+    /* ================= RESPONSIVE ================= */
     @media (max-width:900px){
       .tileTitle{ font-size:30px; }
       .title{ display:none; }
-      .gameLogo{ height:34px; }
+      .gameLogo{ height:54px; }
       :root{ --header-h:92px; }
+    }
+
+    @media (max-width:680px){
+      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; }
+      .tile{ min-height:160px; }
     }
   </style>
 </head>
@@ -313,58 +429,63 @@
         </div>
       </div>
 
-      <button class="menuBtn" id="menuBtn">MENU</button>
+      <button class="menuBtn" id="menuBtn" type="button">MENU</button>
     </div>
 
     <div class="content">
 
       <!-- MENU -->
-      <div class="menuView" id="menuView">
-        <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/">
+      <nav class="menuView" id="menuView" aria-label="Main menu">
+        <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" aria-label="Open Latest Results">
           <div>
             <div class="tileTitle">Latest Results</div>
             <span class="sub">View today’s draw results</span>
           </div>
         </a>
 
-        <a class="tile" href="#" data-url="https://supremeventures.com/past-results/">
+        <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" aria-label="Open Past Results">
           <div>
             <div class="tileTitle">Past Results</div>
             <span class="sub">Search previous draws</span>
           </div>
         </a>
 
-        <a class="tile" href="#" data-url="https://supremeventures.com/games/">
+        <a class="tile" href="#" data-url="https://supremeventures.com/games/" aria-label="Open Games">
           <div>
             <div class="tileTitle">Games</div>
             <span class="sub">Browse available games</span>
           </div>
         </a>
 
-        <a class="tile" href="#" data-url="https://supremeventures.com/investor-centre/">
+        <a class="tile" href="#" data-url="https://supremeventures.com/investor-centre/" aria-label="Open Investor Center">
           <div>
             <div class="tileTitle">Investor Center</div>
             <span class="sub">Company information</span>
           </div>
         </a>
-      </div>
+      </nav>
 
       <!-- PAGE -->
-      <div class="pageView" id="pageView">
+      <section class="pageView" id="pageView" aria-label="Web view">
         <div class="frameWrap">
-          <iframe id="frame" src="about:blank" referrerpolicy="no-referrer"></iframe>
+          <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
 
-          <!-- ✅ NEW: covers sticky header/nav inside iframe -->
-          <div class="topMask" id="topMask">
+          <!-- Loading overlay (helps kiosk users) -->
+          <div class="loading" id="loading" aria-hidden="true">
+            <div class="spinner" aria-label="Loading"></div>
+          </div>
+
+          <!-- Covers sticky header/nav inside iframe -->
+          <div class="topMask" id="topMask" aria-hidden="true">
             <img src="./sv-logo.png" alt="Supreme Ventures Group" />
           </div>
 
           <!-- Cookie/privacy mask at bottom -->
-          <div class="cookieMask" id="cookieMask">
+          <div class="cookieMask" id="cookieMask" aria-hidden="true">
             <img src="./sv-logo.png" alt="Supreme Ventures Group" />
           </div>
         </div>
-      </div>
+      </section>
 
     </div>
   </div>
@@ -377,34 +498,71 @@
     const headerTitle = document.getElementById('headerTitle');
     const cookieMask  = document.getElementById('cookieMask');
     const topMask     = document.getElementById('topMask');
+    const loading     = document.getElementById('loading');
+
+    // ===== KIOSK SETTINGS =====
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes -> returns to menu
+    let idleTimer = null;
 
     // If any top logos fail to load, hide them (prevents broken icon clutter)
     document.querySelectorAll('.gameLogo').forEach(img => {
       img.addEventListener('error', () => { img.style.display = 'none'; });
     });
 
+    function setIdleTimer(){
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        // Only return if we're on a page
+        if (pageView.style.display === 'block') showMenu();
+      }, IDLE_TIMEOUT_MS);
+    }
+
+    // reset timer on user activity
+    ['click','touchstart','mousemove','keydown'].forEach(evt => {
+      window.addEventListener(evt, setIdleTimer, { passive:true });
+    });
+
+    function showLoading(on){
+      loading.style.display = on ? 'flex' : 'none';
+      loading.setAttribute('aria-hidden', on ? 'false' : 'true');
+    }
+
     function showMenu(){
+      showLoading(false);
       frame.src = 'about:blank';
       cookieMask.style.display = 'none';
       topMask.style.display = 'none';
       menuView.style.display = 'grid';
       pageView.style.display = 'none';
       headerTitle.textContent = 'Supreme Ventures Results';
+      menuBtn.setAttribute('aria-pressed', 'true');
     }
 
     function showPage(url, label){
       menuView.style.display = 'none';
       pageView.style.display = 'block';
       cookieMask.style.display = 'flex';
-      topMask.style.display = 'flex';   // ✅ show top mask when browsing site
+      topMask.style.display = 'flex';
       headerTitle.textContent = label;
-      frame.src = url;
+      menuBtn.setAttribute('aria-pressed', 'false');
+
+      showLoading(true);
+      // cache-buster for kiosk refresh behavior (optional but helpful)
+      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
+      frame.src = url + bust;
     }
 
+    // Hide loading when iframe finishes navigating
+    frame.addEventListener('load', () => {
+      showLoading(false);
+    });
+
+    // MENU button always returns to menu
     menuBtn.addEventListener('click', showMenu);
 
-    document.querySelectorAll('.tile').forEach(tile=>{
-      tile.addEventListener('click', e=>{
+    // Tile click
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('click', e => {
         e.preventDefault();
         const url = tile.dataset.url;
         const label = tile.querySelector('.tileTitle').textContent.trim();
@@ -412,8 +570,19 @@
       });
     });
 
+    // Keyboard: ESC returns to menu
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') showMenu();
+    });
+
+    // Start
     showMenu();
+    setIdleTimer();
   </script>
+
+</body>
+</html>
+
 
 </body>
 </html>
