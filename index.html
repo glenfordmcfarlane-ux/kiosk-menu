@@ -12,328 +12,321 @@
       --sv-green-dark:#075c2c;                 /* Brand dark green */
       --sv-gold:#f2c300;                       /* Brand gold */
 
-      --bg:#071e12;                            /* App background base */
-      --panel:#0b2a19;                         /* Panel color (unused but kept) */
-      --panel2:#0b1a12;                        /* Darker panel */
-      --border:rgba(255,255,255,.14);          /* Hairline borders */
-      --text:#ffffff;                          /* Main text color */
-      --muted:rgba(255,255,255,.78);           /* Muted text color */
+      /* ===== App background (light, like your +/- button surface) ===== */
+      --bg1:#eef1f4;                           /* Light surface */
+      --bg2:#dfe4ea;                           /* Slightly darker surface */
+      --surface:#e7ebf0;                       /* Content surface */
 
       --radius:20px;                           /* Global radius */
       --gap:18px;                              /* Grid gap */
       --header-h:290px;                        /* Header height */
-      --shadow:0 14px 40px rgba(0,0,0,.45);    /* Global shadow */
-
-      --iframe-top-mask:140px;                 /* Covers sticky header inside iframe */
 
       --focus: 0 0 0 4px rgba(242,195,0,.45);  /* Focus ring */
       --tap: 0.985;                            /* Tap scale */
 
-      /* ===== Bevel controls (easy tuning) ===== */
-      --bevel: 12px;                           /* ✅ Bezel thickness (increase for thicker rim) */
-      --bevel-radius: 44px;                    /* Outer radius of tile */
-      --face-radius: 32px;                     /* Inner face radius (outer minus bevel) */
+      /* ===== Tile geometry ===== */
+      --bevel: 12px;                           /* Bevel thickness */
+      --bevel-radius: 44px;                    /* Outer tile radius */
+      --face-radius: 32px;                     /* Inner face radius */
 
-      /* ===== Header scaling (proportional) ===== */
+      /* ===== Header scaling ===== */
       --title-size: 44px;                      /* Title font size */
-      --logo-h: 130px;                         /* Game logo height */
+      --logo-h: 120px;                         /* Logo height (tweak if needed) */
       --menu-font: 28px;                       /* Menu button text size */
-      --menu-pad-y: 22px;                      /* Menu button vertical padding */
-      --menu-pad-x: 48px;                      /* Menu button horizontal padding */
+      --menu-pad-y: 22px;                      /* Menu vertical padding */
+      --menu-pad-x: 48px;                      /* Menu horizontal padding */
       --menu-radius: 26px;                     /* Menu button rounding */
 
-      /* ===== NEW: header spacing controls ===== */
-      --header-bottom-pad: 28px;               /* How far from the bottom the title/menu sit */
-      --logo-top-pad: 10px;                    /* How high the logos sit inside the header */
+      /* ===== Header layout controls ===== */
+      --header-bottom-pad: 22px;               /* Bottom row offset */
+      --header-side-pad: 34px;                 /* Left/right inset */
+      --logo-area-top: 18px;                   /* Logo area top offset */
+      --logo-area-bottom: 115px;               /* Space reserved for bottom row (title + menu) */
+
+      /* ===== Tile shadows (neumorphic-ish, raised) ===== */
+      --tile-shadow-dark: rgba(0,0,0,.55);
+      --tile-shadow-light: rgba(255,255,255,.70);
     }
 
-    *{ box-sizing:border-box; }                /* Predictable sizing */
+    *{ box-sizing:border-box; }
 
     html, body{
-      height:100%;                             /* Full height app */
-      margin:0;                                /* Remove default margin */
-      font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif; /* Kiosk-friendly font */
-      /* Slightly lighter + textured background to help shadows read more "3D" */
+      height:100%;
+      margin:0;
+      font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif;
+      text-transform:uppercase;                /* ✅ All text to CAPS */
+
+      /* ✅ Light surface background so raised shadows read like the +/- control */
       background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(242,195,0,.12), transparent 55%), /* Soft gold glow */
-        radial-gradient(1200px 800px at 80% 20%, rgba(11,122,59,.22), transparent 55%), /* Soft green glow */
-        radial-gradient(1000px 700px at 50% 85%, rgba(255,255,255,.05), transparent 55%), /* subtle lift behind tiles */
-        linear-gradient(180deg, #0b2417, var(--bg));                                    /* Base gradient */
-      color:var(--text);                       /* Text color */
-      overscroll-behavior:none;                /* Prevent bounce in kiosk */
+        radial-gradient(1200px 800px at 18% 12%, rgba(255,255,255,.85), transparent 55%),
+        radial-gradient(900px 650px at 70% 20%, rgba(255,255,255,.55), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+
+      color:#0c1a12;
+      overscroll-behavior:none;
     }
 
     /* ================= APP ================= */
     .app{
-      height:100%;                             /* Fill viewport */
-      display:flex;                            /* Column layout */
-      flex-direction:column;                   /* Header on top */
+      height:100%;
+      display:flex;
+      flex-direction:column;
     }
 
     /* ================= HEADER ================= */
     .header{
-      min-height:var(--header-h);              /* Taller header */
-      display:flex;                            /* Horizontal layout */
-      align-items:stretch;                     /* Stretch so we can push title/menu down */
-      gap:26px;                                /* Space between items */
-      padding:28px 32px;                       /* Header padding */
+      min-height:var(--header-h);
+      position:relative;
+      padding:0;                               /* we position internal sections */
 
-      /* Light header so logos are more visible */
-      background:linear-gradient(180deg, #ffffff 0%, #f4f4f4 45%, #eaeaea 100%);
+      /* ✅ Light header gradient */
+      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 55%, #eeeeee 100%);
 
-      border-bottom:1px solid rgba(0,0,0,.10); /* Subtle bottom line */
-      position:relative;                       /* For accent bar */
+      /* Soft depth below header (reads like a raised slab) */
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.18);
+
+      border-bottom:1px solid rgba(0,0,0,.10);
+      overflow:hidden;
     }
 
     .header::after{
-      content:"";                              /* Accent bar */
-      position:absolute;                       /* Stick to bottom */
-      left:0; right:0; bottom:0;               /* Full width */
-      height:6px;                              /* Accent thickness */
-      background:linear-gradient(90deg, var(--sv-green), var(--sv-gold)); /* Green->Gold */
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height:6px;
+      background:linear-gradient(90deg, var(--sv-green), var(--sv-gold));
     }
 
-    /* Title sits LOWER to avoid competing with logos */
-    .title{
-      font-size:var(--title-size);             /* Title size */
-      font-weight:900;                         /* Bold */
-      letter-spacing:.4px;                     /* Tracking */
-      white-space:nowrap;                      /* Single line */
-      flex:0 0 auto;                           /* Don’t stretch */
-      color:#0b3f22;                           /* Dark green on white */
-      text-shadow:0 2px 0 rgba(255,255,255,.65);/* Slight lift */
-
-      margin-top:auto;                         /* ✅ Push toward bottom */
-      margin-bottom:var(--header-bottom-pad);  /* ✅ Control how low it sits */
-      align-self:flex-end;                     /* Align to bottom edge */
-    }
-
-    /* ======= LOGO STRIP ======= */
+    /* ===== Logo area (takes the top part of the header) ===== */
     .logoStrip{
-      flex:1;                                  /* Take remaining space */
-      display:flex;                            /* Horizontal */
-      overflow:hidden;                         /* Hide overflow */
-      padding:0 10px;                          /* Side padding */
-      min-width:0;                             /* Allow shrink */
-      align-self:stretch;                      /* Fill header height */
+      position:absolute;
+      left:var(--header-side-pad);
+      right:var(--header-side-pad);
+      top:var(--logo-area-top);
+      bottom:var(--logo-area-bottom);          /* ✅ keeps logos from colliding with title/menu */
+
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      overflow:hidden;
     }
 
     .logoStripInner{
-      width:100%;                              /* Full width */
-      display:flex;                            /* Row */
-      justify-content:center;                  /* Center logos */
-      gap:32px;                                /* Spacing between logos */
-      min-width:0;                             /* Allow shrink */
-      padding-top:var(--logo-top-pad);         /* ✅ Keep logos higher */
-      align-items:flex-start;                  /* ✅ Keep logos near top */
+      width:100%;
+      height:100%;
+
+      display:flex;
+      flex-wrap:wrap;                          /* ✅ allows ALL logos to appear */
+      justify-content:center;
+      align-content:flex-start;
+
+      column-gap:34px;
+      row-gap:18px;
+
+      padding-top:10px;
     }
 
     .gameLogo{
-      height:var(--logo-h);                    /* Logo height */
-      width:auto;                              /* Keep aspect */
-      object-fit:contain;                      /* Fit nicely */
+      height:var(--logo-h);
+      width:auto;
+      object-fit:contain;
+      opacity:1;
+
+      /* crisp pop on light background */
       filter:
-        drop-shadow(0 6px 12px rgba(0,0,0,.28)) /* Shadow for visibility */
-        drop-shadow(0 0 2px rgba(255,255,255,.35));
-      opacity:1;                               /* Full */
+        drop-shadow(0 8px 16px rgba(0,0,0,.22))
+        drop-shadow(0 0 2px rgba(255,255,255,.45));
     }
 
-    /* ================= MENU BUTTON (3D) ================= */
+    /* ===== Bottom row (title + menu sit LOWER, not competing with logos) ===== */
+    .bottomRow{
+      position:absolute;
+      left:var(--header-side-pad);
+      right:var(--header-side-pad);
+      bottom:var(--header-bottom-pad);
+
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:18px;
+
+      pointer-events:none;                     /* only menu should be clickable */
+    }
+
+    .title{
+      font-size:var(--title-size);
+      font-weight:900;
+      letter-spacing:.5px;
+      color:#0b3f22;
+      white-space:nowrap;
+
+      /* subtle embossed feel */
+      text-shadow:
+        0 1px 0 rgba(255,255,255,.85),
+        0 10px 18px rgba(0,0,0,.10);
+    }
+
+    /* ================= MENU BUTTON (RAISED 3D) ================= */
     .menuBtn{
-      flex:0 0 auto;                           /* Fixed width */
-      border:3px solid rgba(242,195,0,.95);    /* Gold rim */
-      background:linear-gradient(145deg, #ffe58a, #caa800); /* Gold face */
-      color:#1a1a1a;                           /* Dark text */
+      pointer-events:auto;                    /* re-enable clicks */
 
-      font-size:var(--menu-font);              /* Menu text size */
-      font-weight:900;                         /* Bold */
-      letter-spacing:.4px;                     /* Tracking */
+      border:3px solid rgba(242,195,0,.95);
+      background:linear-gradient(145deg, #ffe58a, #caa800);
+      color:#1a1a1a;
 
-      padding:var(--menu-pad-y) var(--menu-pad-x); /* Padding */
-      border-radius:var(--menu-radius);        /* Rounding */
+      font-size:var(--menu-font);
+      font-weight:900;
+      letter-spacing:.5px;
 
-      cursor:pointer;                          /* Pointer */
-      user-select:none;                        /* No select */
-      -webkit-tap-highlight-color:transparent; /* No tap glow */
-      position:relative;                       /* For gloss */
+      padding:var(--menu-pad-y) var(--menu-pad-x);
+      border-radius:var(--menu-radius);
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      position:relative;
 
-      /* Strong 3D */
+      /* Raised, like a physical button */
       box-shadow:
-        0 12px 0 #9e8500,
-        0 28px 52px rgba(0,0,0,.35);
+        0 14px 0 #9e8500,
+        0 34px 64px rgba(0,0,0,.30);
 
       transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
-
-      margin-top:auto;                         /* ✅ Push toward bottom */
-      margin-bottom:var(--header-bottom-pad);  /* ✅ Keep same baseline as title */
-      align-self:flex-end;                     /* Align to bottom edge */
     }
 
     .menuBtn::before{
-      content:"";                              /* Gloss highlight */
-      position:absolute;                       /* Inside */
-      left:10px; right:10px; top:10px;         /* Inset */
-      height:44%;                              /* Top band */
+      content:"";
+      position:absolute;
+      left:10px; right:10px; top:10px;
+      height:44%;
       border-radius:calc(var(--menu-radius) - 8px);
-      background:linear-gradient(to bottom, rgba(255,255,255,.40), rgba(255,255,255,0));
-      pointer-events:none;                     /* Ignore clicks */
+      background:linear-gradient(to bottom, rgba(255,255,255,.45), rgba(255,255,255,0));
+      pointer-events:none;
     }
 
     .menuBtn:hover{
-      transform:translateY(-4px);              /* Lift */
+      transform:translateY(-4px);
       box-shadow:
-        0 16px 0 #9e8500,
-        0 34px 64px rgba(0,0,0,.40);
+        0 18px 0 #9e8500,
+        0 40px 78px rgba(0,0,0,.34);
       filter:saturate(1.05);
     }
 
     .menuBtn:active{
-      transform:translateY(7px);               /* Press */
+      transform:translateY(8px);
       box-shadow:
         0 6px 0 #9e8500,
-        0 16px 28px rgba(0,0,0,.28);
+        0 18px 32px rgba(0,0,0,.26);
       filter:saturate(.98);
     }
 
     .menuBtn:focus-visible{
       outline:none;
       box-shadow:
-        0 12px 0 #9e8500,
-        0 28px 52px rgba(0,0,0,.35),
+        0 14px 0 #9e8500,
+        0 34px 64px rgba(0,0,0,.30),
         var(--focus);
     }
 
     /* ================= CONTENT ================= */
     .content{
-      flex:1;                                  /* Fill remaining space */
-      min-height:0;                            /* Allow children to size */
-      padding:18px;                            /* Outer padding */
-      display:flex;                            /* Holds menu/page */
-    }
+      flex:1;
+      min-height:0;
+      padding:22px;
+      display:flex;
 
-    /* ================= MENU ================= */
-    .menuView{
-      width:100%;                              /* Full width */
-      height:100%;                             /* Full height */
-      display:grid;                            /* 2x2 grid */
-      grid-template-columns:1fr 1fr;           /* Two columns */
-      grid-template-rows:1fr 1fr;              /* Two rows */
-      gap:var(--gap);                          /* Spacing */
-    }
-
-    /* ================= TRUE RAISED 3D TILE (more convex) ================= */
-    .tile{
-      position:relative;                       /* Needed for pseudo-elements */
-      display:flex;                            /* Center content */
-      align-items:center;                      /* Center vertically */
-      justify-content:center;                  /* Center horizontally */
-      text-align:center;                       /* Center text */
-      text-decoration:none;                    /* No underline */
-      color:#fff;                              /* White text */
-      user-select:none;                        /* No select */
-      -webkit-tap-highlight-color:transparent; /* No tap glow */
-
-      border-radius:var(--bevel-radius);       /* Outer roundness */
-      padding:0;                               /* Inner face handles padding */
-
-      /* Dark outer bezel ring (rim) */
-      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.40));
-
-      /* Raised shadow: strong bottom-right + subtle top-left highlight */
-      box-shadow:
-        18px 18px 38px rgba(0,0,0,.80),        /* main cast shadow */
-        -7px -7px 16px rgba(255,255,255,.05), /* rim highlight */
-        inset 0 2px 0 rgba(255,255,255,.06);  /* tiny inner rim line */
-
-      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-    }
-
-    /* Inner face (bevel thickness controlled by --bevel) */
-    .tile::before{
-      content:"";                              /* Create inner surface */
-      position:absolute;                       /* Fill inside */
-      inset:var(--bevel);                      /* ✅ Bevel thickness */
-      border-radius:var(--face-radius);        /* Inner rounding */
-
-      /* Convex green face */
+      /* ✅ light surface behind tiles (helps the raised effect) */
       background:
-        radial-gradient(circle at 30% 22%, rgba(90, 240, 160, .95) 0%, rgba(24, 170, 90, .95) 32%, rgba(11, 122, 59, .99) 62%, rgba(7, 92, 44, 1) 100%);
-
-      /* TRUE convex feel: bright top-left, deeper bottom-right */
-      box-shadow:
-        inset 10px 10px 18px rgba(255,255,255,.18), /* highlight */
-        inset -14px -18px 28px rgba(0,0,0,.55);     /* depth */
-
-      z-index:0;                               /* Behind content */
+        radial-gradient(1200px 800px at 25% 15%, rgba(255,255,255,.45), transparent 55%),
+        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,.25), transparent 60%),
+        linear-gradient(180deg, var(--surface), #d9dee6);
     }
 
-    /* Gloss highlight band (top shine) */
+    /* ================= MENU GRID ================= */
+    .menuView{
+      width:100%;
+      height:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+      gap:var(--gap);
+    }
+
+    /* ================= TRUE RAISED 3D TILE (UPGRADE) ================= */
+    .tile{
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      text-decoration:none;
+      color:#fff;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+
+      border-radius:var(--bevel-radius);
+      padding:0;
+
+      /* Outer shell tone (dark green rim) */
+      background:linear-gradient(180deg,#0d5f35,#0a4e2b);
+
+      /* ✅ OUTER RAISE (like +/- button: dark BR shadow + light TL highlight) */
+      box-shadow:
+        18px 18px 38px var(--tile-shadow-dark),
+        -10px -10px 22px var(--tile-shadow-light);
+
+      transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    }
+
+    /* Inner face */
+    .tile::before{
+      content:"";
+      position:absolute;
+      inset:var(--bevel);                      /* ✅ bevel thickness */
+      border-radius:var(--face-radius);
+
+      background:
+        radial-gradient(circle at 30% 25%, #20b76a 0%, #0b7a3b 50%, #075c2c 100%);
+
+      /* ✅ TRUE CONVEX SHAPE (bright TL, deep BR) */
+      box-shadow:
+        inset 8px 8px 16px rgba(255,255,255,.22),
+        inset -14px -18px 30px rgba(0,0,0,.55);
+
+      z-index:0;
+    }
+
+    /* Gloss highlight */
     .tile::after{
-      content:"";                              /* Shine layer */
-      position:absolute;                       /* Place at top */
-      left:calc(var(--bevel) + 8px);
-      right:calc(var(--bevel) + 8px);
-      top:calc(var(--bevel) + 8px);
+      content:"";
+      position:absolute;
+      left:calc(var(--bevel) + 10px);
+      right:calc(var(--bevel) + 10px);
+      top:calc(var(--bevel) + 10px);
       height:40%;
-      border-radius:calc(var(--face-radius) - 8px);
-      background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
+      border-radius:calc(var(--face-radius) - 10px);
+      background:linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0));
       filter:blur(.25px);
       z-index:1;
       pointer-events:none;
     }
 
-    /* Gold indicator dot */
     .tile .dot{
       position:absolute;
-      top:22px; right:22px;
-      width:16px; height:16px;
+      top:22px;
+      right:22px;
+      width:16px;
+      height:16px;
       border-radius:50%;
       background:var(--sv-gold);
-      box-shadow:0 0 0 8px rgba(242,195,0,.15);
+      box-shadow:0 0 0 8px rgba(242,195,0,.16);
       z-index:3;
     }
 
-    /* Content wrapper so text sits above the face */
     .tileContent{
       position:relative;
       z-index:2;
       padding:34px;
-    }
-
-    /* Hover lift */
-    .tile:hover{
-      transform:translateY(-6px);
-      box-shadow:
-        22px 22px 50px rgba(0,0,0,.84),
-        -8px -8px 18px rgba(255,255,255,.06),
-        inset 0 2px 0 rgba(255,255,255,.06);
-      filter:saturate(1.06);
-    }
-
-    /* Pressed becomes slightly concave */
-    .tile:active{
-      transform:translateY(4px) scale(var(--tap));
-      box-shadow:
-        10px 10px 22px rgba(0,0,0,.70),
-        -4px -4px 10px rgba(255,255,255,.04);
-      filter:saturate(.98);
-    }
-
-    /* Inner face concave when pressed */
-    .tile:active::before{
-      box-shadow:
-        inset 12px 12px 22px rgba(0,0,0,.60),
-        inset -8px -8px 16px rgba(255,255,255,.18);
-    }
-
-    /* Keyboard focus ring */
-    .tile:focus-visible{
-      outline:none;
-      box-shadow:
-        18px 18px 38px rgba(0,0,0,.80),
-        -7px -7px 16px rgba(255,255,255,.05),
-        inset 0 2px 0 rgba(255,255,255,.06),
-        var(--focus);
     }
 
     .tileTitle{
@@ -348,7 +341,41 @@
       margin-top:10px;
       font-size:20px;
       font-weight:800;
-      color:rgba(255,255,255,.88);
+      color:rgba(255,255,255,.92);
+    }
+
+    /* Hover: lift */
+    .tile:hover{
+      transform:translateY(-6px);
+      box-shadow:
+        22px 22px 50px rgba(0,0,0,.62),
+        -12px -12px 26px rgba(255,255,255,.78);
+      filter:saturate(1.06);
+    }
+
+    /* ================= PRESSED STATE (CONCAVE EFFECT) ================= */
+    .tile:active{
+      transform:translateY(4px) scale(var(--tap));
+
+      box-shadow:
+        6px 6px 16px rgba(0,0,0,.70),
+        -4px -4px 10px rgba(255,255,255,.55);
+
+      filter:saturate(.98);
+    }
+
+    .tile:active::before{
+      box-shadow:
+        inset 8px 8px 16px rgba(0,0,0,.55),
+        inset -6px -6px 14px rgba(255,255,255,.18);
+    }
+
+    .tile:focus-visible{
+      outline:none;
+      box-shadow:
+        18px 18px 38px var(--tile-shadow-dark),
+        -10px -10px 22px var(--tile-shadow-light),
+        var(--focus);
     }
 
     /* ================= PAGE VIEW ================= */
@@ -358,28 +385,41 @@
       display:none;
       border-radius:var(--radius);
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);
-      background:var(--panel2);
-      box-shadow:var(--shadow);
+      border:1px solid rgba(0,0,0,.12);
+      background:#ffffff;
+      box-shadow:0 14px 40px rgba(0,0,0,.20);
     }
 
-    .frameWrap{
-      position:relative;
-      width:100%; height:100%;
-      background:#fff;
+    .frameWrap{ position:relative; width:100%; height:100%; background:#fff; }
+    iframe{ width:100%; height:100%; border:0; background:#fff; }
+
+    /* ================= OVERLAYS ================= */
+    .loading{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:7;
+      background:rgba(255,255,255,.72);
+      backdrop-filter: blur(2px);
     }
 
-    iframe{
-      width:100%; height:100%;
-      border:0;
-      background:#fff;
+    .spinner{
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      border:7px solid rgba(0,0,0,.15);
+      border-top-color: rgba(11,122,59,.9);
+      animation: spin .9s linear infinite;
     }
 
-    /* ================= TOP MASK ================= */
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
     .topMask{
       position:absolute;
       top:0; left:0; right:0;
-      height:var(--iframe-top-mask);
+      height:140px;
       z-index:6;
       display:none;
       background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
@@ -398,7 +438,6 @@
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
     }
 
-    /* ================= COOKIE MASK ================= */
     .cookieMask{
       position:absolute;
       left:0; right:0; bottom:0;
@@ -423,39 +462,23 @@
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
 
-    /* ================= LOADING OVERLAY ================= */
-    .loading{
-      position:absolute;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:7;
-      background:rgba(255,255,255,.72);
-      backdrop-filter: blur(2px);
-    }
-
-    .spinner{
-      width:58px; height:58px;
-      border-radius:50%;
-      border:7px solid rgba(0,0,0,.15);
-      border-top-color: rgba(11,122,59,.9);
-      animation: spin .9s linear infinite;
-    }
-
-    @keyframes spin{ to{ transform:rotate(360deg); } }
-
     /* ================= RESPONSIVE ================= */
+    @media (max-width:1100px){
+      :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; }
+      .logoStripInner{ column-gap:24px; row-gap:14px; }
+    }
+
     @media (max-width:900px){
+      :root{ --header-h: 220px; --logo-area-bottom: 92px; }
       .tileTitle{ font-size:34px; }
-      .title{ display:none; }
-      .gameLogo{ height:84px; }
-      :root{ --header-h:200px; }
+      .sub{ font-size:18px; }
     }
 
     @media (max-width:680px){
       .menuView{ grid-template-columns:1fr; grid-template-rows:auto; }
       .tile{ min-height:160px; }
+      .bottomRow{ flex-direction:column; align-items:flex-start; }
+      .menuBtn{ align-self:flex-end; }
     }
   </style>
 </head>
@@ -463,9 +486,8 @@
 <body>
   <div class="app">
 
-    <div class="header">
-      <div class="title" id="headerTitle">Supreme Ventures Results</div>
-
+    <header class="header">
+      <!-- Logos (top area) -->
       <div class="logoStrip" aria-label="Game logos">
         <div class="logoStripInner">
           <img class="gameLogo" src="./cpot-150x150.png"       alt="Cash Pot" />
@@ -483,8 +505,12 @@
         </div>
       </div>
 
-      <button class="menuBtn" id="menuBtn" type="button">MENU</button>
-    </div>
+      <!-- Bottom row (lowered title + menu) -->
+      <div class="bottomRow">
+        <div class="title" id="headerTitle">SUPREME VENTURES RESULTS</div>
+        <button class="menuBtn" id="menuBtn" type="button">MENU</button>
+      </div>
+    </header>
 
     <div class="content">
 
@@ -493,32 +519,32 @@
         <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" aria-label="Open Latest Results">
           <span class="dot" aria-hidden="true"></span>
           <div class="tileContent">
-            <div class="tileTitle">Latest Results</div>
-            <span class="sub">View today’s draw results</span>
+            <div class="tileTitle">LATEST RESULTS</div>
+            <span class="sub">VIEW TODAY’S DRAW RESULTS</span>
           </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" aria-label="Open Past Results">
           <span class="dot" aria-hidden="true"></span>
           <div class="tileContent">
-            <div class="tileTitle">Past Results</div>
-            <span class="sub">Search previous draws</span>
+            <div class="tileTitle">PAST RESULTS</div>
+            <span class="sub">SEARCH PREVIOUS DRAWS</span>
           </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/games/" aria-label="Open Games">
           <span class="dot" aria-hidden="true"></span>
           <div class="tileContent">
-            <div class="tileTitle">Games</div>
-            <span class="sub">Browse available games</span>
+            <div class="tileTitle">GAMES</div>
+            <span class="sub">BROWSE AVAILABLE GAMES</span>
           </div>
         </a>
 
         <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" aria-label="Responsible Gaming">
           <span class="dot" aria-hidden="true"></span>
           <div class="tileContent">
-            <div class="tileTitle">Responsible Gaming</div>
-            <span class="sub">General information</span>
+            <div class="tileTitle">RESPONSIBLE GAMING</div>
+            <span class="sub">GENERAL INFORMATION</span>
           </div>
         </a>
       </nav>
@@ -528,17 +554,14 @@
         <div class="frameWrap">
           <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
 
-          <!-- Loading overlay -->
           <div class="loading" id="loading" aria-hidden="true">
             <div class="spinner" aria-label="Loading"></div>
           </div>
 
-          <!-- Covers sticky header/nav inside iframe -->
           <div class="topMask" id="topMask" aria-hidden="true">
             <img src="./sv-logo.png" alt="Supreme Ventures Group" />
           </div>
 
-          <!-- Cookie/privacy mask at bottom -->
           <div class="cookieMask" id="cookieMask" aria-hidden="true">
             <img src="./sv-logo.png" alt="Supreme Ventures Group" />
           </div>
@@ -550,88 +573,82 @@
 
   <script>
     // ===== Element references =====
-    const menuView    = document.getElementById('menuView');      // Menu grid container
-    const pageView    = document.getElementById('pageView');      // Iframe container
-    const frame       = document.getElementById('frame');         // The iframe
-    const menuBtn     = document.getElementById('menuBtn');       // MENU button
-    const headerTitle = document.getElementById('headerTitle');   // Header title text
-    const cookieMask  = document.getElementById('cookieMask');    // Bottom cookie mask
-    const topMask     = document.getElementById('topMask');       // Top header mask
-    const loading     = document.getElementById('loading');       // Loading overlay
+    const menuView    = document.getElementById('menuView');
+    const pageView    = document.getElementById('pageView');
+    const frame       = document.getElementById('frame');
+    const menuBtn     = document.getElementById('menuBtn');
+    const headerTitle = document.getElementById('headerTitle');
+    const cookieMask  = document.getElementById('cookieMask');
+    const topMask     = document.getElementById('topMask');
+    const loading     = document.getElementById('loading');
 
     // ===== KIOSK SETTINGS =====
-    const IDLE_TIMEOUT_MS = 2 * 60 * 1000;                        // 2 minutes -> auto-return to menu
-    let idleTimer = null;                                         // Idle timeout handle
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+    let idleTimer = null;
 
-    // If any top logos fail to load, hide them (prevents broken icon clutter)
-    document.querySelectorAll('.gameLogo').forEach(img => {       // Loop all game logos
-      img.addEventListener('error', () => {                       // If an image fails
-        img.style.display = 'none';                               // Hide broken logo
+    // Hide any broken logos
+    document.querySelectorAll('.gameLogo').forEach(img => {
+      img.addEventListener('error', () => { img.style.display = 'none'; });
+    });
+
+    function setIdleTimer(){
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (pageView.style.display === 'block') showMenu();
+      }, IDLE_TIMEOUT_MS);
+    }
+
+    ['click','touchstart','mousemove','keydown'].forEach(evt => {
+      window.addEventListener(evt, setIdleTimer, { passive:true });
+    });
+
+    function showLoading(on){
+      loading.style.display = on ? 'flex' : 'none';
+      loading.setAttribute('aria-hidden', on ? 'false' : 'true');
+    }
+
+    function showMenu(){
+      showLoading(false);
+      frame.src = 'about:blank';
+      cookieMask.style.display = 'none';
+      topMask.style.display = 'none';
+      menuView.style.display = 'grid';
+      pageView.style.display = 'none';
+      headerTitle.textContent = 'SUPREME VENTURES RESULTS';
+      menuBtn.setAttribute('aria-pressed', 'true');
+    }
+
+    function showPage(url, label){
+      menuView.style.display = 'none';
+      pageView.style.display = 'block';
+      cookieMask.style.display = 'flex';
+      topMask.style.display = 'flex';
+      headerTitle.textContent = label.toUpperCase();
+      menuBtn.setAttribute('aria-pressed', 'false');
+
+      showLoading(true);
+      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
+      frame.src = url + bust;
+    }
+
+    frame.addEventListener('load', () => showLoading(false));
+    menuBtn.addEventListener('click', showMenu);
+
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('click', e => {
+        e.preventDefault();
+        const url = tile.dataset.url;
+        const label = tile.querySelector('.tileTitle').textContent.trim();
+        showPage(url, label);
       });
     });
 
-    function setIdleTimer(){                                      // Reset and start the idle timer
-      if (idleTimer) clearTimeout(idleTimer);                     // Clear existing timer
-      idleTimer = setTimeout(() => {                              // Start a new timer
-        if (pageView.style.display === 'block') showMenu();       // If browsing, return to menu
-      }, IDLE_TIMEOUT_MS);                                        // After timeout
-    }
-
-    // Reset timer on user activity (touch/kiosk friendly)
-    ['click','touchstart','mousemove','keydown'].forEach(evt => { // Events to treat as activity
-      window.addEventListener(evt, setIdleTimer, { passive:true });// Passive for performance
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') showMenu();
     });
 
-    function showLoading(on){                                     // Toggle loading overlay
-      loading.style.display = on ? 'flex' : 'none';               // Show/hide overlay
-      loading.setAttribute('aria-hidden', on ? 'false' : 'true'); // Accessibility state
-    }
-
-    function showMenu(){                                          // Return to main menu
-      showLoading(false);                                         // Ensure loader off
-      frame.src = 'about:blank';                                  // Clear iframe
-      cookieMask.style.display = 'none';                          // Hide bottom mask
-      topMask.style.display = 'none';                             // Hide top mask
-      menuView.style.display = 'grid';                            // Show menu grid
-      pageView.style.display = 'none';                            // Hide iframe view
-      headerTitle.textContent = 'Supreme Ventures Results';       // Reset title
-      menuBtn.setAttribute('aria-pressed', 'true');               // State
-    }
-
-    function showPage(url, label){                                // Navigate to a site page
-      menuView.style.display = 'none';                            // Hide menu
-      pageView.style.display = 'block';                           // Show iframe view
-      cookieMask.style.display = 'flex';                          // Show bottom mask
-      topMask.style.display = 'flex';                             // Show top mask
-      headerTitle.textContent = label;                            // Update title
-      menuBtn.setAttribute('aria-pressed', 'false');              // State
-
-      showLoading(true);                                          // Show loading overlay
-      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now(); // Cache-buster
-      frame.src = url + bust;                                     // Load page
-    }
-
-    frame.addEventListener('load', () => showLoading(false));     // Hide loader when iframe loads
-    menuBtn.addEventListener('click', showMenu);                  // MENU button returns home
-
-    // Tile click -> open corresponding URL
-    document.querySelectorAll('.tile').forEach(tile => {          // Loop tiles
-      tile.addEventListener('click', e => {                       // On tile click
-        e.preventDefault();                                       // Prevent default anchor behavior
-        const url = tile.dataset.url;                             // URL to load
-        const label = tile.querySelector('.tileTitle').textContent.trim(); // Title to show
-        showPage(url, label);                                     // Navigate
-      });
-    });
-
-    // Keyboard: ESC returns to menu
-    window.addEventListener('keydown', (e) => {                   // On key press
-      if (e.key === 'Escape') showMenu();                         // Escape -> menu
-    });
-
-    showMenu();                                                   // Start in menu mode
-    setIdleTimer();                                               // Start idle timer
+    showMenu();
+    setIdleTimer();
   </script>
-
 </body>
 </html>
