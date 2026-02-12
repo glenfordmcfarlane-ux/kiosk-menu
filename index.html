@@ -55,12 +55,15 @@
       --tile-shadow-dark: rgba(0,0,0,.58);
       --tile-shadow-light: rgba(255,255,255,.72);
 
-      /* ✅ NEW: “cutout ring” around each button */
-      --ring-radius: 46px;                  /* slightly > tile radius for a nice frame */
-      --ring-thickness: 10px;               /* visual thickness of the ring */
-      --ring-gap: 12px;                     /* distance between ring and tile */
-      --ring-shadow-dark: rgba(0,0,0,.20);  /* recess shadow */
-      --ring-shadow-light: rgba(255,255,255,.65); /* recess highlight */
+      /* “cutout ring” around each button */
+      --ring-radius: 46px;
+      --ring-thickness: 10px;
+      --ring-gap: 12px;
+      --ring-shadow-dark: rgba(0,0,0,.20);
+      --ring-shadow-light: rgba(255,255,255,.65);
+
+      /* ✅ NEW: iframe zoom (set per page) */
+      --iframe-zoom: 1;
     }
 
     *{ box-sizing:border-box; }
@@ -285,25 +288,22 @@
       gap:var(--gap);
     }
 
-    /* ✅ NEW: “Button cutout ring” wrapper */
+    /* “Button cutout ring” wrapper */
     .tileSlot{
       position:relative;
       border-radius:var(--ring-radius);
       padding:var(--ring-gap);
 
-      /* ring material */
       background:
         linear-gradient(180deg, rgba(0,0,0,.10), rgba(255,255,255,.10)),
         linear-gradient(180deg, #edf1f6 0%, #d7dde6 100%);
 
-      /* recessed frame */
       box-shadow:
         inset 12px 12px 18px var(--ring-shadow-dark),
         inset -12px -12px 18px var(--ring-shadow-light),
         0 10px 24px rgba(0,0,0,.06);
     }
 
-    /* thin “lip” to read like machined bezel */
     .tileSlot::before{
       content:"";
       position:absolute;
@@ -445,8 +445,62 @@
       box-shadow:0 14px 40px rgba(0,0,0,.20);
     }
 
-    .frameWrap{ position:relative; width:100%; height:100%; background:#fff; }
-    iframe{ width:100%; height:100%; border:0; background:#fff; }
+    /* ✅ UPDATED: wrap/zoom */
+    .frameWrap{
+      position:relative;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    /* ✅ UPDATED: scaled iframe */
+    iframe{
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      border:0;
+      background:#fff;
+      transform-origin: top left;
+      transform: scale(var(--iframe-zoom));
+    }
+
+    /* ✅ ZOOM CONTROLS */
+    .zoomControls{
+      position:absolute;
+      top:16px;
+      right:16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      z-index:8;
+    }
+
+    .zoomBtn{
+      width:56px;
+      height:56px;
+      border-radius:16px;
+      border:none;
+      font-size:28px;
+      font-weight:900;
+      cursor:pointer;
+
+      background:linear-gradient(180deg,#ffffff,#e6e6e6);
+      box-shadow:
+        6px 6px 14px rgba(0,0,0,.25),
+        -4px -4px 10px rgba(255,255,255,.8);
+
+      transition:all .15s ease;
+    }
+
+    .zoomBtn:active{
+      transform:translateY(3px);
+      box-shadow:
+        inset 6px 6px 12px rgba(0,0,0,.25),
+        inset -4px -4px 10px rgba(255,255,255,.9);
+    }
 
     /* overlays */
     .loading{
@@ -570,7 +624,7 @@
         <nav class="menuView" id="menuView" aria-label="Main menu">
 
           <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" aria-label="Open Latest Results">
+            <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results">
               <span class="dot" aria-hidden="true"></span>
               <div class="tileContent">
                 <div class="tileTitle">LATEST RESULTS</div>
@@ -580,7 +634,7 @@
           </div>
 
           <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" aria-label="Open Past Results">
+            <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results">
               <span class="dot" aria-hidden="true"></span>
               <div class="tileContent">
                 <div class="tileTitle">PAST RESULTS</div>
@@ -590,7 +644,7 @@
           </div>
 
           <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/games/" aria-label="Open Games">
+            <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games">
               <span class="dot" aria-hidden="true"></span>
               <div class="tileContent">
                 <div class="tileTitle">GAMES</div>
@@ -600,7 +654,7 @@
           </div>
 
           <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" aria-label="Responsible Gaming">
+            <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming">
               <span class="dot" aria-hidden="true"></span>
               <div class="tileContent">
                 <div class="tileTitle">RESPONSIBLE GAMING</div>
@@ -614,6 +668,12 @@
         <section class="pageView" id="pageView" aria-label="Web view">
           <div class="frameWrap">
             <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
+
+            <!-- ✅ ZOOM CONTROLS -->
+            <div class="zoomControls" aria-label="Zoom controls">
+              <button class="zoomBtn" id="zoomOut" type="button" aria-label="Zoom out">-</button>
+              <button class="zoomBtn" id="zoomIn"  type="button" aria-label="Zoom in">+</button>
+            </div>
 
             <div class="loading" id="loading" aria-hidden="true">
               <div class="spinner" aria-label="Loading"></div>
@@ -643,6 +703,11 @@
     const topMask     = document.getElementById('topMask');
     const loading     = document.getElementById('loading');
 
+    // ✅ zoom controls
+    const zoomIn  = document.getElementById('zoomIn');
+    const zoomOut = document.getElementById('zoomOut');
+    let currentZoom = 1;
+
     const IDLE_TIMEOUT_MS = 2 * 60 * 1000;
     let idleTimer = null;
 
@@ -666,6 +731,11 @@
       loading.setAttribute('aria-hidden', on ? 'false' : 'true');
     }
 
+    function applyZoom(z){
+      currentZoom = Math.max(0.75, Math.min(1.6, z));
+      document.documentElement.style.setProperty('--iframe-zoom', currentZoom);
+    }
+
     function showMenu(){
       showLoading(false);
       frame.src = 'about:blank';
@@ -675,15 +745,19 @@
       pageView.style.display = 'none';
       headerTitle.textContent = 'SUPREME VENTURES RESULTS';
       menuBtn.setAttribute('aria-pressed', 'true');
+      applyZoom(1);
     }
 
-    function showPage(url, label){
+    // ✅ updated to accept per-page zoom
+    function showPage(url, label, zoom=1){
       menuView.style.display = 'none';
       pageView.style.display = 'block';
       cookieMask.style.display = 'flex';
       topMask.style.display = 'flex';
       headerTitle.textContent = label.toUpperCase();
       menuBtn.setAttribute('aria-pressed', 'false');
+
+      applyZoom(zoom);
 
       showLoading(true);
       const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
@@ -697,10 +771,15 @@
       tile.addEventListener('click', e => {
         e.preventDefault();
         const url = tile.dataset.url;
+        const zoom = parseFloat(tile.dataset.zoom || '1');
         const label = tile.querySelector('.tileTitle').textContent.trim();
-        showPage(url, label);
+        showPage(url, label, zoom);
       });
     });
+
+    // ✅ zoom buttons
+    zoomIn.addEventListener('click', () => applyZoom(currentZoom + 0.1));
+    zoomOut.addEventListener('click', () => applyZoom(currentZoom - 0.1));
 
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') showMenu();
