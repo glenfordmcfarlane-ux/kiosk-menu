@@ -8,48 +8,52 @@
 
   <style>
     :root{
-      --sv-green:#0b7a3b;
-      --sv-green-dark:#075c2c;
-      --sv-gold:#f2c300;
+      --sv-green:#0b7a3b;                       /* Brand green */
+      --sv-green-dark:#075c2c;                 /* Brand dark green */
+      --sv-gold:#f2c300;                       /* Brand gold */
 
-      /* ===== SILVER MACHINE BODY / SURFACE ===== */
-      --bg1:#f6f7f9;
-      --bg2:#d9dde3;
-      --surface:#e7ebf0;
+      /* ===== App background (light, like your +/- button surface) ===== */
+      --bg1:#eef1f4;                           /* Light surface */
+      --bg2:#dfe4ea;                           /* Slightly darker surface */
+      --surface:#e7ebf0;                       /* Content surface */
 
-      --radius:20px;
-      --gap:18px;
-      --header-h:290px;
+      --radius:20px;                           /* Global radius */
+      --gap:18px;                              /* Grid gap */
+      --header-h:290px;                        /* Header height */
 
-      --focus: 0 0 0 4px rgba(242,195,0,.45);
-      --tap: 0.985;
+      --focus: 0 0 0 4px rgba(242,195,0,.45);  /* Focus ring */
+      --tap: 0.985;                            /* Tap scale */
 
       /* ===== Tile geometry ===== */
-      --bevel: 12px;
-      --bevel-radius: 44px;
-      --face-radius: 32px;
+      --bevel: 12px;                           /* Bevel thickness */
+      --bevel-radius: 44px;                    /* Outer tile radius */
+      --face-radius: 32px;                     /* Inner face radius */
 
       /* ===== Header scaling ===== */
-      --title-size: 44px;
-      --logo-h: 120px;
-      --menu-font: 28px;
-      --menu-pad-y: 22px;
-      --menu-pad-x: 48px;
-      --menu-radius: 26px;
+      --title-size: 44px;                      /* Title font size */
+      --logo-h: 120px;                         /* Logo height */
+      --menu-font: 28px;                       /* Menu button text size */
+      --menu-pad-y: 22px;                      /* Menu vertical padding */
+      --menu-pad-x: 48px;                      /* Menu horizontal padding */
+      --menu-radius: 26px;                     /* Menu button rounding */
 
       /* ===== Header layout controls ===== */
-      --header-bottom-pad: 22px;
-      --header-side-pad: 34px;
-      --logo-area-top: 18px;
-      --logo-area-bottom: 115px;
+      --header-bottom-pad: 22px;               /* Bottom row offset */
+      --header-side-pad: 34px;                 /* Left/right inset */
+      --logo-area-top: 18px;                   /* Logo area top offset */
+      --logo-area-bottom: 115px;               /* Space reserved for bottom row */
 
-      /* ===== Shadows (raised) ===== */
-      --tile-shadow-dark: rgba(0,0,0,.55);
-      --tile-shadow-light: rgba(255,255,255,.70);
+      /* ===== Tile shadows (raised) ===== */
+      --tile-shadow-dark: rgba(0,0,0,.58);
+      --tile-shadow-light: rgba(255,255,255,.72);
 
-      /* ===== Console panel ===== */
-      --console-radius: 46px;
-      --console-pad: 26px;
+      /* ===== NEW: console / hardware look controls ===== */
+      --console-radius: 28px;                  /* console rounding */
+      --console-pad: 22px;                     /* padding between console edge and buttons */
+      --console-edge-dark: rgba(0,0,0,.22);    /* outer edge cast */
+      --console-edge-light: rgba(255,255,255,.75); /* outer edge highlight */
+      --console-inset-dark: rgba(0,0,0,.18);   /* inset recess */
+      --console-inset-light: rgba(255,255,255,.55); /* inset lift */
     }
 
     *{ box-sizing:border-box; }
@@ -58,19 +62,19 @@
       height:100%;
       margin:0;
       font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif;
-      text-transform:uppercase;
+      text-transform:uppercase;                /* ✅ All text to CAPS */
 
-      /* ✅ SILVERY GREY "MACHINE BODY" BACKGROUND */
+      /* ✅ Light surface background */
       background:
-        radial-gradient(1200px 900px at 25% 15%, rgba(255,255,255,.95), transparent 55%),
-        radial-gradient(900px 650px at 78% 18%, rgba(255,255,255,.60), transparent 60%),
-        radial-gradient(1200px 900px at 50% 88%, rgba(0,0,0,.06), transparent 55%),
+        radial-gradient(1200px 800px at 18% 12%, rgba(255,255,255,.85), transparent 55%),
+        radial-gradient(900px 650px at 70% 20%, rgba(255,255,255,.55), transparent 60%),
         linear-gradient(180deg, var(--bg1), var(--bg2));
 
       color:#0c1a12;
       overscroll-behavior:none;
     }
 
+    /* ================= APP ================= */
     .app{
       height:100%;
       display:flex;
@@ -98,6 +102,7 @@
       background:linear-gradient(90deg, var(--sv-green), var(--sv-gold));
     }
 
+    /* ===== Logo area ===== */
     .logoStrip{
       position:absolute;
       left:var(--header-side-pad);
@@ -133,6 +138,7 @@
         drop-shadow(0 0 2px rgba(255,255,255,.45));
     }
 
+    /* ===== Bottom row ===== */
     .bottomRow{
       position:absolute;
       left:var(--header-side-pad);
@@ -223,39 +229,62 @@
       flex:1;
       min-height:0;
       padding:22px;
-
       display:flex;
-      align-items:stretch;
-      justify-content:center;
 
-      /* Soft surface behind console panel */
       background:
-        radial-gradient(1200px 900px at 25% 20%, rgba(255,255,255,.55), transparent 55%),
-        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,.30), transparent 60%),
+        radial-gradient(1200px 800px at 25% 15%, rgba(255,255,255,.45), transparent 55%),
+        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,.25), transparent 60%),
         linear-gradient(180deg, var(--surface), #d9dee6);
     }
 
-    /* ✅ RECESSED SILVER CONSOLE PANEL (hardware faceplate) */
+    /* ================= NEW: CONSOLE / HARDWARE FRAME ================= */
     .console{
-      flex:1;
       width:100%;
+      height:100%;
       border-radius:var(--console-radius);
       padding:var(--console-pad);
-
-      background:
-        linear-gradient(180deg, #f2f4f7 0%, #e0e4ea 55%, #d6dbe2 100%);
-
-      box-shadow:
-        inset 0 10px 24px rgba(255,255,255,.95),
-        inset 0 -24px 48px rgba(0,0,0,.10),
-        0 40px 80px rgba(0,0,0,.18);
-
-      border:1px solid rgba(0,0,0,.08);
+      position:relative;
       overflow:hidden;
 
-      display:flex; /* so pageView can fill */
-      min-height:0;
+      /* “Silvery grey console” base */
+      background:
+        /* subtle brushed-metal texture */
+        repeating-linear-gradient(
+          135deg,
+          rgba(255,255,255,.14) 0px,
+          rgba(255,255,255,.14) 6px,
+          rgba(0,0,0,.02) 6px,
+          rgba(0,0,0,.02) 12px
+        ),
+        radial-gradient(900px 700px at 20% 15%, rgba(255,255,255,.85), transparent 55%),
+        radial-gradient(900px 700px at 85% 35%, rgba(255,255,255,.35), transparent 60%),
+        linear-gradient(180deg, #f2f4f7 0%, #d8dee6 100%);
+
+      /* Outer edge + inner recess (this is what makes it feel like hardware) */
+      box-shadow:
+        18px 18px 40px var(--console-edge-dark),        /* cast shadow */
+        -10px -10px 26px var(--console-edge-light),     /* top-left highlight */
+        inset 10px 10px 18px var(--console-inset-dark), /* inner recess dark */
+        inset -10px -10px 18px var(--console-inset-light); /* inner recess light */
     }
+
+    /* Optional: a darker inner “cutout” plate, very subtle */
+    .console::before{
+      content:"";
+      position:absolute;
+      inset:12px;
+      border-radius:calc(var(--console-radius) - 12px);
+      background:
+        radial-gradient(700px 520px at 20% 20%, rgba(255,255,255,.22), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,.06), rgba(255,255,255,.02));
+      box-shadow:
+        inset 10px 10px 18px rgba(0,0,0,.10),
+        inset -10px -10px 18px rgba(255,255,255,.45);
+      pointer-events:none;
+    }
+
+    /* Keep real content above the console decorative layer */
+    .console > *{ position:relative; z-index:1; }
 
     /* ================= MENU GRID ================= */
     .menuView{
@@ -284,9 +313,10 @@
 
       background:linear-gradient(180deg,#0d5f35,#0a4e2b);
 
+      /* ✅ Stronger mounting + softer highlight so it reads on the console */
       box-shadow:
-        18px 18px 38px var(--tile-shadow-dark),
-        -10px -10px 22px var(--tile-shadow-light);
+        20px 22px 44px rgba(0,0,0,.42),       /* cast shadow onto console */
+        -10px -10px 22px rgba(255,255,255,.55); /* top-left light */
 
       transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
     }
@@ -357,17 +387,16 @@
     .tile:hover{
       transform:translateY(-6px);
       box-shadow:
-        22px 22px 50px rgba(0,0,0,.62),
-        -12px -12px 26px rgba(255,255,255,.78);
+        26px 28px 56px rgba(0,0,0,.48),
+        -12px -12px 26px rgba(255,255,255,.62);
       filter:saturate(1.06);
     }
 
-    /* ================= PRESSED STATE (CONCAVE EFFECT) ================= */
     .tile:active{
       transform:translateY(4px) scale(var(--tap));
       box-shadow:
-        6px 6px 16px rgba(0,0,0,.70),
-        -4px -4px 10px rgba(255,255,255,.55);
+        10px 10px 22px rgba(0,0,0,.42),
+        -4px -4px 10px rgba(255,255,255,.40);
       filter:saturate(.98);
     }
 
@@ -380,8 +409,8 @@
     .tile:focus-visible{
       outline:none;
       box-shadow:
-        18px 18px 38px var(--tile-shadow-dark),
-        -10px -10px 22px var(--tile-shadow-light),
+        20px 22px 44px rgba(0,0,0,.42),
+        -10px -10px 22px rgba(255,255,255,.55),
         var(--focus);
     }
 
@@ -390,7 +419,7 @@
       width:100%;
       height:100%;
       display:none;
-      border-radius:30px;
+      border-radius:var(--radius);
       overflow:hidden;
       border:1px solid rgba(0,0,0,.12);
       background:#ffffff;
@@ -473,14 +502,12 @@
     @media (max-width:1100px){
       :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; }
       .logoStripInner{ column-gap:24px; row-gap:14px; }
-      :root{ --console-pad: 22px; }
     }
 
     @media (max-width:900px){
       :root{ --header-h: 220px; --logo-area-bottom: 92px; }
       .tileTitle{ font-size:34px; }
       .sub{ font-size:18px; }
-      :root{ --console-radius: 36px; }
     }
 
     @media (max-width:680px){
@@ -488,7 +515,6 @@
       .tile{ min-height:160px; }
       .bottomRow{ flex-direction:column; align-items:flex-start; }
       .menuBtn{ align-self:flex-end; }
-      :root{ --console-pad: 18px; }
     }
   </style>
 </head>
@@ -523,7 +549,7 @@
     </header>
 
     <div class="content">
-      <!-- ✅ Console panel wrapper (hardware faceplate) -->
+      <!-- ✅ NEW: Hardware console wrapper -->
       <div class="console">
 
         <!-- MENU -->
@@ -594,7 +620,7 @@
     const topMask     = document.getElementById('topMask');
     const loading     = document.getElementById('loading');
 
-    const IDLE_TIMEOUT_MS = 2 * 60 * 1000;
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
     let idleTimer = null;
 
     document.querySelectorAll('.gameLogo').forEach(img => {
@@ -633,7 +659,7 @@
       pageView.style.display = 'block';
       cookieMask.style.display = 'flex';
       topMask.style.display = 'flex';
-      headerTitle.textContent = (label || '').toUpperCase();
+      headerTitle.textContent = label.toUpperCase();
       menuBtn.setAttribute('aria-pressed', 'false');
 
       showLoading(true);
@@ -648,7 +674,7 @@
       tile.addEventListener('click', e => {
         e.preventDefault();
         const url = tile.dataset.url;
-        const label = tile.querySelector('.tileTitle')?.textContent?.trim() || 'PAGE';
+        const label = tile.querySelector('.tileTitle').textContent.trim();
         showPage(url, label);
       });
     });
