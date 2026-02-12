@@ -450,10 +450,9 @@
       transform: scale(var(--iframe-zoom)); /* ✅ apply zoom */
     } /* end iframe */
 
-    /* ✅ ZOOM CONTROLS: MOVED UP (closer to top) */
     .zoomControls{ /* Container for + / - */
       position:absolute; /* overlay inside frameWrap */
-      top:6px; /* ✅ moved UP (was 70px) */
+      top:6px; /* ✅ moved UP (adjust this number) */
       right:18px; /* right margin */
       display:flex; /* stack buttons */
       flex-direction:column; /* vertical */
@@ -469,10 +468,14 @@
       font-size:28px; /* glyph size */
       font-weight:900; /* bold */
       cursor:pointer; /* pointer */
-      background:linear-gradient(180deg,#ffffff,#e6e6e6); /* light button gradient */
+
+      background:linear-gradient(180deg, var(--sv-green), var(--sv-green-dark)); /* ✅ GREEN button gradient */
+      color:#ffffff; /* ✅ WHITE text */
+
       box-shadow:
         6px 6px 14px rgba(0,0,0,.25), /* cast */
         -4px -4px 10px rgba(255,255,255,.8); /* highlight */
+
       transition:all .15s ease; /* smooth */
     } /* end .zoomBtn */
 
@@ -480,7 +483,7 @@
       transform:translateY(3px); /* push down */
       box-shadow:
         inset 6px 6px 12px rgba(0,0,0,.25), /* inset shadow */
-        inset -4px -4px 10px rgba(255,255,255,.9); /* inset highlight */
+        inset -4px -4px 10px rgba(255,255,255,.25); /* ✅ softer inset highlight (works with green) */
     } /* end .zoomBtn:active */
 
     .loading{ /* Loading overlay */
