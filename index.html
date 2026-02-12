@@ -62,7 +62,7 @@
       --ring-shadow-dark: rgba(0,0,0,.20);
       --ring-shadow-light: rgba(255,255,255,.65);
 
-      /* ✅ NEW: iframe zoom (set per page) */
+      /* ✅ iframe zoom (set per page) */
       --iframe-zoom: 1;
     }
 
@@ -445,7 +445,7 @@
       box-shadow:0 14px 40px rgba(0,0,0,.20);
     }
 
-    /* ✅ UPDATED: wrap/zoom */
+    /* wrap/zoom */
     .frameWrap{
       position:relative;
       width:100%;
@@ -454,7 +454,7 @@
       background:#fff;
     }
 
-    /* ✅ UPDATED: scaled iframe */
+    /* scaled iframe */
     iframe{
       position:absolute;
       top:0;
@@ -467,14 +467,14 @@
       transform: scale(var(--iframe-zoom));
     }
 
-    /* ✅ ZOOM CONTROLS */
+    /* ✅ ZOOM CONTROLS (moved down so + isn't on the gold line) */
     .zoomControls{
       position:absolute;
-      top:16px;
-      right:16px;
+      top:70px;
+      right:18px;
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:14px;
       z-index:8;
     }
 
@@ -666,10 +666,10 @@
         </nav>
 
         <section class="pageView" id="pageView" aria-label="Web view">
-          <div class="frameWrap">
+          <div class="frameWrap" id="frameWrap">
             <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
 
-            <!-- ✅ ZOOM CONTROLS -->
+            <!-- ZOOM CONTROLS -->
             <div class="zoomControls" aria-label="Zoom controls">
               <button class="zoomBtn" id="zoomOut" type="button" aria-label="Zoom out">-</button>
               <button class="zoomBtn" id="zoomIn"  type="button" aria-label="Zoom in">+</button>
@@ -696,6 +696,7 @@
   <script>
     const menuView    = document.getElementById('menuView');
     const pageView    = document.getElementById('pageView');
+    const frameWrap   = document.getElementById('frameWrap');
     const frame       = document.getElementById('frame');
     const menuBtn     = document.getElementById('menuBtn');
     const headerTitle = document.getElementById('headerTitle');
@@ -703,7 +704,7 @@
     const topMask     = document.getElementById('topMask');
     const loading     = document.getElementById('loading');
 
-    // ✅ zoom controls
+    // zoom controls
     const zoomIn  = document.getElementById('zoomIn');
     const zoomOut = document.getElementById('zoomOut');
     let currentZoom = 1;
@@ -731,9 +732,19 @@
       loading.setAttribute('aria-hidden', on ? 'false' : 'true');
     }
 
+    function recenterIframe(){
+      // Centers the scaled iframe inside the frameWrap
+      const rect = frameWrap.getBoundingClientRect();
+      const offsetX = (rect.width  * (currentZoom - 1)) / 2;
+      const offsetY = (rect.height * (currentZoom - 1)) / 2;
+      frame.style.left = (-offsetX) + 'px';
+      frame.style.top  = (-offsetY) + 'px';
+    }
+
     function applyZoom(z){
       currentZoom = Math.max(0.75, Math.min(1.6, z));
       document.documentElement.style.setProperty('--iframe-zoom', currentZoom);
+      recenterIframe();
     }
 
     function showMenu(){
@@ -748,7 +759,6 @@
       applyZoom(1);
     }
 
-    // ✅ updated to accept per-page zoom
     function showPage(url, label, zoom=1){
       menuView.style.display = 'none';
       pageView.style.display = 'block';
@@ -764,7 +774,12 @@
       frame.src = url + bust;
     }
 
-    frame.addEventListener('load', () => showLoading(false));
+    frame.addEventListener('load', () => {
+      showLoading(false);
+      // After load, ensure centering is still correct
+      recenterIframe();
+    });
+
     menuBtn.addEventListener('click', showMenu);
 
     document.querySelectorAll('.tile').forEach(tile => {
@@ -777,9 +792,14 @@
       });
     });
 
-    // ✅ zoom buttons
+    // zoom buttons
     zoomIn.addEventListener('click', () => applyZoom(currentZoom + 0.1));
     zoomOut.addEventListener('click', () => applyZoom(currentZoom - 0.1));
+
+    // keep centered on resize
+    window.addEventListener('resize', () => {
+      if (pageView.style.display === 'block') recenterIframe();
+    });
 
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') showMenu();
