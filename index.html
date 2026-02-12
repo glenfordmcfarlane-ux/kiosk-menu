@@ -1,812 +1,785 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <meta name="theme-color" content="#0b7a3b" />
-  <title>Supreme Ventures Results Kiosk</title>
+<!doctype html> <!-- Document type: HTML5 -->
+<html lang="en"> <!-- Root element + language -->
+<head> <!-- Head: metadata, title, styles -->
+  <meta charset="utf-8" /> <!-- Character encoding -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" /> <!-- Kiosk-friendly viewport -->
+  <meta name="theme-color" content="#0b7a3b" /> <!-- Browser UI theme color -->
+  <title>Supreme Ventures Results Kiosk</title> <!-- Page title -->
 
-  <style>
-    :root{
-      --sv-green:#0b7a3b;
-      --sv-green-dark:#075c2c;
-      --sv-gold:#f2c300;
+  <style> /* ====== STYLES START ====== */
+    :root{ /* CSS variables (easy tuning) */
+      --sv-green:#0b7a3b; /* Brand green */
+      --sv-green-dark:#075c2c; /* Brand dark green */
+      --sv-gold:#f2c300; /* Brand gold */
 
-      /* Light “panel” background */
-      --bg1:#eef1f4;
-      --bg2:#dfe4ea;
-      --surface:#e7ebf0;
+      --bg1:#eef1f4; /* Light panel gradient top */
+      --bg2:#dfe4ea; /* Light panel gradient bottom */
+      --surface:#e7ebf0; /* Inner surface behind console */
 
-      --radius:20px;
-      --gap:18px;
-      --header-h:290px;
+      --radius:20px; /* Common rounding radius */
+      --gap:18px; /* Grid gap between tiles */
+      --header-h:290px; /* Header height */
 
-      --focus: 0 0 0 4px rgba(242,195,0,.45);
-      --tap: 0.985;
+      --focus: 0 0 0 4px rgba(242,195,0,.45); /* Focus ring glow */
+      --tap: 0.985; /* Tap scale for tiles */
 
-      /* Tile geometry */
-      --bevel: 12px;
-      --bevel-radius: 44px;
-      --face-radius: 32px;
+      --bevel: 12px; /* Tile bevel thickness */
+      --bevel-radius: 44px; /* Tile outer radius */
+      --face-radius: 32px; /* Tile inner face radius */
 
-      /* Header scaling */
-      --title-size: 44px;
-      --logo-h: 120px;
-      --menu-font: 28px;
-      --menu-pad-y: 22px;
-      --menu-pad-x: 48px;
-      --menu-radius: 26px;
+      --title-size: 44px; /* Header title size */
+      --logo-h: 120px; /* Logo image height */
+      --menu-font: 28px; /* Menu button font size */
+      --menu-pad-y: 22px; /* Menu button vertical padding */
+      --menu-pad-x: 48px; /* Menu button horizontal padding */
+      --menu-radius: 26px; /* Menu button rounding */
 
-      /* Header layout */
-      --header-bottom-pad: 22px;
-      --header-side-pad: 34px;
-      --logo-area-top: 18px;
-      --logo-area-bottom: 115px;
+      --header-bottom-pad: 22px; /* Bottom row vertical offset */
+      --header-side-pad: 34px; /* Left/right header padding */
+      --logo-area-top: 18px; /* Logo strip top offset */
+      --logo-area-bottom: 115px; /* Space reserved for title/menu row */
 
-      /* Console / hardware look */
-      --console-radius: 28px;
-      --console-pad: 22px;
-      --console-edge-dark: rgba(0,0,0,.22);
-      --console-edge-light: rgba(255,255,255,.75);
-      --console-inset-dark: rgba(0,0,0,.18);
-      --console-inset-light: rgba(255,255,255,.55);
+      --console-radius: 28px; /* Console outer rounding */
+      --console-pad: 22px; /* Console inner padding */
+      --console-edge-dark: rgba(0,0,0,.22); /* Console cast shadow */
+      --console-edge-light: rgba(255,255,255,.75); /* Console highlight */
+      --console-inset-dark: rgba(0,0,0,.18); /* Console inset shadow */
+      --console-inset-light: rgba(255,255,255,.55); /* Console inset highlight */
 
-      /* Tile shadows */
-      --tile-shadow-dark: rgba(0,0,0,.58);
-      --tile-shadow-light: rgba(255,255,255,.72);
+      --tile-shadow-dark: rgba(0,0,0,.58); /* Tile shadow */
+      --tile-shadow-light: rgba(255,255,255,.72); /* Tile highlight */
 
-      /* “cutout ring” around each button */
-      --ring-radius: 46px;
-      --ring-thickness: 10px;
-      --ring-gap: 12px;
-      --ring-shadow-dark: rgba(0,0,0,.20);
-      --ring-shadow-light: rgba(255,255,255,.65);
+      --ring-radius: 46px; /* Ring slot radius */
+      --ring-thickness: 10px; /* Slot lip thickness */
+      --ring-gap: 12px; /* Space between slot + tile */
+      --ring-shadow-dark: rgba(0,0,0,.20); /* Slot inset shadow */
+      --ring-shadow-light: rgba(255,255,255,.65); /* Slot inset highlight */
 
-      /* ✅ iframe zoom (set per page) */
-      --iframe-zoom: 1;
-    }
+      --iframe-zoom: 1; /* ✅ Zoom factor for iframe (updated in JS) */
+    } /* end :root */
 
-    *{ box-sizing:border-box; }
+    *{ box-sizing:border-box; } /* Include padding/border in sizes */
 
-    html, body{
-      height:100%;
-      margin:0;
-      font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif;
-      text-transform:uppercase;
+    html, body{ /* Page base */
+      height:100%; /* Full height */
+      margin:0; /* Remove default margin */
+      font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif; /* Font stack */
+      text-transform:uppercase; /* All caps UI text */
 
-      background:
-        radial-gradient(1200px 800px at 18% 12%, rgba(255,255,255,.85), transparent 55%),
-        radial-gradient(900px 650px at 70% 20%, rgba(255,255,255,.55), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
+      background: /* Light brushed background */
+        radial-gradient(1200px 800px at 18% 12%, rgba(255,255,255,.85), transparent 55%), /* top-left glow */
+        radial-gradient(900px 650px at 70% 20%, rgba(255,255,255,.55), transparent 60%), /* top-right glow */
+        linear-gradient(180deg, var(--bg1), var(--bg2)); /* base gradient */
 
-      color:#0c1a12;
-      overscroll-behavior:none;
-    }
+      color:#0c1a12; /* Default text color */
+      overscroll-behavior:none; /* Prevent rubber-band overscroll */
+    } /* end html, body */
 
-    .app{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
+    .app{ /* App wrapper */
+      height:100%; /* Full height */
+      display:flex; /* Flex layout */
+      flex-direction:column; /* Stack header + content */
+    } /* end .app */
 
-    /* ================= HEADER ================= */
-    .header{
-      min-height:var(--header-h);
-      position:relative;
-      padding:0;
-      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 55%, #eeeeee 100%);
-      box-shadow: 0 18px 45px rgba(0,0,0,.18);
-      border-bottom:1px solid rgba(0,0,0,.10);
-      overflow:hidden;
-    }
+    .header{ /* Header bar */
+      min-height:var(--header-h); /* Fixed header height */
+      position:relative; /* Anchor internal absolute sections */
+      padding:0; /* No padding (internal sections handle it) */
+      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 55%, #eeeeee 100%); /* Header gradient */
+      box-shadow: 0 18px 45px rgba(0,0,0,.18); /* Depth shadow */
+      border-bottom:1px solid rgba(0,0,0,.10); /* Separator line */
+      overflow:hidden; /* Clip glow and content */
+    } /* end .header */
 
-    .header::after{
-      content:"";
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height:6px;
-      background:linear-gradient(90deg, var(--sv-green), var(--sv-gold));
-    }
+    .header::after{ /* Gold/green underline */
+      content:""; /* Pseudo-element */
+      position:absolute; /* Position at bottom */
+      left:0; right:0; bottom:0; /* Stretch full width at bottom */
+      height:6px; /* Line thickness */
+      background:linear-gradient(90deg, var(--sv-green), var(--sv-gold)); /* Brand gradient line */
+    } /* end .header::after */
 
-    .logoStrip{
-      position:absolute;
-      left:var(--header-side-pad);
-      right:var(--header-side-pad);
-      top:var(--logo-area-top);
-      bottom:var(--logo-area-bottom);
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      overflow:hidden;
-    }
+    .logoStrip{ /* Logos region */
+      position:absolute; /* Absolute within header */
+      left:var(--header-side-pad); /* Side padding */
+      right:var(--header-side-pad); /* Side padding */
+      top:var(--logo-area-top); /* Top offset */
+      bottom:var(--logo-area-bottom); /* Reserve space for bottom row */
+      display:flex; /* Flex container */
+      align-items:flex-start; /* Align to top */
+      justify-content:center; /* Center horizontally */
+      overflow:hidden; /* Hide overflow */
+    } /* end .logoStrip */
 
-    .logoStripInner{
-      width:100%;
-      height:100%;
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      align-content:flex-start;
-      column-gap:34px;
-      row-gap:18px;
-      padding-top:10px;
-    }
+    .logoStripInner{ /* Actual logo wrap container */
+      width:100%; /* Full width */
+      height:100%; /* Full height */
+      display:flex; /* Flex */
+      flex-wrap:wrap; /* Wrap logos */
+      justify-content:center; /* Center */
+      align-content:flex-start; /* Pack from top */
+      column-gap:34px; /* Horizontal spacing */
+      row-gap:18px; /* Vertical spacing */
+      padding-top:10px; /* Small top padding */
+    } /* end .logoStripInner */
 
-    .gameLogo{
-      height:var(--logo-h);
-      width:auto;
-      object-fit:contain;
-      filter:
-        drop-shadow(0 8px 16px rgba(0,0,0,.22))
-        drop-shadow(0 0 2px rgba(255,255,255,.45));
-    }
+    .gameLogo{ /* Each logo image */
+      height:var(--logo-h); /* Logo height */
+      width:auto; /* Preserve aspect ratio */
+      object-fit:contain; /* Fit safely */
+      filter: /* Crisp “pop” */
+        drop-shadow(0 8px 16px rgba(0,0,0,.22)) /* shadow */
+        drop-shadow(0 0 2px rgba(255,255,255,.45)); /* light edge */
+    } /* end .gameLogo */
 
-    .bottomRow{
-      position:absolute;
-      left:var(--header-side-pad);
-      right:var(--header-side-pad);
-      bottom:var(--header-bottom-pad);
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:18px;
-      pointer-events:none;
-    }
+    .bottomRow{ /* Title + Menu row */
+      position:absolute; /* Absolute in header */
+      left:var(--header-side-pad); /* Side padding */
+      right:var(--header-side-pad); /* Side padding */
+      bottom:var(--header-bottom-pad); /* Offset from bottom */
+      display:flex; /* Flex layout */
+      align-items:flex-end; /* Align bottom edges */
+      justify-content:space-between; /* Title left, button right */
+      gap:18px; /* Spacing */
+      pointer-events:none; /* Only menu button clickable */
+    } /* end .bottomRow */
 
-    .title{
-      font-size:var(--title-size);
-      font-weight:900;
-      letter-spacing:.5px;
-      color:#0b3f22;
-      white-space:nowrap;
-      text-shadow:
-        0 1px 0 rgba(255,255,255,.85),
-        0 10px 18px rgba(0,0,0,.10);
-    }
+    .title{ /* Header title */
+      font-size:var(--title-size); /* Size */
+      font-weight:900; /* Heavy */
+      letter-spacing:.5px; /* Slight spacing */
+      color:#0b3f22; /* Dark green */
+      white-space:nowrap; /* Stay on one line */
+      text-shadow: /* Soft emboss */
+        0 1px 0 rgba(255,255,255,.85), /* highlight */
+        0 10px 18px rgba(0,0,0,.10); /* depth */
+    } /* end .title */
 
-    .menuBtn{
-      pointer-events:auto;
-      border:3px solid rgba(242,195,0,.95);
-      background:linear-gradient(145deg, #ffe58a, #caa800);
-      color:#1a1a1a;
+    .menuBtn{ /* Menu button */
+      pointer-events:auto; /* Enable clicking */
+      border:3px solid rgba(242,195,0,.95); /* Gold border */
+      background:linear-gradient(145deg, #ffe58a, #caa800); /* Gold gradient */
+      color:#1a1a1a; /* Dark text */
 
-      font-size:var(--menu-font);
-      font-weight:900;
-      letter-spacing:.5px;
+      font-size:var(--menu-font); /* Size */
+      font-weight:900; /* Heavy */
+      letter-spacing:.5px; /* Spacing */
 
-      padding:var(--menu-pad-y) var(--menu-pad-x);
-      border-radius:var(--menu-radius);
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color:transparent;
-      position:relative;
+      padding:var(--menu-pad-y) var(--menu-pad-x); /* Padding */
+      border-radius:var(--menu-radius); /* Rounded corners */
+      cursor:pointer; /* Pointer cursor */
+      user-select:none; /* Disable selection */
+      -webkit-tap-highlight-color:transparent; /* Remove mobile highlight */
+      position:relative; /* For gloss overlay */
 
+      box-shadow: /* “Physical” button depth */
+        0 14px 0 #9e8500, /* hard shadow/ledge */
+        0 34px 64px rgba(0,0,0,.30); /* soft cast shadow */
+
+      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease; /* Smooth interactions */
+    } /* end .menuBtn */
+
+    .menuBtn::before{ /* Gloss highlight */
+      content:""; /* Pseudo */
+      position:absolute; /* Positioned inside */
+      left:10px; right:10px; top:10px; /* Inset */
+      height:44%; /* Height of gloss */
+      border-radius:calc(var(--menu-radius) - 8px); /* Match rounding */
+      background:linear-gradient(to bottom, rgba(255,255,255,.45), rgba(255,255,255,0)); /* Fade highlight */
+      pointer-events:none; /* Ignore clicks */
+    } /* end .menuBtn::before */
+
+    .menuBtn:hover{ /* Hover lift */
+      transform:translateY(-4px); /* Lift up */
       box-shadow:
-        0 14px 0 #9e8500,
-        0 34px 64px rgba(0,0,0,.30);
+        0 18px 0 #9e8500, /* deeper ledge */
+        0 40px 78px rgba(0,0,0,.34); /* stronger shadow */
+      filter:saturate(1.05); /* Slightly richer color */
+    } /* end hover */
 
-      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
-    }
-
-    .menuBtn::before{
-      content:"";
-      position:absolute;
-      left:10px; right:10px; top:10px;
-      height:44%;
-      border-radius:calc(var(--menu-radius) - 8px);
-      background:linear-gradient(to bottom, rgba(255,255,255,.45), rgba(255,255,255,0));
-      pointer-events:none;
-    }
-
-    .menuBtn:hover{
-      transform:translateY(-4px);
+    .menuBtn:active{ /* Press */
+      transform:translateY(8px); /* Push down */
       box-shadow:
-        0 18px 0 #9e8500,
-        0 40px 78px rgba(0,0,0,.34);
-      filter:saturate(1.05);
-    }
+        0 6px 0 #9e8500, /* smaller ledge */
+        0 18px 32px rgba(0,0,0,.26); /* smaller shadow */
+      filter:saturate(.98); /* Slightly less saturated */
+    } /* end active */
 
-    .menuBtn:active{
-      transform:translateY(8px);
+    .menuBtn:focus-visible{ /* Keyboard focus */
+      outline:none; /* Remove outline */
       box-shadow:
-        0 6px 0 #9e8500,
-        0 18px 32px rgba(0,0,0,.26);
-      filter:saturate(.98);
-    }
+        0 14px 0 #9e8500, /* normal ledge */
+        0 34px 64px rgba(0,0,0,.30), /* normal shadow */
+        var(--focus); /* focus ring */
+    } /* end focus-visible */
 
-    .menuBtn:focus-visible{
-      outline:none;
-      box-shadow:
-        0 14px 0 #9e8500,
-        0 34px 64px rgba(0,0,0,.30),
-        var(--focus);
-    }
+    .content{ /* Main content region */
+      flex:1; /* Fill remaining space */
+      min-height:0; /* Allow proper flex shrink */
+      padding:22px; /* Inner padding */
+      display:flex; /* Flex layout */
+      background: /* Soft surface behind console */
+        radial-gradient(1200px 800px at 25% 15%, rgba(255,255,255,.45), transparent 55%), /* highlight */
+        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,.25), transparent 60%), /* highlight */
+        linear-gradient(180deg, var(--surface), #d9dee6); /* base gradient */
+    } /* end .content */
 
-    /* ================= CONTENT ================= */
-    .content{
-      flex:1;
-      min-height:0;
-      padding:22px;
-      display:flex;
-      background:
-        radial-gradient(1200px 800px at 25% 15%, rgba(255,255,255,.45), transparent 55%),
-        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,.25), transparent 60%),
-        linear-gradient(180deg, var(--surface), #d9dee6);
-    }
+    .console{ /* Console / hardware frame */
+      width:100%; /* Full width */
+      height:100%; /* Full height */
+      border-radius:var(--console-radius); /* Rounding */
+      padding:var(--console-pad); /* Padding */
+      position:relative; /* Anchor pseudo-element */
+      overflow:hidden; /* Clip effects */
 
-    /* Console frame */
-    .console{
-      width:100%;
-      height:100%;
-      border-radius:var(--console-radius);
-      padding:var(--console-pad);
-      position:relative;
-      overflow:hidden;
-
-      background:
-        repeating-linear-gradient(
+      background: /* Brushed metal feel */
+        repeating-linear-gradient( /* micro stripes */
           135deg,
           rgba(255,255,255,.14) 0px,
           rgba(255,255,255,.14) 6px,
           rgba(0,0,0,.02) 6px,
           rgba(0,0,0,.02) 12px
         ),
-        radial-gradient(900px 700px at 20% 15%, rgba(255,255,255,.85), transparent 55%),
-        radial-gradient(900px 700px at 85% 35%, rgba(255,255,255,.35), transparent 60%),
-        linear-gradient(180deg, #f2f4f7 0%, #d8dee6 100%);
+        radial-gradient(900px 700px at 20% 15%, rgba(255,255,255,.85), transparent 55%), /* left highlight */
+        radial-gradient(900px 700px at 85% 35%, rgba(255,255,255,.35), transparent 60%), /* right highlight */
+        linear-gradient(180deg, #f2f4f7 0%, #d8dee6 100%); /* base metal gradient */
 
-      box-shadow:
-        18px 18px 40px var(--console-edge-dark),
-        -10px -10px 26px var(--console-edge-light),
-        inset 10px 10px 18px var(--console-inset-dark),
-        inset -10px -10px 18px var(--console-inset-light);
-    }
+      box-shadow: /* outer + inset depth */
+        18px 18px 40px var(--console-edge-dark), /* outer shadow */
+        -10px -10px 26px var(--console-edge-light), /* outer highlight */
+        inset 10px 10px 18px var(--console-inset-dark), /* inset shadow */
+        inset -10px -10px 18px var(--console-inset-light); /* inset highlight */
+    } /* end .console */
 
-    .console::before{
-      content:"";
-      position:absolute;
-      inset:12px;
-      border-radius:calc(var(--console-radius) - 12px);
+    .console::before{ /* Inner lip / inset ring */
+      content:""; /* Pseudo */
+      position:absolute; /* Cover inside */
+      inset:12px; /* inset border */
+      border-radius:calc(var(--console-radius) - 12px); /* match rounding */
       background:
-        radial-gradient(700px 520px at 20% 20%, rgba(255,255,255,.22), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,.06), rgba(255,255,255,.02));
+        radial-gradient(700px 520px at 20% 20%, rgba(255,255,255,.22), transparent 60%), /* inner glow */
+        linear-gradient(180deg, rgba(0,0,0,.06), rgba(255,255,255,.02)); /* subtle depth */
       box-shadow:
-        inset 10px 10px 18px rgba(0,0,0,.10),
-        inset -10px -10px 18px rgba(255,255,255,.45);
-      pointer-events:none;
-    }
+        inset 10px 10px 18px rgba(0,0,0,.10), /* inset shadow */
+        inset -10px -10px 18px rgba(255,255,255,.45); /* inset highlight */
+      pointer-events:none; /* let clicks pass through */
+    } /* end .console::before */
 
-    .console > *{ position:relative; z-index:1; }
+    .console > *{ position:relative; z-index:1; } /* Ensure content above inner lip */
 
-    /* ================= MENU GRID ================= */
-    .menuView{
-      width:100%;
-      height:100%;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      grid-template-rows:1fr 1fr;
-      gap:var(--gap);
-    }
+    .menuView{ /* 2x2 menu grid */
+      width:100%; /* Full width */
+      height:100%; /* Full height */
+      display:grid; /* CSS grid */
+      grid-template-columns:1fr 1fr; /* Two columns */
+      grid-template-rows:1fr 1fr; /* Two rows */
+      gap:var(--gap); /* Tile gap */
+    } /* end .menuView */
 
-    /* “Button cutout ring” wrapper */
-    .tileSlot{
-      position:relative;
-      border-radius:var(--ring-radius);
-      padding:var(--ring-gap);
+    .tileSlot{ /* Cutout “ring” / slot */
+      position:relative; /* Position pseudo lip */
+      border-radius:var(--ring-radius); /* Slot rounding */
+      padding:var(--ring-gap); /* Gap around button */
 
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.10), rgba(255,255,255,.10)),
-        linear-gradient(180deg, #edf1f6 0%, #d7dde6 100%);
+      background: /* Slot material */
+        linear-gradient(180deg, rgba(0,0,0,.10), rgba(255,255,255,.10)), /* tint */
+        linear-gradient(180deg, #edf1f6 0%, #d7dde6 100%); /* metal base */
 
+      box-shadow: /* Recessed inset look */
+        inset 12px 12px 18px var(--ring-shadow-dark), /* inset shadow */
+        inset -12px -12px 18px var(--ring-shadow-light), /* inset highlight */
+        0 10px 24px rgba(0,0,0,.06); /* small cast shadow */
+    } /* end .tileSlot */
+
+    .tileSlot::before{ /* Slot inner lip */
+      content:""; /* Pseudo */
+      position:absolute; /* Inside ring */
+      inset:var(--ring-thickness); /* thickness */
+      border-radius:calc(var(--ring-radius) - var(--ring-thickness)); /* matched radius */
       box-shadow:
-        inset 12px 12px 18px var(--ring-shadow-dark),
-        inset -12px -12px 18px var(--ring-shadow-light),
-        0 10px 24px rgba(0,0,0,.06);
-    }
+        inset 2px 2px 0 rgba(255,255,255,.55), /* lip highlight */
+        inset -2px -2px 0 rgba(0,0,0,.08); /* lip shadow */
+      pointer-events:none; /* ignore clicks */
+    } /* end .tileSlot::before */
 
-    .tileSlot::before{
-      content:"";
-      position:absolute;
-      inset:var(--ring-thickness);
-      border-radius:calc(var(--ring-radius) - var(--ring-thickness));
-      box-shadow:
-        inset 2px 2px 0 rgba(255,255,255,.55),
-        inset -2px -2px 0 rgba(0,0,0,.08);
-      pointer-events:none;
-    }
+    .tile{ /* Green raised button tile */
+      position:relative; /* For pseudo-elements */
+      height:100%; /* Fill slot */
+      display:flex; /* Center content */
+      align-items:center; /* Vertical center */
+      justify-content:center; /* Horizontal center */
+      text-align:center; /* Center text */
+      text-decoration:none; /* Remove underline */
+      color:#fff; /* White text */
+      user-select:none; /* No select */
+      -webkit-tap-highlight-color:transparent; /* No tap highlight */
 
-    /* ================= GREEN RAISED 3D TILE ================= */
-    .tile{
-      position:relative;
-      height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      text-decoration:none;
-      color:#fff;
-      user-select:none;
-      -webkit-tap-highlight-color:transparent;
+      border-radius:var(--bevel-radius); /* Rounded outer */
+      padding:0; /* No padding (content handles it) */
 
-      border-radius:var(--bevel-radius);
-      padding:0;
+      background:linear-gradient(180deg,#0d5f35,#0a4e2b); /* Outer green shell */
 
-      background:linear-gradient(180deg,#0d5f35,#0a4e2b);
+      box-shadow: /* Raised effect */
+        20px 22px 44px rgba(0,0,0,.42), /* cast shadow */
+        -10px -10px 22px rgba(255,255,255,.55); /* highlight */
 
-      box-shadow:
-        20px 22px 44px rgba(0,0,0,.42),
-        -10px -10px 22px rgba(255,255,255,.55);
+      transition:transform .2s ease, box-shadow .2s ease, filter .2s ease; /* smooth */
+    } /* end .tile */
 
-      transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
-    }
+    .tile::before{ /* Inner face */
+      content:""; /* Pseudo */
+      position:absolute; /* Inside tile */
+      inset:var(--bevel); /* bevel thickness */
+      border-radius:var(--face-radius); /* inner rounding */
 
-    .tile::before{
-      content:"";
-      position:absolute;
-      inset:var(--bevel);
-      border-radius:var(--face-radius);
-
-      background:
+      background: /* Green face gradient */
         radial-gradient(circle at 30% 25%, #20b76a 0%, #0b7a3b 50%, #075c2c 100%);
 
+      box-shadow: /* Convex look */
+        inset 8px 8px 16px rgba(255,255,255,.22), /* top-left highlight */
+        inset -14px -18px 30px rgba(0,0,0,.55); /* bottom-right depth */
+
+      z-index:0; /* behind content */
+    } /* end .tile::before */
+
+    .tile::after{ /* Gloss highlight */
+      content:""; /* Pseudo */
+      position:absolute; /* Overlay */
+      left:calc(var(--bevel) + 10px); /* inset */
+      right:calc(var(--bevel) + 10px); /* inset */
+      top:calc(var(--bevel) + 10px); /* inset */
+      height:40%; /* highlight height */
+      border-radius:calc(var(--face-radius) - 10px); /* match rounding */
+      background:linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0)); /* fade */
+      filter:blur(.25px); /* soften */
+      z-index:1; /* above face, below text */
+      pointer-events:none; /* ignore clicks */
+    } /* end .tile::after */
+
+    .tile .dot{ /* Gold indicator dot */
+      position:absolute; /* Top-right */
+      top:22px; /* offset */
+      right:22px; /* offset */
+      width:16px; /* size */
+      height:16px; /* size */
+      border-radius:50%; /* circle */
+      background:var(--sv-gold); /* gold */
+      box-shadow:0 0 0 8px rgba(242,195,0,.16); /* glow ring */
+      z-index:3; /* above */
+    } /* end .dot */
+
+    .tileContent{ /* Tile text wrapper */
+      position:relative; /* Above face */
+      z-index:2; /* above pseudo elements */
+      padding:34px; /* spacing */
+    } /* end .tileContent */
+
+    .tileTitle{ /* Big label */
+      font-size:44px; /* size */
+      font-weight:900; /* heavy */
+      line-height:1.05; /* compact */
+      text-shadow:0 10px 18px rgba(0,0,0,.35); /* depth */
+    } /* end .tileTitle */
+
+    .sub{ /* Subtitle */
+      display:block; /* new line */
+      margin-top:10px; /* spacing */
+      font-size:20px; /* size */
+      font-weight:800; /* heavy */
+      color:rgba(255,255,255,.92); /* slightly soft white */
+    } /* end .sub */
+
+    .tile:hover{ /* Hover lift */
+      transform:translateY(-6px); /* lift */
       box-shadow:
-        inset 8px 8px 16px rgba(255,255,255,.22),
-        inset -14px -18px 30px rgba(0,0,0,.55);
+        26px 28px 56px rgba(0,0,0,.48), /* stronger shadow */
+        -12px -12px 26px rgba(255,255,255,.62); /* stronger highlight */
+      filter:saturate(1.06); /* richer */
+    } /* end .tile:hover */
 
-      z-index:0;
-    }
-
-    .tile::after{
-      content:"";
-      position:absolute;
-      left:calc(var(--bevel) + 10px);
-      right:calc(var(--bevel) + 10px);
-      top:calc(var(--bevel) + 10px);
-      height:40%;
-      border-radius:calc(var(--face-radius) - 10px);
-      background:linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0));
-      filter:blur(.25px);
-      z-index:1;
-      pointer-events:none;
-    }
-
-    .tile .dot{
-      position:absolute;
-      top:22px;
-      right:22px;
-      width:16px;
-      height:16px;
-      border-radius:50%;
-      background:var(--sv-gold);
-      box-shadow:0 0 0 8px rgba(242,195,0,.16);
-      z-index:3;
-    }
-
-    .tileContent{
-      position:relative;
-      z-index:2;
-      padding:34px;
-    }
-
-    .tileTitle{
-      font-size:44px;
-      font-weight:900;
-      line-height:1.05;
-      text-shadow:0 10px 18px rgba(0,0,0,.35);
-    }
-
-    .sub{
-      display:block;
-      margin-top:10px;
-      font-size:20px;
-      font-weight:800;
-      color:rgba(255,255,255,.92);
-    }
-
-    .tile:hover{
-      transform:translateY(-6px);
+    .tile:active{ /* Press */
+      transform:translateY(4px) scale(var(--tap)); /* push down */
       box-shadow:
-        26px 28px 56px rgba(0,0,0,.48),
-        -12px -12px 26px rgba(255,255,255,.62);
-      filter:saturate(1.06);
-    }
+        10px 10px 22px rgba(0,0,0,.42), /* reduced shadow */
+        -4px -4px 10px rgba(255,255,255,.40); /* reduced highlight */
+      filter:saturate(.98); /* slightly muted */
+    } /* end .tile:active */
 
-    .tile:active{
-      transform:translateY(4px) scale(var(--tap));
+    .tile:active::before{ /* Make face concave on press */
       box-shadow:
-        10px 10px 22px rgba(0,0,0,.42),
-        -4px -4px 10px rgba(255,255,255,.40);
-      filter:saturate(.98);
-    }
+        inset 8px 8px 16px rgba(0,0,0,.55), /* deeper inset */
+        inset -6px -6px 14px rgba(255,255,255,.18); /* subtle highlight */
+    } /* end .tile:active::before */
 
-    .tile:active::before{
+    .tile:focus-visible{ /* Focus */
+      outline:none; /* no outline */
       box-shadow:
-        inset 8px 8px 16px rgba(0,0,0,.55),
-        inset -6px -6px 14px rgba(255,255,255,.18);
-    }
+        20px 22px 44px rgba(0,0,0,.42), /* normal shadow */
+        -10px -10px 22px rgba(255,255,255,.55), /* normal highlight */
+        var(--focus); /* focus ring */
+    } /* end .tile:focus-visible */
 
-    .tile:focus-visible{
-      outline:none;
+    .pageView{ /* Page container (iframe mode) */
+      width:100%; /* full width */
+      height:100%; /* full height */
+      display:none; /* hidden until tile click */
+      border-radius:var(--radius); /* rounding */
+      overflow:hidden; /* clip */
+      border:1px solid rgba(0,0,0,.12); /* border */
+      background:#ffffff; /* white */
+      box-shadow:0 14px 40px rgba(0,0,0,.20); /* depth */
+    } /* end .pageView */
+
+    .frameWrap{ /* Iframe wrapper */
+      position:relative; /* anchor zoom UI */
+      width:100%; /* full width */
+      height:100%; /* full height */
+      overflow:hidden; /* hide overhang when zoomed */
+      background:#fff; /* white */
+    } /* end .frameWrap */
+
+    iframe{ /* The iframe itself */
+      position:absolute; /* allow centering by left/top */
+      top:0; /* top */
+      left:0; /* left */
+      width:100%; /* fill */
+      height:100%; /* fill */
+      border:0; /* no border */
+      background:#fff; /* white */
+      transform-origin: top left; /* zoom origin */
+      transform: scale(var(--iframe-zoom)); /* ✅ apply zoom */
+    } /* end iframe */
+
+    /* ✅ ZOOM CONTROLS: MOVED UP (closer to top) */
+    .zoomControls{ /* Container for + / - */
+      position:absolute; /* overlay inside frameWrap */
+      top:14px; /* ✅ moved UP (was 70px) */
+      right:18px; /* right margin */
+      display:flex; /* stack buttons */
+      flex-direction:column; /* vertical */
+      gap:14px; /* space between buttons */
+      z-index:10; /* above header gold line + masks */
+    } /* end .zoomControls */
+
+    .zoomBtn{ /* + / - button style */
+      width:56px; /* size */
+      height:56px; /* size */
+      border-radius:16px; /* rounding */
+      border:none; /* no border */
+      font-size:28px; /* glyph size */
+      font-weight:900; /* bold */
+      cursor:pointer; /* pointer */
+      background:linear-gradient(180deg,#ffffff,#e6e6e6); /* light button gradient */
       box-shadow:
-        20px 22px 44px rgba(0,0,0,.42),
-        -10px -10px 22px rgba(255,255,255,.55),
-        var(--focus);
-    }
+        6px 6px 14px rgba(0,0,0,.25), /* cast */
+        -4px -4px 10px rgba(255,255,255,.8); /* highlight */
+      transition:all .15s ease; /* smooth */
+    } /* end .zoomBtn */
 
-    /* ================= PAGE VIEW ================= */
-    .pageView{
-      width:100%;
-      height:100%;
-      display:none;
-      border-radius:var(--radius);
-      overflow:hidden;
-      border:1px solid rgba(0,0,0,.12);
-      background:#ffffff;
-      box-shadow:0 14px 40px rgba(0,0,0,.20);
-    }
-
-    /* wrap/zoom */
-    .frameWrap{
-      position:relative;
-      width:100%;
-      height:100%;
-      overflow:hidden;
-      background:#fff;
-    }
-
-    /* scaled iframe */
-    iframe{
-      position:absolute;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      border:0;
-      background:#fff;
-      transform-origin: top left;
-      transform: scale(var(--iframe-zoom));
-    }
-
-    /* ✅ ZOOM CONTROLS (moved down so + isn't on the gold line) */
-    .zoomControls{
-      position:absolute;
-      top:70px;
-      right:18px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-      z-index:8;
-    }
-
-    .zoomBtn{
-      width:56px;
-      height:56px;
-      border-radius:16px;
-      border:none;
-      font-size:28px;
-      font-weight:900;
-      cursor:pointer;
-
-      background:linear-gradient(180deg,#ffffff,#e6e6e6);
+    .zoomBtn:active{ /* Press look */
+      transform:translateY(3px); /* push down */
       box-shadow:
-        6px 6px 14px rgba(0,0,0,.25),
-        -4px -4px 10px rgba(255,255,255,.8);
+        inset 6px 6px 12px rgba(0,0,0,.25), /* inset shadow */
+        inset -4px -4px 10px rgba(255,255,255,.9); /* inset highlight */
+    } /* end .zoomBtn:active */
 
-      transition:all .15s ease;
-    }
+    .loading{ /* Loading overlay */
+      position:absolute; /* cover */
+      inset:0; /* full cover */
+      display:none; /* hidden by default */
+      align-items:center; /* center */
+      justify-content:center; /* center */
+      z-index:7; /* above iframe */
+      background:rgba(255,255,255,.72); /* translucent */
+      backdrop-filter: blur(2px); /* soft blur */
+    } /* end .loading */
 
-    .zoomBtn:active{
-      transform:translateY(3px);
-      box-shadow:
-        inset 6px 6px 12px rgba(0,0,0,.25),
-        inset -4px -4px 10px rgba(255,255,255,.9);
-    }
+    .spinner{ /* Spinner circle */
+      width:58px; /* size */
+      height:58px; /* size */
+      border-radius:50%; /* circle */
+      border:7px solid rgba(0,0,0,.15); /* ring */
+      border-top-color: rgba(11,122,59,.9); /* green top */
+      animation: spin .9s linear infinite; /* rotate */
+    } /* end .spinner */
 
-    /* overlays */
-    .loading{
-      position:absolute;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:7;
-      background:rgba(255,255,255,.72);
-      backdrop-filter: blur(2px);
-    }
+    @keyframes spin{ to{ transform:rotate(360deg); } } /* Spinner animation */
 
-    .spinner{
-      width:58px;
-      height:58px;
-      border-radius:50%;
-      border:7px solid rgba(0,0,0,.15);
-      border-top-color: rgba(11,122,59,.9);
-      animation: spin .9s linear infinite;
-    }
+    .topMask{ /* Top mask overlay inside iframe */
+      position:absolute; /* overlay */
+      top:0; left:0; right:0; /* full width */
+      height:140px; /* mask height */
+      z-index:6; /* above iframe */
+      display:none; /* hidden until page view */
+      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%); /* light */
+      border-bottom:4px solid var(--sv-gold); /* gold line */
+      box-shadow:0 10px 22px rgba(0,0,0,.18); /* depth */
+      pointer-events:auto; /* block interactions */
+      align-items:center; /* center */
+      justify-content:center; /* center */
+      padding:10px 14px; /* padding */
+    } /* end .topMask */
 
-    @keyframes spin{ to{ transform:rotate(360deg); } }
+    .topMask img{ /* Logo inside mask */
+      height:56px; /* size */
+      width:auto; /* aspect */
+      object-fit:contain; /* fit */
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); /* depth */
+    } /* end .topMask img */
 
-    .topMask{
-      position:absolute;
-      top:0; left:0; right:0;
-      height:140px;
-      z-index:6;
-      display:none;
-      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
-      border-bottom:4px solid var(--sv-gold);
-      box-shadow:0 10px 22px rgba(0,0,0,.18);
-      pointer-events:auto;
-      align-items:center;
-      justify-content:center;
-      padding:10px 14px;
-    }
+    .cookieMask{ /* Bottom cookie banner mask */
+      position:absolute; /* overlay */
+      left:0; right:0; bottom:0; /* bottom */
+      height:120px; /* height */
+      background:linear-gradient(180deg, #ffffff, #f7f7f7); /* gradient */
+      border-top:4px solid var(--sv-gold); /* gold line */
+      box-shadow:0 -10px 22px rgba(0,0,0,.18); /* depth */
+      z-index:5; /* above iframe */
+      display:none; /* hidden until page view */
+      pointer-events:none; /* not clickable */
+      align-items:center; /* center */
+      justify-content:center; /* center */
+      gap:14px; /* spacing */
+      padding:12px 18px; /* padding */
+    } /* end .cookieMask */
 
-    .topMask img{
-      height:56px;
-      width:auto;
-      object-fit:contain;
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
-    }
+    .cookieMask img{ /* Logo inside cookie mask */
+      height:52px; /* size */
+      max-width:260px; /* clamp */
+      object-fit:contain; /* fit */
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15)); /* depth */
+    } /* end .cookieMask img */
 
-    .cookieMask{
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height:120px;
-      background:linear-gradient(180deg, #ffffff, #f7f7f7);
-      border-top:4px solid var(--sv-gold);
-      box-shadow:0 -10px 22px rgba(0,0,0,.18);
-      z-index:5;
-      display:none;
-      pointer-events:none;
-      align-items:center;
-      justify-content:center;
-      gap:14px;
-      padding:12px 18px;
-    }
+    @media (max-width:1100px){ /* Medium screens */
+      :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; } /* scale down */
+      .logoStripInner{ column-gap:24px; row-gap:14px; } /* tighten gaps */
+    } /* end 1100px */
 
-    .cookieMask img{
-      height:52px;
-      max-width:260px;
-      object-fit:contain;
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
-    }
+    @media (max-width:900px){ /* Smaller screens */
+      :root{ --header-h: 220px; --logo-area-bottom: 92px; } /* shorter header */
+      .tileTitle{ font-size:34px; } /* smaller title */
+      .sub{ font-size:18px; } /* smaller subtitle */
+    } /* end 900px */
 
-    /* responsive */
-    @media (max-width:1100px){
-      :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; }
-      .logoStripInner{ column-gap:24px; row-gap:14px; }
-    }
+    @media (max-width:680px){ /* Phone-ish */
+      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; } /* single column */
+      .tile{ min-height:160px; } /* ensure touch height */
+      .bottomRow{ flex-direction:column; align-items:flex-start; } /* stack title + menu */
+      .menuBtn{ align-self:flex-end; } /* menu on right */
+    } /* end 680px */
+  </style> <!-- ====== STYLES END ====== -->
+</head> <!-- end head -->
 
-    @media (max-width:900px){
-      :root{ --header-h: 220px; --logo-area-bottom: 92px; }
-      .tileTitle{ font-size:34px; }
-      .sub{ font-size:18px; }
-    }
+<body> <!-- Body -->
+  <div class="app"> <!-- App container -->
 
-    @media (max-width:680px){
-      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; }
-      .tile{ min-height:160px; }
-      .bottomRow{ flex-direction:column; align-items:flex-start; }
-      .menuBtn{ align-self:flex-end; }
-    }
-  </style>
-</head>
+    <header class="header"> <!-- Header -->
+      <div class="logoStrip" aria-label="Game logos"> <!-- Logo area -->
+        <div class="logoStripInner"> <!-- Logo wrap -->
+          <img class="gameLogo" src="./cpot-150x150.png"       alt="Cash Pot" /> <!-- Cash Pot -->
+          <img class="gameLogo" src="./dollaz-150x150.png"     alt="Dollaz" /> <!-- Dollaz -->
+          <img class="gameLogo" src="./hotpick-150x150.png"    alt="Hot Pick" /> <!-- Hot Pick -->
+          <img class="gameLogo" src="./JustBet-150x150.png"    alt="Just Bet" /> <!-- Just Bet -->
+          <img class="gameLogo" src="./lotto-150x150.png"      alt="Lotto" /> <!-- Lotto -->
+          <img class="gameLogo" src="./lucky5-150x150.png"     alt="Lucky 5" /> <!-- Lucky 5 -->
+          <img class="gameLogo" src="./mtime-150x150.png"      alt="Midday Time" /> <!-- Money Time / Midday -->
+          <img class="gameLogo" src="./pick2-150x150.png"      alt="Pick 2" /> <!-- Pick 2 -->
+          <img class="gameLogo" src="./pick3-150x150.png"      alt="Pick 3" /> <!-- Pick 3 -->
+          <img class="gameLogo" src="./pick4-150x150.png"      alt="Pick 4" /> <!-- Pick 4 -->
+          <img class="gameLogo" src="./superlotto-150x150.png" alt="Super Lotto" /> <!-- Super Lotto -->
+          <img class="gameLogo" src="./topdraw-150x150.png"    alt="Top Draw" /> <!-- Top Draw -->
+        </div> <!-- end .logoStripInner -->
+      </div> <!-- end .logoStrip -->
 
-<body>
-  <div class="app">
+      <div class="bottomRow"> <!-- Title + menu -->
+        <div class="title" id="headerTitle">SUPREME VENTURES RESULTS</div> <!-- Header title -->
+        <button class="menuBtn" id="menuBtn" type="button">MENU</button> <!-- Menu button -->
+      </div> <!-- end .bottomRow -->
+    </header> <!-- end header -->
 
-    <header class="header">
-      <div class="logoStrip" aria-label="Game logos">
-        <div class="logoStripInner">
-          <img class="gameLogo" src="./cpot-150x150.png"       alt="Cash Pot" />
-          <img class="gameLogo" src="./dollaz-150x150.png"     alt="Dollaz" />
-          <img class="gameLogo" src="./hotpick-150x150.png"    alt="Hot Pick" />
-          <img class="gameLogo" src="./JustBet-150x150.png"    alt="Just Bet" />
-          <img class="gameLogo" src="./lotto-150x150.png"      alt="Lotto" />
-          <img class="gameLogo" src="./lucky5-150x150.png"     alt="Lucky 5" />
-          <img class="gameLogo" src="./mtime-150x150.png"      alt="Midday Time" />
-          <img class="gameLogo" src="./pick2-150x150.png"      alt="Pick 2" />
-          <img class="gameLogo" src="./pick3-150x150.png"      alt="Pick 3" />
-          <img class="gameLogo" src="./pick4-150x150.png"      alt="Pick 4" />
-          <img class="gameLogo" src="./superlotto-150x150.png" alt="Super Lotto" />
-          <img class="gameLogo" src="./topdraw-150x150.png"    alt="Top Draw" />
-        </div>
-      </div>
+    <div class="content"> <!-- Content -->
+      <div class="console"> <!-- Console frame -->
 
-      <div class="bottomRow">
-        <div class="title" id="headerTitle">SUPREME VENTURES RESULTS</div>
-        <button class="menuBtn" id="menuBtn" type="button">MENU</button>
-      </div>
-    </header>
+        <nav class="menuView" id="menuView" aria-label="Main menu"> <!-- Menu grid -->
 
-    <div class="content">
-      <div class="console">
+          <div class="tileSlot"> <!-- Slot 1 -->
+            <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results"> <!-- Latest Results tile -->
+              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+              <div class="tileContent"> <!-- Text wrapper -->
+                <div class="tileTitle">LATEST RESULTS</div> <!-- Title -->
+                <span class="sub">VIEW TODAY’S DRAW RESULTS</span> <!-- Subtitle -->
+              </div> <!-- end tileContent -->
+            </a> <!-- end tile link -->
+          </div> <!-- end tileSlot -->
 
-        <nav class="menuView" id="menuView" aria-label="Main menu">
+          <div class="tileSlot"> <!-- Slot 2 -->
+            <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results"> <!-- Past Results tile -->
+              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+              <div class="tileContent"> <!-- Text wrapper -->
+                <div class="tileTitle">PAST RESULTS</div> <!-- Title -->
+                <span class="sub">SEARCH PREVIOUS DRAWS</span> <!-- Subtitle -->
+              </div> <!-- end tileContent -->
+            </a> <!-- end tile link -->
+          </div> <!-- end tileSlot -->
 
-          <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results">
-              <span class="dot" aria-hidden="true"></span>
-              <div class="tileContent">
-                <div class="tileTitle">LATEST RESULTS</div>
-                <span class="sub">VIEW TODAY’S DRAW RESULTS</span>
-              </div>
-            </a>
-          </div>
+          <div class="tileSlot"> <!-- Slot 3 -->
+            <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games"> <!-- Games tile -->
+              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+              <div class="tileContent"> <!-- Text wrapper -->
+                <div class="tileTitle">GAMES</div> <!-- Title -->
+                <span class="sub">BROWSE AVAILABLE GAMES</span> <!-- Subtitle -->
+              </div> <!-- end tileContent -->
+            </a> <!-- end tile link -->
+          </div> <!-- end tileSlot -->
 
-          <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results">
-              <span class="dot" aria-hidden="true"></span>
-              <div class="tileContent">
-                <div class="tileTitle">PAST RESULTS</div>
-                <span class="sub">SEARCH PREVIOUS DRAWS</span>
-              </div>
-            </a>
-          </div>
+          <div class="tileSlot"> <!-- Slot 4 -->
+            <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming"> <!-- Responsible Gaming tile -->
+              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+              <div class="tileContent"> <!-- Text wrapper -->
+                <div class="tileTitle">RESPONSIBLE GAMING</div> <!-- Title -->
+                <span class="sub">GENERAL INFORMATION</span> <!-- Subtitle -->
+              </div> <!-- end tileContent -->
+            </a> <!-- end tile link -->
+          </div> <!-- end tileSlot -->
 
-          <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games">
-              <span class="dot" aria-hidden="true"></span>
-              <div class="tileContent">
-                <div class="tileTitle">GAMES</div>
-                <span class="sub">BROWSE AVAILABLE GAMES</span>
-              </div>
-            </a>
-          </div>
+        </nav> <!-- end menuView -->
 
-          <div class="tileSlot">
-            <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming">
-              <span class="dot" aria-hidden="true"></span>
-              <div class="tileContent">
-                <div class="tileTitle">RESPONSIBLE GAMING</div>
-                <span class="sub">GENERAL INFORMATION</span>
-              </div>
-            </a>
-          </div>
+        <section class="pageView" id="pageView" aria-label="Web view"> <!-- Page view (iframe mode) -->
+          <div class="frameWrap" id="frameWrap"> <!-- Iframe wrapper -->
+            <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe> <!-- Iframe -->
 
-        </nav>
+            <div class="zoomControls" aria-label="Zoom controls"> <!-- Zoom UI -->
+              <button class="zoomBtn" id="zoomOut" type="button" aria-label="Zoom out">-</button> <!-- Zoom out -->
+              <button class="zoomBtn" id="zoomIn"  type="button" aria-label="Zoom in">+</button> <!-- Zoom in -->
+            </div> <!-- end zoomControls -->
 
-        <section class="pageView" id="pageView" aria-label="Web view">
-          <div class="frameWrap" id="frameWrap">
-            <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
+            <div class="loading" id="loading" aria-hidden="true"> <!-- Loading overlay -->
+              <div class="spinner" aria-label="Loading"></div> <!-- Spinner -->
+            </div> <!-- end loading -->
 
-            <!-- ZOOM CONTROLS -->
-            <div class="zoomControls" aria-label="Zoom controls">
-              <button class="zoomBtn" id="zoomOut" type="button" aria-label="Zoom out">-</button>
-              <button class="zoomBtn" id="zoomIn"  type="button" aria-label="Zoom in">+</button>
-            </div>
+            <div class="topMask" id="topMask" aria-hidden="true"> <!-- Top mask -->
+              <img src="./sv-logo.png" alt="Supreme Ventures Group" /> <!-- Mask logo -->
+            </div> <!-- end topMask -->
 
-            <div class="loading" id="loading" aria-hidden="true">
-              <div class="spinner" aria-label="Loading"></div>
-            </div>
+            <div class="cookieMask" id="cookieMask" aria-hidden="true"> <!-- Bottom mask -->
+              <img src="./sv-logo.png" alt="Supreme Ventures Group" /> <!-- Mask logo -->
+            </div> <!-- end cookieMask -->
+          </div> <!-- end frameWrap -->
+        </section> <!-- end pageView -->
 
-            <div class="topMask" id="topMask" aria-hidden="true">
-              <img src="./sv-logo.png" alt="Supreme Ventures Group" />
-            </div>
+      </div> <!-- end console -->
+    </div> <!-- end content -->
+  </div> <!-- end app -->
 
-            <div class="cookieMask" id="cookieMask" aria-hidden="true">
-              <img src="./sv-logo.png" alt="Supreme Ventures Group" />
-            </div>
-          </div>
-        </section>
+  <script> // ====== SCRIPT START ======
+    const menuView    = document.getElementById('menuView'); // Menu grid element
+    const pageView    = document.getElementById('pageView'); // Iframe page view container
+    const frameWrap   = document.getElementById('frameWrap'); // Iframe wrapper (used for centering math)
+    const frame       = document.getElementById('frame'); // Iframe element
+    const menuBtn     = document.getElementById('menuBtn'); // Menu button
+    const headerTitle = document.getElementById('headerTitle'); // Header title element
+    const cookieMask  = document.getElementById('cookieMask'); // Cookie mask overlay
+    const topMask     = document.getElementById('topMask'); // Top mask overlay
+    const loading     = document.getElementById('loading'); // Loading overlay
 
-      </div>
-    </div>
-  </div>
+    const zoomIn  = document.getElementById('zoomIn'); // Zoom in button
+    const zoomOut = document.getElementById('zoomOut'); // Zoom out button
+    let currentZoom = 1; // Current zoom value
 
-  <script>
-    const menuView    = document.getElementById('menuView');
-    const pageView    = document.getElementById('pageView');
-    const frameWrap   = document.getElementById('frameWrap');
-    const frame       = document.getElementById('frame');
-    const menuBtn     = document.getElementById('menuBtn');
-    const headerTitle = document.getElementById('headerTitle');
-    const cookieMask  = document.getElementById('cookieMask');
-    const topMask     = document.getElementById('topMask');
-    const loading     = document.getElementById('loading');
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // Idle timeout (2 minutes)
+    let idleTimer = null; // Idle timer handle
 
-    // zoom controls
-    const zoomIn  = document.getElementById('zoomIn');
-    const zoomOut = document.getElementById('zoomOut');
-    let currentZoom = 1;
+    document.querySelectorAll('.gameLogo').forEach(img => { // For each logo image
+      img.addEventListener('error', () => { img.style.display = 'none'; }); // Hide logo if missing/broken
+    }); // End logo error handlers
 
-    const IDLE_TIMEOUT_MS = 2 * 60 * 1000;
-    let idleTimer = null;
+    function setIdleTimer(){ // Reset idle timer function
+      if (idleTimer) clearTimeout(idleTimer); // Clear existing timer
+      idleTimer = setTimeout(() => { // Start new timer
+        if (pageView.style.display === 'block') showMenu(); // If in page view, return to menu
+      }, IDLE_TIMEOUT_MS); // Using timeout duration
+    } // End setIdleTimer
 
-    document.querySelectorAll('.gameLogo').forEach(img => {
-      img.addEventListener('error', () => { img.style.display = 'none'; });
-    });
+    ['click','touchstart','mousemove','keydown'].forEach(evt => { // List of activity events
+      window.addEventListener(evt, setIdleTimer, { passive:true }); // Reset timer on any activity
+    }); // End event binding loop
 
-    function setIdleTimer(){
-      if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => {
-        if (pageView.style.display === 'block') showMenu();
-      }, IDLE_TIMEOUT_MS);
-    }
+    function showLoading(on){ // Toggle loading overlay
+      loading.style.display = on ? 'flex' : 'none'; // Show/hide overlay
+      loading.setAttribute('aria-hidden', on ? 'false' : 'true'); // Update accessibility state
+    } // End showLoading
 
-    ['click','touchstart','mousemove','keydown'].forEach(evt => {
-      window.addEventListener(evt, setIdleTimer, { passive:true });
-    });
+    function recenterIframe(){ // Center the zoomed iframe in the visible window
+      const rect = frameWrap.getBoundingClientRect(); // Get wrapper size
+      const offsetX = (rect.width  * (currentZoom - 1)) / 2; // Horizontal extra content /2
+      const offsetY = (rect.height * (currentZoom - 1)) / 2; // Vertical extra content /2
+      frame.style.left = (-offsetX) + 'px'; // Shift iframe left to center
+      frame.style.top  = (-offsetY) + 'px'; // Shift iframe up to center
+    } // End recenterIframe
 
-    function showLoading(on){
-      loading.style.display = on ? 'flex' : 'none';
-      loading.setAttribute('aria-hidden', on ? 'false' : 'true');
-    }
+    function applyZoom(z){ // Apply zoom while clamping
+      currentZoom = Math.max(0.75, Math.min(1.6, z)); // Clamp zoom range
+      document.documentElement.style.setProperty('--iframe-zoom', currentZoom); // Update CSS variable for transform
+      recenterIframe(); // Recenter after zoom change
+    } // End applyZoom
 
-    function recenterIframe(){
-      // Centers the scaled iframe inside the frameWrap
-      const rect = frameWrap.getBoundingClientRect();
-      const offsetX = (rect.width  * (currentZoom - 1)) / 2;
-      const offsetY = (rect.height * (currentZoom - 1)) / 2;
-      frame.style.left = (-offsetX) + 'px';
-      frame.style.top  = (-offsetY) + 'px';
-    }
+    function showMenu(){ // Return to menu state
+      showLoading(false); // Hide loading
+      frame.src = 'about:blank'; // Clear iframe
+      cookieMask.style.display = 'none'; // Hide cookie mask
+      topMask.style.display = 'none'; // Hide top mask
+      menuView.style.display = 'grid'; // Show menu grid
+      pageView.style.display = 'none'; // Hide page view
+      headerTitle.textContent = 'SUPREME VENTURES RESULTS'; // Reset header title
+      menuBtn.setAttribute('aria-pressed', 'true'); // Mark menu active
+      applyZoom(1); // Reset zoom to 1x
+    } // End showMenu
 
-    function applyZoom(z){
-      currentZoom = Math.max(0.75, Math.min(1.6, z));
-      document.documentElement.style.setProperty('--iframe-zoom', currentZoom);
-      recenterIframe();
-    }
+    function showPage(url, label, zoom=1){ // Show iframe page state
+      menuView.style.display = 'none'; // Hide menu grid
+      pageView.style.display = 'block'; // Show iframe view
+      cookieMask.style.display = 'flex'; // Show cookie mask
+      topMask.style.display = 'flex'; // Show top mask
+      headerTitle.textContent = label.toUpperCase(); // Set title based on tile label
+      menuBtn.setAttribute('aria-pressed', 'false'); // Mark menu inactive
 
-    function showMenu(){
-      showLoading(false);
-      frame.src = 'about:blank';
-      cookieMask.style.display = 'none';
-      topMask.style.display = 'none';
-      menuView.style.display = 'grid';
-      pageView.style.display = 'none';
-      headerTitle.textContent = 'SUPREME VENTURES RESULTS';
-      menuBtn.setAttribute('aria-pressed', 'true');
-      applyZoom(1);
-    }
+      applyZoom(zoom); // Apply per-page starting zoom
 
-    function showPage(url, label, zoom=1){
-      menuView.style.display = 'none';
-      pageView.style.display = 'block';
-      cookieMask.style.display = 'flex';
-      topMask.style.display = 'flex';
-      headerTitle.textContent = label.toUpperCase();
-      menuBtn.setAttribute('aria-pressed', 'false');
+      showLoading(true); // Show loading overlay
+      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now(); // Cache buster
+      frame.src = url + bust; // Load page into iframe
+    } // End showPage
 
-      applyZoom(zoom);
+    frame.addEventListener('load', () => { // When iframe finishes loading
+      showLoading(false); // Hide loading overlay
+      recenterIframe(); // Ensure centering after load
+    }); // End iframe load handler
 
-      showLoading(true);
-      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
-      frame.src = url + bust;
-    }
+    menuBtn.addEventListener('click', showMenu); // Menu button returns to menu
 
-    frame.addEventListener('load', () => {
-      showLoading(false);
-      // After load, ensure centering is still correct
-      recenterIframe();
-    });
+    document.querySelectorAll('.tile').forEach(tile => { // For each tile link
+      tile.addEventListener('click', e => { // On tile click
+        e.preventDefault(); // Prevent navigation
+        const url = tile.dataset.url; // Read URL from data attribute
+        const zoom = parseFloat(tile.dataset.zoom || '1'); // Read per-page zoom (default 1)
+        const label = tile.querySelector('.tileTitle').textContent.trim(); // Get label text
+        showPage(url, label, zoom); // Open page view
+      }); // End tile click handler
+    }); // End tiles loop
 
-    menuBtn.addEventListener('click', showMenu);
+    zoomIn.addEventListener('click', () => applyZoom(currentZoom + 0.1)); // Zoom in by step
+    zoomOut.addEventListener('click', () => applyZoom(currentZoom - 0.1)); // Zoom out by step
 
-    document.querySelectorAll('.tile').forEach(tile => {
-      tile.addEventListener('click', e => {
-        e.preventDefault();
-        const url = tile.dataset.url;
-        const zoom = parseFloat(tile.dataset.zoom || '1');
-        const label = tile.querySelector('.tileTitle').textContent.trim();
-        showPage(url, label, zoom);
-      });
-    });
+    window.addEventListener('resize', () => { // On window resize
+      if (pageView.style.display === 'block') recenterIframe(); // Keep centered if viewing a page
+    }); // End resize handler
 
-    // zoom buttons
-    zoomIn.addEventListener('click', () => applyZoom(currentZoom + 0.1));
-    zoomOut.addEventListener('click', () => applyZoom(currentZoom - 0.1));
+    window.addEventListener('keydown', (e) => { // Keyboard shortcuts
+      if (e.key === 'Escape') showMenu(); // ESC returns to menu
+    }); // End keydown handler
 
-    // keep centered on resize
-    window.addEventListener('resize', () => {
-      if (pageView.style.display === 'block') recenterIframe();
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') showMenu();
-    });
-
-    showMenu();
-    setIdleTimer();
-  </script>
-</body>
-</html>
+    showMenu(); // Initialize in menu mode
+    setIdleTimer(); // Start idle timer
+  </script> <!-- ====== SCRIPT END ====== -->
+</body> <!-- end body -->
+</html> <!-- end document -->
