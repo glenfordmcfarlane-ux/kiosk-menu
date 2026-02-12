@@ -8,44 +8,48 @@
 
   <style>
     :root{
-      --sv-green:#0b7a3b;                       /* Brand green */
-      --sv-green-dark:#075c2c;                 /* Brand dark green */
-      --sv-gold:#f2c300;                       /* Brand gold */
+      --sv-green:#0b7a3b;
+      --sv-green-dark:#075c2c;
+      --sv-gold:#f2c300;
 
-      /* ===== App background (light, like your +/- button surface) ===== */
-      --bg1:#eef1f4;                           /* Light surface */
-      --bg2:#dfe4ea;                           /* Slightly darker surface */
-      --surface:#e7ebf0;                       /* Content surface */
+      /* ===== SILVER MACHINE BODY / SURFACE ===== */
+      --bg1:#f6f7f9;
+      --bg2:#d9dde3;
+      --surface:#e7ebf0;
 
-      --radius:20px;                           /* Global radius */
-      --gap:18px;                              /* Grid gap */
-      --header-h:290px;                        /* Header height */
+      --radius:20px;
+      --gap:18px;
+      --header-h:290px;
 
-      --focus: 0 0 0 4px rgba(242,195,0,.45);  /* Focus ring */
-      --tap: 0.985;                            /* Tap scale */
+      --focus: 0 0 0 4px rgba(242,195,0,.45);
+      --tap: 0.985;
 
       /* ===== Tile geometry ===== */
-      --bevel: 12px;                           /* Bevel thickness */
-      --bevel-radius: 44px;                    /* Outer tile radius */
-      --face-radius: 32px;                     /* Inner face radius */
+      --bevel: 12px;
+      --bevel-radius: 44px;
+      --face-radius: 32px;
 
       /* ===== Header scaling ===== */
-      --title-size: 44px;                      /* Title font size */
-      --logo-h: 120px;                         /* Logo height (tweak if needed) */
-      --menu-font: 28px;                       /* Menu button text size */
-      --menu-pad-y: 22px;                      /* Menu vertical padding */
-      --menu-pad-x: 48px;                      /* Menu horizontal padding */
-      --menu-radius: 26px;                     /* Menu button rounding */
+      --title-size: 44px;
+      --logo-h: 120px;
+      --menu-font: 28px;
+      --menu-pad-y: 22px;
+      --menu-pad-x: 48px;
+      --menu-radius: 26px;
 
       /* ===== Header layout controls ===== */
-      --header-bottom-pad: 22px;               /* Bottom row offset */
-      --header-side-pad: 34px;                 /* Left/right inset */
-      --logo-area-top: 18px;                   /* Logo area top offset */
-      --logo-area-bottom: 115px;               /* Space reserved for bottom row (title + menu) */
+      --header-bottom-pad: 22px;
+      --header-side-pad: 34px;
+      --logo-area-top: 18px;
+      --logo-area-bottom: 115px;
 
-      /* ===== Tile shadows (neumorphic-ish, raised) ===== */
+      /* ===== Shadows (raised) ===== */
       --tile-shadow-dark: rgba(0,0,0,.55);
       --tile-shadow-light: rgba(255,255,255,.70);
+
+      /* ===== Console panel ===== */
+      --console-radius: 46px;
+      --console-pad: 26px;
     }
 
     *{ box-sizing:border-box; }
@@ -54,19 +58,19 @@
       height:100%;
       margin:0;
       font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif;
-      text-transform:uppercase;                /* ✅ All text to CAPS */
+      text-transform:uppercase;
 
-      /* ✅ Light surface background so raised shadows read like the +/- control */
+      /* ✅ SILVERY GREY "MACHINE BODY" BACKGROUND */
       background:
-        radial-gradient(1200px 800px at 18% 12%, rgba(255,255,255,.85), transparent 55%),
-        radial-gradient(900px 650px at 70% 20%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(1200px 900px at 25% 15%, rgba(255,255,255,.95), transparent 55%),
+        radial-gradient(900px 650px at 78% 18%, rgba(255,255,255,.60), transparent 60%),
+        radial-gradient(1200px 900px at 50% 88%, rgba(0,0,0,.06), transparent 55%),
         linear-gradient(180deg, var(--bg1), var(--bg2));
 
       color:#0c1a12;
       overscroll-behavior:none;
     }
 
-    /* ================= APP ================= */
     .app{
       height:100%;
       display:flex;
@@ -77,15 +81,11 @@
     .header{
       min-height:var(--header-h);
       position:relative;
-      padding:0;                               /* we position internal sections */
+      padding:0;
 
-      /* ✅ Light header gradient */
       background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 55%, #eeeeee 100%);
 
-      /* Soft depth below header (reads like a raised slab) */
-      box-shadow:
-        0 18px 45px rgba(0,0,0,.18);
-
+      box-shadow: 0 18px 45px rgba(0,0,0,.18);
       border-bottom:1px solid rgba(0,0,0,.10);
       overflow:hidden;
     }
@@ -98,13 +98,12 @@
       background:linear-gradient(90deg, var(--sv-green), var(--sv-gold));
     }
 
-    /* ===== Logo area (takes the top part of the header) ===== */
     .logoStrip{
       position:absolute;
       left:var(--header-side-pad);
       right:var(--header-side-pad);
       top:var(--logo-area-top);
-      bottom:var(--logo-area-bottom);          /* ✅ keeps logos from colliding with title/menu */
+      bottom:var(--logo-area-bottom);
 
       display:flex;
       align-items:flex-start;
@@ -115,15 +114,12 @@
     .logoStripInner{
       width:100%;
       height:100%;
-
       display:flex;
-      flex-wrap:wrap;                          /* ✅ allows ALL logos to appear */
+      flex-wrap:wrap;
       justify-content:center;
       align-content:flex-start;
-
       column-gap:34px;
       row-gap:18px;
-
       padding-top:10px;
     }
 
@@ -132,14 +128,11 @@
       width:auto;
       object-fit:contain;
       opacity:1;
-
-      /* crisp pop on light background */
       filter:
         drop-shadow(0 8px 16px rgba(0,0,0,.22))
         drop-shadow(0 0 2px rgba(255,255,255,.45));
     }
 
-    /* ===== Bottom row (title + menu sit LOWER, not competing with logos) ===== */
     .bottomRow{
       position:absolute;
       left:var(--header-side-pad);
@@ -151,7 +144,7 @@
       justify-content:space-between;
       gap:18px;
 
-      pointer-events:none;                     /* only menu should be clickable */
+      pointer-events:none;
     }
 
     .title{
@@ -160,8 +153,6 @@
       letter-spacing:.5px;
       color:#0b3f22;
       white-space:nowrap;
-
-      /* subtle embossed feel */
       text-shadow:
         0 1px 0 rgba(255,255,255,.85),
         0 10px 18px rgba(0,0,0,.10);
@@ -169,7 +160,7 @@
 
     /* ================= MENU BUTTON (RAISED 3D) ================= */
     .menuBtn{
-      pointer-events:auto;                    /* re-enable clicks */
+      pointer-events:auto;
 
       border:3px solid rgba(242,195,0,.95);
       background:linear-gradient(145deg, #ffe58a, #caa800);
@@ -186,7 +177,6 @@
       -webkit-tap-highlight-color:transparent;
       position:relative;
 
-      /* Raised, like a physical button */
       box-shadow:
         0 14px 0 #9e8500,
         0 34px 64px rgba(0,0,0,.30);
@@ -233,13 +223,38 @@
       flex:1;
       min-height:0;
       padding:22px;
-      display:flex;
 
-      /* ✅ light surface behind tiles (helps the raised effect) */
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+
+      /* Soft surface behind console panel */
       background:
-        radial-gradient(1200px 800px at 25% 15%, rgba(255,255,255,.45), transparent 55%),
-        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,.25), transparent 60%),
+        radial-gradient(1200px 900px at 25% 20%, rgba(255,255,255,.55), transparent 55%),
+        radial-gradient(900px 650px at 80% 30%, rgba(255,255,255,.30), transparent 60%),
         linear-gradient(180deg, var(--surface), #d9dee6);
+    }
+
+    /* ✅ RECESSED SILVER CONSOLE PANEL (hardware faceplate) */
+    .console{
+      flex:1;
+      width:100%;
+      border-radius:var(--console-radius);
+      padding:var(--console-pad);
+
+      background:
+        linear-gradient(180deg, #f2f4f7 0%, #e0e4ea 55%, #d6dbe2 100%);
+
+      box-shadow:
+        inset 0 10px 24px rgba(255,255,255,.95),
+        inset 0 -24px 48px rgba(0,0,0,.10),
+        0 40px 80px rgba(0,0,0,.18);
+
+      border:1px solid rgba(0,0,0,.08);
+      overflow:hidden;
+
+      display:flex; /* so pageView can fill */
+      min-height:0;
     }
 
     /* ================= MENU GRID ================= */
@@ -252,7 +267,7 @@
       gap:var(--gap);
     }
 
-    /* ================= TRUE RAISED 3D TILE (UPGRADE) ================= */
+    /* ================= TRUE RAISED 3D TILE (GREEN) ================= */
     .tile{
       position:relative;
       display:flex;
@@ -267,10 +282,8 @@
       border-radius:var(--bevel-radius);
       padding:0;
 
-      /* Outer shell tone (dark green rim) */
       background:linear-gradient(180deg,#0d5f35,#0a4e2b);
 
-      /* ✅ OUTER RAISE (like +/- button: dark BR shadow + light TL highlight) */
       box-shadow:
         18px 18px 38px var(--tile-shadow-dark),
         -10px -10px 22px var(--tile-shadow-light);
@@ -278,17 +291,15 @@
       transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
     }
 
-    /* Inner face */
     .tile::before{
       content:"";
       position:absolute;
-      inset:var(--bevel);                      /* ✅ bevel thickness */
+      inset:var(--bevel);
       border-radius:var(--face-radius);
 
       background:
         radial-gradient(circle at 30% 25%, #20b76a 0%, #0b7a3b 50%, #075c2c 100%);
 
-      /* ✅ TRUE CONVEX SHAPE (bright TL, deep BR) */
       box-shadow:
         inset 8px 8px 16px rgba(255,255,255,.22),
         inset -14px -18px 30px rgba(0,0,0,.55);
@@ -296,7 +307,6 @@
       z-index:0;
     }
 
-    /* Gloss highlight */
     .tile::after{
       content:"";
       position:absolute;
@@ -344,7 +354,6 @@
       color:rgba(255,255,255,.92);
     }
 
-    /* Hover: lift */
     .tile:hover{
       transform:translateY(-6px);
       box-shadow:
@@ -356,11 +365,9 @@
     /* ================= PRESSED STATE (CONCAVE EFFECT) ================= */
     .tile:active{
       transform:translateY(4px) scale(var(--tap));
-
       box-shadow:
         6px 6px 16px rgba(0,0,0,.70),
         -4px -4px 10px rgba(255,255,255,.55);
-
       filter:saturate(.98);
     }
 
@@ -383,7 +390,7 @@
       width:100%;
       height:100%;
       display:none;
-      border-radius:var(--radius);
+      border-radius:30px;
       overflow:hidden;
       border:1px solid rgba(0,0,0,.12);
       background:#ffffff;
@@ -466,12 +473,14 @@
     @media (max-width:1100px){
       :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; }
       .logoStripInner{ column-gap:24px; row-gap:14px; }
+      :root{ --console-pad: 22px; }
     }
 
     @media (max-width:900px){
       :root{ --header-h: 220px; --logo-area-bottom: 92px; }
       .tileTitle{ font-size:34px; }
       .sub{ font-size:18px; }
+      :root{ --console-radius: 36px; }
     }
 
     @media (max-width:680px){
@@ -479,6 +488,7 @@
       .tile{ min-height:160px; }
       .bottomRow{ flex-direction:column; align-items:flex-start; }
       .menuBtn{ align-self:flex-end; }
+      :root{ --console-pad: 18px; }
     }
   </style>
 </head>
@@ -513,66 +523,68 @@
     </header>
 
     <div class="content">
+      <!-- ✅ Console panel wrapper (hardware faceplate) -->
+      <div class="console">
 
-      <!-- MENU -->
-      <nav class="menuView" id="menuView" aria-label="Main menu">
-        <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" aria-label="Open Latest Results">
-          <span class="dot" aria-hidden="true"></span>
-          <div class="tileContent">
-            <div class="tileTitle">LATEST RESULTS</div>
-            <span class="sub">VIEW TODAY’S DRAW RESULTS</span>
+        <!-- MENU -->
+        <nav class="menuView" id="menuView" aria-label="Main menu">
+          <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" aria-label="Open Latest Results">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="tileContent">
+              <div class="tileTitle">LATEST RESULTS</div>
+              <span class="sub">VIEW TODAY’S DRAW RESULTS</span>
+            </div>
+          </a>
+
+          <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" aria-label="Open Past Results">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="tileContent">
+              <div class="tileTitle">PAST RESULTS</div>
+              <span class="sub">SEARCH PREVIOUS DRAWS</span>
+            </div>
+          </a>
+
+          <a class="tile" href="#" data-url="https://supremeventures.com/games/" aria-label="Open Games">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="tileContent">
+              <div class="tileTitle">GAMES</div>
+              <span class="sub">BROWSE AVAILABLE GAMES</span>
+            </div>
+          </a>
+
+          <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" aria-label="Responsible Gaming">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="tileContent">
+              <div class="tileTitle">RESPONSIBLE GAMING</div>
+              <span class="sub">GENERAL INFORMATION</span>
+            </div>
+          </a>
+        </nav>
+
+        <!-- PAGE -->
+        <section class="pageView" id="pageView" aria-label="Web view">
+          <div class="frameWrap">
+            <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
+
+            <div class="loading" id="loading" aria-hidden="true">
+              <div class="spinner" aria-label="Loading"></div>
+            </div>
+
+            <div class="topMask" id="topMask" aria-hidden="true">
+              <img src="./sv-logo.png" alt="Supreme Ventures Group" />
+            </div>
+
+            <div class="cookieMask" id="cookieMask" aria-hidden="true">
+              <img src="./sv-logo.png" alt="Supreme Ventures Group" />
+            </div>
           </div>
-        </a>
+        </section>
 
-        <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" aria-label="Open Past Results">
-          <span class="dot" aria-hidden="true"></span>
-          <div class="tileContent">
-            <div class="tileTitle">PAST RESULTS</div>
-            <span class="sub">SEARCH PREVIOUS DRAWS</span>
-          </div>
-        </a>
-
-        <a class="tile" href="#" data-url="https://supremeventures.com/games/" aria-label="Open Games">
-          <span class="dot" aria-hidden="true"></span>
-          <div class="tileContent">
-            <div class="tileTitle">GAMES</div>
-            <span class="sub">BROWSE AVAILABLE GAMES</span>
-          </div>
-        </a>
-
-        <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" aria-label="Responsible Gaming">
-          <span class="dot" aria-hidden="true"></span>
-          <div class="tileContent">
-            <div class="tileTitle">RESPONSIBLE GAMING</div>
-            <span class="sub">GENERAL INFORMATION</span>
-          </div>
-        </a>
-      </nav>
-
-      <!-- PAGE -->
-      <section class="pageView" id="pageView" aria-label="Web view">
-        <div class="frameWrap">
-          <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
-
-          <div class="loading" id="loading" aria-hidden="true">
-            <div class="spinner" aria-label="Loading"></div>
-          </div>
-
-          <div class="topMask" id="topMask" aria-hidden="true">
-            <img src="./sv-logo.png" alt="Supreme Ventures Group" />
-          </div>
-
-          <div class="cookieMask" id="cookieMask" aria-hidden="true">
-            <img src="./sv-logo.png" alt="Supreme Ventures Group" />
-          </div>
-        </div>
-      </section>
-
+      </div>
     </div>
   </div>
 
   <script>
-    // ===== Element references =====
     const menuView    = document.getElementById('menuView');
     const pageView    = document.getElementById('pageView');
     const frame       = document.getElementById('frame');
@@ -582,11 +594,9 @@
     const topMask     = document.getElementById('topMask');
     const loading     = document.getElementById('loading');
 
-    // ===== KIOSK SETTINGS =====
-    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000;
     let idleTimer = null;
 
-    // Hide any broken logos
     document.querySelectorAll('.gameLogo').forEach(img => {
       img.addEventListener('error', () => { img.style.display = 'none'; });
     });
@@ -623,7 +633,7 @@
       pageView.style.display = 'block';
       cookieMask.style.display = 'flex';
       topMask.style.display = 'flex';
-      headerTitle.textContent = label.toUpperCase();
+      headerTitle.textContent = (label || '').toUpperCase();
       menuBtn.setAttribute('aria-pressed', 'false');
 
       showLoading(true);
@@ -638,7 +648,7 @@
       tile.addEventListener('click', e => {
         e.preventDefault();
         const url = tile.dataset.url;
-        const label = tile.querySelector('.tileTitle').textContent.trim();
+        const label = tile.querySelector('.tileTitle')?.textContent?.trim() || 'PAGE';
         showPage(url, label);
       });
     });
