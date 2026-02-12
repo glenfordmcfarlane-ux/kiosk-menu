@@ -21,7 +21,7 @@
 
       --radius:20px;                           /* Global radius */
       --gap:18px;                              /* Grid gap */
-      --header-h:290px;                        /* ✅ Header height (was 104px) */
+      --header-h:290px;                        /* Header height */
       --shadow:0 14px 40px rgba(0,0,0,.45);    /* Global shadow */
 
       --iframe-top-mask:140px;                 /* Covers sticky header inside iframe */
@@ -30,17 +30,21 @@
       --tap: 0.985;                            /* Tap scale */
 
       /* ===== Bevel controls (easy tuning) ===== */
-      --bevel: 12px;                           /* ✅ Bezel thickness (was 6px) */
-      --bevel-radius: 44px;                    /* ✅ Outer radius (scaled up) */
-      --face-radius: 32px;                     /* ✅ Inner radius = outer - bevel */
+      --bevel: 12px;                           /* ✅ Bezel thickness (increase for thicker rim) */
+      --bevel-radius: 44px;                    /* Outer radius of tile */
+      --face-radius: 32px;                     /* Inner face radius (outer minus bevel) */
 
       /* ===== Header scaling (proportional) ===== */
-      --title-size: 44px;                      /* Title font size (scaled up) */
-      --logo-h: 130px;                         /* Game logo height (scaled up) */
-      --menu-font: 28px;                       /* Menu button text size (scaled up) */
+      --title-size: 44px;                      /* Title font size */
+      --logo-h: 130px;                         /* Game logo height */
+      --menu-font: 28px;                       /* Menu button text size */
       --menu-pad-y: 22px;                      /* Menu button vertical padding */
       --menu-pad-x: 48px;                      /* Menu button horizontal padding */
       --menu-radius: 26px;                     /* Menu button rounding */
+
+      /* ===== NEW: header spacing controls ===== */
+      --header-bottom-pad: 28px;               /* How far from the bottom the title/menu sit */
+      --logo-top-pad: 10px;                    /* How high the logos sit inside the header */
     }
 
     *{ box-sizing:border-box; }                /* Predictable sizing */
@@ -49,10 +53,12 @@
       height:100%;                             /* Full height app */
       margin:0;                                /* Remove default margin */
       font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif; /* Kiosk-friendly font */
+      /* Slightly lighter + textured background to help shadows read more "3D" */
       background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(242,195,0,.10), transparent 55%), /* Soft gold glow */
-        radial-gradient(1200px 800px at 80% 20%, rgba(11,122,59,.25), transparent 50%), /* Soft green glow */
-        linear-gradient(180deg, #06160e, var(--bg));                                    /* Base gradient */
+        radial-gradient(1200px 800px at 20% 10%, rgba(242,195,0,.12), transparent 55%), /* Soft gold glow */
+        radial-gradient(1200px 800px at 80% 20%, rgba(11,122,59,.22), transparent 55%), /* Soft green glow */
+        radial-gradient(1000px 700px at 50% 85%, rgba(255,255,255,.05), transparent 55%), /* subtle lift behind tiles */
+        linear-gradient(180deg, #0b2417, var(--bg));                                    /* Base gradient */
       color:var(--text);                       /* Text color */
       overscroll-behavior:none;                /* Prevent bounce in kiosk */
     }
@@ -66,15 +72,14 @@
 
     /* ================= HEADER ================= */
     .header{
-      min-height:var(--header-h);              /* ✅ Taller header */
-      display:flex;                            /* Horizontal alignment */
-      align-items:center;                      /* Vertically center */
-      gap:26px;                                /* Space between items (scaled up) */
-      padding:28px 32px;                       /* ✅ Larger padding */
+      min-height:var(--header-h);              /* Taller header */
+      display:flex;                            /* Horizontal layout */
+      align-items:stretch;                     /* Stretch so we can push title/menu down */
+      gap:26px;                                /* Space between items */
+      padding:28px 32px;                       /* Header padding */
 
-      /* ✅ Lighter header for logo visibility */
-      background:
-        linear-gradient(180deg, #ffffff 0%, #f3f3f3 45%, #eaeaea 100%); /* White -> light grey */
+      /* Light header so logos are more visible */
+      background:linear-gradient(180deg, #ffffff 0%, #f4f4f4 45%, #eaeaea 100%);
 
       border-bottom:1px solid rgba(0,0,0,.10); /* Subtle bottom line */
       position:relative;                       /* For accent bar */
@@ -84,45 +89,51 @@
       content:"";                              /* Accent bar */
       position:absolute;                       /* Stick to bottom */
       left:0; right:0; bottom:0;               /* Full width */
-      height:6px;                              /* ✅ Thicker accent bar */
+      height:6px;                              /* Accent thickness */
       background:linear-gradient(90deg, var(--sv-green), var(--sv-gold)); /* Green->Gold */
     }
 
+    /* Title sits LOWER to avoid competing with logos */
     .title{
-      font-size:var(--title-size);             /* ✅ Scaled title */
+      font-size:var(--title-size);             /* Title size */
       font-weight:900;                         /* Bold */
-      letter-spacing:.4px;                     /* Slight tracking */
-      white-space:nowrap;                      /* Keep single line */
+      letter-spacing:.4px;                     /* Tracking */
+      white-space:nowrap;                      /* Single line */
       flex:0 0 auto;                           /* Don’t stretch */
-      color:#0b3f22;                           /* ✅ Dark green for contrast on white */
-      text-shadow:0 2px 0 rgba(255,255,255,.6);/* Tiny lift */
+      color:#0b3f22;                           /* Dark green on white */
+      text-shadow:0 2px 0 rgba(255,255,255,.65);/* Slight lift */
+
+      margin-top:auto;                         /* ✅ Push toward bottom */
+      margin-bottom:var(--header-bottom-pad);  /* ✅ Control how low it sits */
+      align-self:flex-end;                     /* Align to bottom edge */
     }
 
     /* ======= LOGO STRIP ======= */
     .logoStrip{
       flex:1;                                  /* Take remaining space */
       display:flex;                            /* Horizontal */
-      align-items:center;                      /* Center */
       overflow:hidden;                         /* Hide overflow */
       padding:0 10px;                          /* Side padding */
       min-width:0;                             /* Allow shrink */
+      align-self:stretch;                      /* Fill header height */
     }
 
     .logoStripInner{
       width:100%;                              /* Full width */
-      display:flex;                            /* Horizontal row */
-      align-items:center;                      /* Center */
+      display:flex;                            /* Row */
       justify-content:center;                  /* Center logos */
-      gap:32px;                                /* ✅ More spacing between logos */
+      gap:32px;                                /* Spacing between logos */
       min-width:0;                             /* Allow shrink */
+      padding-top:var(--logo-top-pad);         /* ✅ Keep logos higher */
+      align-items:flex-start;                  /* ✅ Keep logos near top */
     }
 
     .gameLogo{
-      height:var(--logo-h);                    /* ✅ Bigger logos */
+      height:var(--logo-h);                    /* Logo height */
       width:auto;                              /* Keep aspect */
       object-fit:contain;                      /* Fit nicely */
       filter:
-        drop-shadow(0 6px 12px rgba(0,0,0,.28)) /* Stronger shadow for visibility on white */
+        drop-shadow(0 6px 12px rgba(0,0,0,.28)) /* Shadow for visibility */
         drop-shadow(0 0 2px rgba(255,255,255,.35));
       opacity:1;                               /* Full */
     }
@@ -130,62 +141,66 @@
     /* ================= MENU BUTTON (3D) ================= */
     .menuBtn{
       flex:0 0 auto;                           /* Fixed width */
-      border:3px solid rgba(242,195,0,.95);    /* ✅ Slightly thicker gold rim */
+      border:3px solid rgba(242,195,0,.95);    /* Gold rim */
       background:linear-gradient(145deg, #ffe58a, #caa800); /* Gold face */
       color:#1a1a1a;                           /* Dark text */
 
-      font-size:var(--menu-font);              /* ✅ Bigger text */
+      font-size:var(--menu-font);              /* Menu text size */
       font-weight:900;                         /* Bold */
       letter-spacing:.4px;                     /* Tracking */
 
-      padding:var(--menu-pad-y) var(--menu-pad-x); /* ✅ Bigger padding */
-      border-radius:var(--menu-radius);        /* ✅ Bigger rounding */
+      padding:var(--menu-pad-y) var(--menu-pad-x); /* Padding */
+      border-radius:var(--menu-radius);        /* Rounding */
 
       cursor:pointer;                          /* Pointer */
       user-select:none;                        /* No select */
       -webkit-tap-highlight-color:transparent; /* No tap glow */
       position:relative;                       /* For gloss */
 
-      /* ✅ Stronger 3D */
+      /* Strong 3D */
       box-shadow:
-        0 12px 0 #9e8500,                      /* Hard base edge */
-        0 28px 52px rgba(0,0,0,.35);           /* Soft shadow */
+        0 12px 0 #9e8500,
+        0 28px 52px rgba(0,0,0,.35);
 
-      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease; /* Smooth */
+      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+
+      margin-top:auto;                         /* ✅ Push toward bottom */
+      margin-bottom:var(--header-bottom-pad);  /* ✅ Keep same baseline as title */
+      align-self:flex-end;                     /* Align to bottom edge */
     }
 
     .menuBtn::before{
       content:"";                              /* Gloss highlight */
       position:absolute;                       /* Inside */
-      left:10px; right:10px; top:10px;         /* ✅ Larger inset */
+      left:10px; right:10px; top:10px;         /* Inset */
       height:44%;                              /* Top band */
-      border-radius:calc(var(--menu-radius) - 8px); /* Match rounding */
-      background:linear-gradient(to bottom, rgba(255,255,255,.40), rgba(255,255,255,0)); /* Shine */
+      border-radius:calc(var(--menu-radius) - 8px);
+      background:linear-gradient(to bottom, rgba(255,255,255,.40), rgba(255,255,255,0));
       pointer-events:none;                     /* Ignore clicks */
     }
 
     .menuBtn:hover{
       transform:translateY(-4px);              /* Lift */
       box-shadow:
-        0 16px 0 #9e8500,                      /* Deeper edge */
-        0 34px 64px rgba(0,0,0,.40);           /* Bigger shadow */
-      filter:saturate(1.05);                   /* Slight pop */
+        0 16px 0 #9e8500,
+        0 34px 64px rgba(0,0,0,.40);
+      filter:saturate(1.05);
     }
 
     .menuBtn:active{
-      transform:translateY(7px);               /* Press down */
+      transform:translateY(7px);               /* Press */
       box-shadow:
-        0 6px 0 #9e8500,                       /* Smaller edge */
-        0 16px 28px rgba(0,0,0,.28);           /* Smaller shadow */
-      filter:saturate(.98);                    /* Slight soften */
+        0 6px 0 #9e8500,
+        0 16px 28px rgba(0,0,0,.28);
+      filter:saturate(.98);
     }
 
     .menuBtn:focus-visible{
-      outline:none;                            /* Remove default outline */
+      outline:none;
       box-shadow:
-        0 12px 0 #9e8500,                      /* Keep 3D */
-        0 28px 52px rgba(0,0,0,.35),           /* Keep shadow */
-        var(--focus);                          /* Add focus ring */
+        0 12px 0 #9e8500,
+        0 28px 52px rgba(0,0,0,.35),
+        var(--focus);
     }
 
     /* ================= CONTENT ================= */
@@ -206,7 +221,7 @@
       gap:var(--gap);                          /* Spacing */
     }
 
-    /* ================= CONTOURED TILE (MATCHES + / - STYLE) ================= */
+    /* ================= TRUE RAISED 3D TILE (more convex) ================= */
     .tile{
       position:relative;                       /* Needed for pseudo-elements */
       display:flex;                            /* Center content */
@@ -221,28 +236,33 @@
       border-radius:var(--bevel-radius);       /* Outer roundness */
       padding:0;                               /* Inner face handles padding */
 
-      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.28)); /* Outer bezel rim */
+      /* Dark outer bezel ring (rim) */
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.40));
 
+      /* Raised shadow: strong bottom-right + subtle top-left highlight */
       box-shadow:
-        0 18px 36px rgba(0,0,0,.72),           /* Raised outer shadow */
-        inset 0 2px 0 rgba(255,255,255,.06);   /* Tiny inner line */
+        18px 18px 38px rgba(0,0,0,.80),        /* main cast shadow */
+        -7px -7px 16px rgba(255,255,255,.05), /* rim highlight */
+        inset 0 2px 0 rgba(255,255,255,.06);  /* tiny inner rim line */
 
-      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease; /* Smooth */
+      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
     }
 
     /* Inner face (bevel thickness controlled by --bevel) */
     .tile::before{
       content:"";                              /* Create inner surface */
       position:absolute;                       /* Fill inside */
-      inset:var(--bevel);                      /* ✅ Bevel thickness (now 12px) */
+      inset:var(--bevel);                      /* ✅ Bevel thickness */
       border-radius:var(--face-radius);        /* Inner rounding */
 
+      /* Convex green face */
       background:
-        radial-gradient(circle at 28% 22%, rgba(70,220,140,.95) 0%, rgba(24,170,90,.95) 30%, rgba(11,122,59,.98) 58%, rgba(7,92,44,1) 100%); /* Green face gradient */
+        radial-gradient(circle at 30% 22%, rgba(90, 240, 160, .95) 0%, rgba(24, 170, 90, .95) 32%, rgba(11, 122, 59, .99) 62%, rgba(7, 92, 44, 1) 100%);
 
+      /* TRUE convex feel: bright top-left, deeper bottom-right */
       box-shadow:
-        inset 0 3px 10px rgba(255,255,255,.35),/* Inner top highlight */
-        inset 0 -24px 34px rgba(0,0,0,.48);    /* ✅ Deeper inner bottom depth (scaled) */
+        inset 10px 10px 18px rgba(255,255,255,.18), /* highlight */
+        inset -14px -18px 28px rgba(0,0,0,.55);     /* depth */
 
       z-index:0;                               /* Behind content */
     }
@@ -251,187 +271,191 @@
     .tile::after{
       content:"";                              /* Shine layer */
       position:absolute;                       /* Place at top */
-      left:18px; right:18px; top:18px;         /* ✅ Inset scaled up (keeps shine off bezel) */
-      height:42%;                              /* Height of shine */
-      border-radius:calc(var(--face-radius) - 4px); /* Match inner face */
-      background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0)); /* Shine fade */
-      filter:blur(.2px);                       /* Soften edge */
-      z-index:1;                               /* Above face */
-      pointer-events:none;                     /* Ignore touch */
+      left:calc(var(--bevel) + 8px);
+      right:calc(var(--bevel) + 8px);
+      top:calc(var(--bevel) + 8px);
+      height:40%;
+      border-radius:calc(var(--face-radius) - 8px);
+      background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
+      filter:blur(.25px);
+      z-index:1;
+      pointer-events:none;
     }
 
     /* Gold indicator dot */
     .tile .dot{
-      position:absolute;                       /* Place in corner */
-      top:22px; right:22px;                    /* ✅ Slightly larger offset */
-      width:16px; height:16px;                 /* ✅ Slightly bigger dot */
-      border-radius:50%;                       /* Circle */
-      background:var(--sv-gold);               /* Gold */
-      box-shadow:0 0 0 8px rgba(242,195,0,.15);/* ✅ Bigger halo */
-      z-index:3;                               /* Above everything */
+      position:absolute;
+      top:22px; right:22px;
+      width:16px; height:16px;
+      border-radius:50%;
+      background:var(--sv-gold);
+      box-shadow:0 0 0 8px rgba(242,195,0,.15);
+      z-index:3;
     }
 
     /* Content wrapper so text sits above the face */
     .tileContent{
-      position:relative;                       /* Create stacking context */
-      z-index:2;                               /* Above face + gloss */
-      padding:34px;                            /* ✅ Slightly more inner padding */
+      position:relative;
+      z-index:2;
+      padding:34px;
     }
 
     /* Hover lift */
     .tile:hover{
-      transform:translateY(-5px);              /* Lift */
+      transform:translateY(-6px);
       box-shadow:
-        0 24px 50px rgba(0,0,0,.78),           /* Bigger shadow */
-        inset 0 2px 0 rgba(255,255,255,.06);   /* Keep rim line */
-      filter:saturate(1.05);                   /* Slight pop */
+        22px 22px 50px rgba(0,0,0,.84),
+        -8px -8px 18px rgba(255,255,255,.06),
+        inset 0 2px 0 rgba(255,255,255,.06);
+      filter:saturate(1.06);
     }
 
     /* Pressed becomes slightly concave */
     .tile:active{
-      transform:translateY(6px) scale(var(--tap)); /* Press down */
+      transform:translateY(4px) scale(var(--tap));
       box-shadow:
-        0 10px 22px rgba(0,0,0,.6),            /* Smaller shadow */
-        inset 0 3px 10px rgba(0,0,0,.35);      /* Inner concave */
-      filter:saturate(.98);                    /* Slight soften */
+        10px 10px 22px rgba(0,0,0,.70),
+        -4px -4px 10px rgba(255,255,255,.04);
+      filter:saturate(.98);
     }
 
-    /* Make the inner face look more concave when pressed */
+    /* Inner face concave when pressed */
     .tile:active::before{
       box-shadow:
-        inset 14px 14px 22px rgba(0,0,0,.50),  /* ✅ Dark corner scaled */
-        inset -8px -8px 14px rgba(255,255,255,.10); /* ✅ Light opposite scaled */
+        inset 12px 12px 22px rgba(0,0,0,.60),
+        inset -8px -8px 16px rgba(255,255,255,.18);
     }
 
     /* Keyboard focus ring */
     .tile:focus-visible{
-      outline:none;                            /* Remove default */
+      outline:none;
       box-shadow:
-        0 18px 36px rgba(0,0,0,.72),           /* Keep raised look */
-        inset 0 2px 0 rgba(255,255,255,.06),   /* Keep rim line */
-        var(--focus);                          /* Add focus ring */
+        18px 18px 38px rgba(0,0,0,.80),
+        -7px -7px 16px rgba(255,255,255,.05),
+        inset 0 2px 0 rgba(255,255,255,.06),
+        var(--focus);
     }
 
     .tileTitle{
-      font-size:44px;                          /* Headline size */
-      font-weight:900;                         /* Bold */
-      line-height:1.05;                        /* Tight */
-      text-shadow:0 10px 18px rgba(0,0,0,.35); /* Depth */
+      font-size:44px;
+      font-weight:900;
+      line-height:1.05;
+      text-shadow:0 10px 18px rgba(0,0,0,.35);
     }
 
     .sub{
-      display:block;                           /* New line */
-      margin-top:10px;                         /* Space */
-      font-size:20px;                          /* Sub size */
-      font-weight:800;                         /* Strong */
-      color:rgba(255,255,255,.88);             /* Slightly muted */
+      display:block;
+      margin-top:10px;
+      font-size:20px;
+      font-weight:800;
+      color:rgba(255,255,255,.88);
     }
 
     /* ================= PAGE VIEW ================= */
     .pageView{
-      width:100%;                              /* Full size */
-      height:100%;                             /* Full size */
-      display:none;                            /* Hidden by default */
-      border-radius:var(--radius);             /* Rounded */
-      overflow:hidden;                         /* Clip */
-      border:1px solid rgba(255,255,255,.12);  /* Border */
-      background:var(--panel2);                /* Back */
-      box-shadow:var(--shadow);                /* Shadow */
+      width:100%;
+      height:100%;
+      display:none;
+      border-radius:var(--radius);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background:var(--panel2);
+      box-shadow:var(--shadow);
     }
 
     .frameWrap{
-      position:relative;                       /* For overlays */
-      width:100%; height:100%;                 /* Fill */
-      background:#fff;                         /* White base */
+      position:relative;
+      width:100%; height:100%;
+      background:#fff;
     }
 
     iframe{
-      width:100%; height:100%;                 /* Fill */
-      border:0;                                /* No border */
-      background:#fff;                         /* White */
+      width:100%; height:100%;
+      border:0;
+      background:#fff;
     }
 
     /* ================= TOP MASK ================= */
     .topMask{
-      position:absolute;                       /* Overlay */
-      top:0; left:0; right:0;                  /* Full width */
-      height:var(--iframe-top-mask);           /* Cover amount */
-      z-index:6;                               /* Above iframe */
-      display:none;                            /* Off by default */
-      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%); /* Light */
-      border-bottom:4px solid var(--sv-gold);  /* Gold line */
-      box-shadow:0 10px 22px rgba(0,0,0,.18);  /* Shadow */
-      pointer-events:auto;                     /* Block clicks under */
-      align-items:center;                      /* Center */
-      justify-content:center;                  /* Center */
-      padding:10px 14px;                       /* Padding */
+      position:absolute;
+      top:0; left:0; right:0;
+      height:var(--iframe-top-mask);
+      z-index:6;
+      display:none;
+      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
+      border-bottom:4px solid var(--sv-gold);
+      box-shadow:0 10px 22px rgba(0,0,0,.18);
+      pointer-events:auto;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
     }
 
     .topMask img{
-      height:56px;                             /* Logo height */
-      width:auto;                              /* Keep ratio */
-      object-fit:contain;                      /* Fit */
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); /* Soft shadow */
+      height:56px;
+      width:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
     }
 
     /* ================= COOKIE MASK ================= */
     .cookieMask{
-      position:absolute;                       /* Overlay */
-      left:0; right:0; bottom:0;               /* Bottom */
-      height:120px;                            /* Mask height */
-      background:linear-gradient(180deg, #ffffff, #f7f7f7); /* Light */
-      border-top:4px solid var(--sv-gold);     /* Gold line */
-      box-shadow:0 -10px 22px rgba(0,0,0,.18); /* Shadow */
-      z-index:5;                               /* Above iframe */
-      display:none;                            /* Off by default */
-      pointer-events:none;                     /* Let touches pass */
-      align-items:center;                      /* Center */
-      justify-content:center;                  /* Center */
-      gap:14px;                                /* Space */
-      padding:12px 18px;                       /* Padding */
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height:120px;
+      background:linear-gradient(180deg, #ffffff, #f7f7f7);
+      border-top:4px solid var(--sv-gold);
+      box-shadow:0 -10px 22px rgba(0,0,0,.18);
+      z-index:5;
+      display:none;
+      pointer-events:none;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      padding:12px 18px;
     }
 
     .cookieMask img{
-      height:52px;                             /* Logo height */
-      max-width:260px;                         /* Limit */
-      object-fit:contain;                      /* Fit */
-      opacity:1;                               /* Full */
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15)); /* Shadow */
+      height:52px;
+      max-width:260px;
+      object-fit:contain;
+      opacity:1;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
 
     /* ================= LOADING OVERLAY ================= */
     .loading{
-      position:absolute;                       /* Overlay */
-      inset:0;                                 /* Fill */
-      display:none;                            /* Off by default */
-      align-items:center;                      /* Center */
-      justify-content:center;                  /* Center */
-      z-index:7;                               /* Top layer */
-      background:rgba(255,255,255,.72);        /* Frosted */
-      backdrop-filter: blur(2px);              /* Blur */
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:7;
+      background:rgba(255,255,255,.72);
+      backdrop-filter: blur(2px);
     }
 
     .spinner{
-      width:58px; height:58px;                 /* Size */
-      border-radius:50%;                       /* Circle */
-      border:7px solid rgba(0,0,0,.15);        /* Track */
-      border-top-color: rgba(11,122,59,.9);    /* Green head */
-      animation: spin .9s linear infinite;     /* Spin */
+      width:58px; height:58px;
+      border-radius:50%;
+      border:7px solid rgba(0,0,0,.15);
+      border-top-color: rgba(11,122,59,.9);
+      animation: spin .9s linear infinite;
     }
 
-    @keyframes spin{ to{ transform:rotate(360deg); } } /* Spinner keyframes */
+    @keyframes spin{ to{ transform:rotate(360deg); } }
 
     /* ================= RESPONSIVE ================= */
     @media (max-width:900px){
-      .tileTitle{ font-size:34px; }            /* Smaller title */
-      .title{ display:none; }                 /* Hide header text */
-      .gameLogo{ height:84px; }               /* Smaller logos */
-      :root{ --header-h:200px; }              /* Reduce header on smaller screens */
+      .tileTitle{ font-size:34px; }
+      .title{ display:none; }
+      .gameLogo{ height:84px; }
+      :root{ --header-h:200px; }
     }
 
     @media (max-width:680px){
-      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; } /* Stack tiles */
-      .tile{ min-height:160px; }              /* Ensure tap size */
+      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; }
+      .tile{ min-height:160px; }
     }
   </style>
 </head>
