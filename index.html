@@ -230,7 +230,7 @@
       border-radius:var(--console-radius); /* Rounding */
       padding:var(--console-pad); /* Padding */
       position:relative; /* Anchor pseudo-element */
-      overflow:hidden; /* Clip effects */
+      overflow:hidden; /* Clip effects (keep frame clean) */
 
       background: /* Brushed metal feel */
         repeating-linear-gradient( /* micro stripes */
@@ -266,6 +266,15 @@
     } /* end .console::before */
 
     .console > *{ position:relative; z-index:1; } /* Ensure content above inner lip */
+
+    .menuView{ /* 2x2 menu grid */
+      width:100%; /* Full width */
+      height:100%; /* Full height */
+      display:grid; /* CSS grid */
+      grid-template-columns:1fr 1fr; /* Two columns */
+      grid-template-rows:1fr 1fr; /* Two rows */
+      gap:var(--gap); /* Tile gap */
+    } /* end .menuView */
 
     .tileSlot{ /* Cutout “ring” / slot */
       position:relative; /* Position pseudo lip */
@@ -411,260 +420,244 @@
     } /* end .tile:focus-visible */
 
     /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
-    /* MENU PAGE GAME RESULTS SHORTLIST: Wrapper holds the 4 tiles + previews (STACKED: buttons top, previews below) */
-    .menuShell{ /* Wraps the 4 buttons + previews */
-      width:100%; /* full width */
-      height:100%; /* full height */
-      display:flex; /* ✅ stack vertically */
-      flex-direction:column; /* ✅ buttons on top, previews below */
-      gap:var(--gap); /* spacing */
+
+    /* ✅ Vertical scrollbar ONLY when needed (menu page only) */
+    .menuShell{ /* Wraps the 4 buttons + 3 previews */
+      width:100%;
+      height:100%;
+      min-height:0;                 /* important */
+      display:grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap:var(--gap);
+      align-items:stretch;
+
+      overflow-y:auto;              /* ✅ scrollbar appears only if needed */
+      overflow-x:hidden;            /* no horizontal scroll */
+      padding-right:6px;            /* space for scrollbar */
+      -webkit-overflow-scrolling:touch; /* smooth touch scroll */
     } /* end .menuShell */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Make the menu grid shrink (no more giant tiles) */
-    .menuView{ /* 2x2 menu grid */
-      width:100%; /* Full width */
-      height:auto; /* ✅ shrink to content */
-      display:grid; /* CSS grid */
-      grid-template-columns:1fr 1fr; /* Two columns */
-      grid-template-rows:auto auto; /* ✅ auto rows (no 1fr stretching) */
-      gap:var(--gap); /* Tile gap */
-      align-content:start; /* ✅ pack toward top */
-    } /* end .menuView */
+    /* Optional: nicer scrollbar in Chromium */
+    .menuShell::-webkit-scrollbar{ width:10px; }
+    .menuShell::-webkit-scrollbar-track{ background:rgba(0,0,0,.06); border-radius:10px; }
+    .menuShell::-webkit-scrollbar-thumb{ background:rgba(11,122,59,.55); border-radius:10px; }
+    .menuShell::-webkit-scrollbar-thumb:hover{ background:rgba(11,122,59,.75); }
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Reduce ring padding so tiles frame text better */
-    .menuShell .tileSlot{ /* tighter ring */
-      padding:8px; /* ✅ smaller than before */
-      border-radius:40px; /* slightly tighter corners */
+    /* MENU PAGE GAME RESULTS SHORTLIST: Keep your existing menu grid, but tighten the tile “rings” */
+    .menuShell .menuView{ height:100%; } /* end .menuShell .menuView */
+
+    .menuShell .tileSlot{ /* ✅ smaller ring padding so tiles frame text better */
+      padding:10px;
+      border-radius:40px;
     } /* end .menuShell .tileSlot */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Reduce tile bulk */
-    .menuShell .tile{ /* tile itself */
-      min-height:170px; /* ✅ controls overall button height */
-    } /* end .menuShell .tile */
-
-    .menuShell .tileContent{ /* text wrapper */
-      padding:18px; /* ✅ tighter */
-    } /* end .menuShell .tileContent */
-
-    .menuShell .tileTitle{ /* main label */
-      font-size:32px; /* ✅ slightly smaller */
-    } /* end .menuShell .tileTitle */
-
-    .menuShell .sub{ /* subtitle */
-      font-size:15px; /* ✅ smaller */
-    } /* end .menuShell .sub */
-
-    /* MENU PAGE GAME RESULTS SHORTLIST: Preview area BELOW the buttons (3 stacked windows) */
-    .previewBar{ /* Column of mini previews */
-      width:100%; /* full width */
-      flex:1; /* ✅ take remaining height */
-      min-height:0; /* ✅ allow proper flex sizing */
-      display:grid; /* grid layout */
-      grid-template-columns:1fr; /* single column */
-      grid-template-rows:1fr 1fr 1fr; /* three rows */
-      gap:var(--gap); /* spacing */
+    /* MENU PAGE GAME RESULTS SHORTLIST: Preview column (3 windows stacked vertically) */
+    .previewBar{
+      height:100%;
+      display:grid;
+      grid-template-columns:1fr;
+      grid-template-rows:1fr 1fr 1fr;
+      gap:var(--gap);
     } /* end .previewBar */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Single preview card container (bigger) */
-    .previewCard{ /* Each preview container */
-      border-radius:18px; /* rounding */
-      overflow:hidden; /* clip the iframe */
-      background:#fff; /* white base */
-      border:1px solid rgba(0,0,0,.12); /* subtle border */
-      box-shadow:0 10px 22px rgba(0,0,0,.14); /* depth */
-      position:relative; /* anchor children */
-      min-height:240px; /* ✅ ensures “bigger windows” even on short layouts */
+    .previewCard{
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.12);
+      box-shadow:0 10px 22px rgba(0,0,0,.14);
+      position:relative;
+      min-height:240px;
     } /* end .previewCard */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Label pill */
-    .previewLabel{ /* Label on top of preview */
-      position:absolute; /* overlay */
-      top:10px; /* offset */
-      left:10px; /* offset */
-      padding:8px 10px; /* padding */
-      border-radius:12px; /* rounding */
-      background:rgba(11,122,59,.92); /* SV green pill */
-      color:#fff; /* white text */
-      font-weight:900; /* bold */
-      font-size:14px; /* small */
-      letter-spacing:.6px; /* spacing */
-      z-index:3; /* above iframe */
-      pointer-events:none; /* non-interactive */
+    .previewLabel{
+      position:absolute;
+      top:10px;
+      left:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      background:rgba(11,122,59,.92);
+      color:#fff;
+      font-weight:900;
+      font-size:14px;
+      letter-spacing:.6px;
+      z-index:3;
+      pointer-events:none;
     } /* end .previewLabel */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Clipped window inside each preview */
-    .previewViewport{ /* The clipped “window” */
-      position:absolute; /* fill card */
-      inset:0; /* full cover */
-      overflow:hidden; /* clip */
+    .previewViewport{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
     } /* end .previewViewport */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: The mini iframe used for preview */
-    .previewFrame{ /* The preview iframe */
-      position:absolute; /* allow crop shifting */
-      top:var(--p-top, 0px); /* crop Y (negative moves content up) */
-      left:var(--p-left, 0px); /* crop X */
-      width:100%; /* base width */
-      height:100%; /* base height */
-      transform-origin: top left; /* stable zoom */
-      transform: scale(var(--p-scale, 1)); /* crop scale */
-      border:0; /* no border */
-      pointer-events:none; /* prevent touch/click inside preview */
-      background:#fff; /* keep white */
+    .previewFrame{
+      position:absolute;
+      top:var(--p-top, 0px);
+      left:var(--p-left, 0px);
+      width:100%;
+      height:100%;
+      transform-origin: top left;
+      transform: scale(var(--p-scale, 1));
+      border:0;
+      pointer-events:none;
     } /* end .previewFrame */
+
     /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
 
     .pageView{ /* Page container (iframe mode) */
-      width:100%; /* full width */
-      height:100%; /* full height */
-      display:none; /* hidden until tile click */
-      border-radius:var(--radius); /* rounding */
-      overflow:hidden; /* clip */
-      border:1px solid rgba(0,0,0,.12); /* border */
-      background:#ffffff; /* white */
-      box-shadow:0 14px 40px rgba(0,0,0,.20); /* depth */
+      width:100%;
+      height:100%;
+      display:none;
+      border-radius:var(--radius);
+      overflow:hidden;
+      border:1px solid rgba(0,0,0,.12);
+      background:#ffffff;
+      box-shadow:0 14px 40px rgba(0,0,0,.20);
     } /* end .pageView */
 
-    .frameWrap{ /* Iframe wrapper */
-      position:relative; /* anchor zoom UI */
-      width:100%; /* full width */
-      height:100%; /* full height */
-      overflow:hidden; /* hide overhang when zoomed */
-      background:#fff; /* white */
+    .frameWrap{
+      position:relative;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#fff;
     } /* end .frameWrap */
 
-    iframe{ /* The iframe itself */
-      position:absolute; /* allow centering by left/top */
-      top:0; /* top */
-      left:0; /* left */
-      width:100%; /* fill */
-      height:100%; /* fill */
-      border:0; /* no border */
-      background:#fff; /* white */
-      transform-origin: top left; /* zoom origin */
-      transform: scale(var(--iframe-zoom)); /* ✅ apply zoom */
+    iframe{
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      border:0;
+      background:#fff;
+      transform-origin: top left;
+      transform: scale(var(--iframe-zoom));
     } /* end iframe */
 
-    .zoomControls{ /* Container for + / - */
-      position:absolute; /* overlay inside frameWrap */
-      top:6px; /* ✅ moved UP (adjust this number) */
-      right:18px; /* right margin */
-      display:flex; /* stack buttons */
-      flex-direction:column; /* vertical */
-      gap:14px; /* space between buttons */
-      z-index:10; /* above header gold line + masks */
+    .zoomControls{
+      position:absolute;
+      top:6px;
+      right:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      z-index:10;
     } /* end .zoomControls */
 
-    .zoomBtn{ /* + / - button style */
-      width:56px; /* size */
-      height:56px; /* size */
-      border-radius:16px; /* rounding */
-      border:none; /* no border */
-      font-size:28px; /* glyph size */
-      font-weight:900; /* bold */
-      cursor:pointer; /* pointer */
+    .zoomBtn{
+      width:56px;
+      height:56px;
+      border-radius:16px;
+      border:none;
+      font-size:28px;
+      font-weight:900;
+      cursor:pointer;
 
-      background:linear-gradient(180deg, var(--sv-green), var(--sv-green-dark)); /* ✅ GREEN button gradient */
-      color:#ffffff; /* ✅ WHITE text */
+      background:linear-gradient(180deg, var(--sv-green), var(--sv-green-dark));
+      color:#ffffff;
 
       box-shadow:
-        6px 6px 14px rgba(0,0,0,.25), /* cast */
-        -4px -4px 10px rgba(255,255,255,.8); /* highlight */
+        6px 6px 14px rgba(0,0,0,.25),
+        -4px -4px 10px rgba(255,255,255,.8);
 
-      transition:all .15s ease; /* smooth */
+      transition:all .15s ease;
     } /* end .zoomBtn */
 
-    .zoomBtn:active{ /* Press look */
-      transform:translateY(3px); /* push down */
+    .zoomBtn:active{
+      transform:translateY(3px);
       box-shadow:
-        inset 6px 6px 12px rgba(0,0,0,.25), /* inset shadow */
-        inset -4px -4px 10px rgba(255,255,255,.25); /* ✅ softer inset highlight (works with green) */
+        inset 6px 6px 12px rgba(0,0,0,.25),
+        inset -4px -4px 10px rgba(255,255,255,.25);
     } /* end .zoomBtn:active */
 
-    .loading{ /* Loading overlay */
-      position:absolute; /* cover */
-      inset:0; /* full cover */
-      display:none; /* hidden by default */
-      align-items:center; /* center */
-      justify-content:center; /* center */
-      z-index:7; /* above iframe */
-      background:rgba(255,255,255,.72); /* translucent */
-      backdrop-filter: blur(2px); /* soft blur */
+    .loading{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:7;
+      background:rgba(255,255,255,.72);
+      backdrop-filter: blur(2px);
     } /* end .loading */
 
-    .spinner{ /* Spinner circle */
-      width:58px; /* size */
-      height:58px; /* size */
-      border-radius:50%; /* circle */
-      border:7px solid rgba(0,0,0,.15); /* ring */
-      border-top-color: rgba(11,122,59,.9); /* green top */
-      animation: spin .9s linear infinite; /* rotate */
+    .spinner{
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      border:7px solid rgba(0,0,0,.15);
+      border-top-color: rgba(11,122,59,.9);
+      animation: spin .9s linear infinite;
     } /* end .spinner */
 
-    @keyframes spin{ to{ transform:rotate(360deg); } } /* Spinner animation */
+    @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    .topMask{ /* Top mask overlay inside iframe */
-      position:absolute; /* overlay */
-      top:0; left:0; right:0; /* full width */
-      height:140px; /* mask height */
-      z-index:6; /* above iframe */
-      display:none; /* hidden until page view */
-      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%); /* light */
-      border-bottom:4px solid var(--sv-gold); /* gold line */
-      box-shadow:0 10px 22px rgba(0,0,0,.18); /* depth */
-      pointer-events:auto; /* block interactions */
-      align-items:center; /* center */
-      justify-content:center; /* center */
-      padding:10px 14px; /* padding */
+    .topMask{
+      position:absolute;
+      top:0; left:0; right:0;
+      height:140px;
+      z-index:6;
+      display:none;
+      background:linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
+      border-bottom:4px solid var(--sv-gold);
+      box-shadow:0 10px 22px rgba(0,0,0,.18);
+      pointer-events:auto;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
     } /* end .topMask */
 
-    .topMask img{ /* Logo inside mask */
-      height:56px; /* size */
-      width:auto; /* aspect */
-      object-fit:contain; /* fit */
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); /* depth */
+    .topMask img{
+      height:56px;
+      width:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
     } /* end .topMask img */
 
-    .cookieMask{ /* Bottom cookie banner mask */
-      position:absolute; /* overlay */
-      left:0; right:0; bottom:0; /* bottom */
-      height:120px; /* height */
-      background:linear-gradient(180deg, #ffffff, #f7f7f7); /* gradient */
-      border-top:4px solid var(--sv-gold); /* gold line */
-      box-shadow:0 -10px 22px rgba(0,0,0,.18); /* depth */
-      z-index:5; /* above iframe */
-      display:none; /* hidden until page view */
-      pointer-events:none; /* not clickable */
-      align-items:center; /* center */
-      justify-content:center; /* center */
-      gap:14px; /* spacing */
-      padding:12px 18px; /* padding */
+    .cookieMask{
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height:120px;
+      background:linear-gradient(180deg, #ffffff, #f7f7f7);
+      border-top:4px solid var(--sv-gold);
+      box-shadow:0 -10px 22px rgba(0,0,0,.18);
+      z-index:5;
+      display:none;
+      pointer-events:none;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      padding:12px 18px;
     } /* end .cookieMask */
 
-    .cookieMask img{ /* Logo inside cookie mask */
-      height:52px; /* size */
-      max-width:260px; /* clamp */
-      object-fit:contain; /* fit */
-      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15)); /* depth */
+    .cookieMask img{
+      height:52px;
+      max-width:260px;
+      object-fit:contain;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     } /* end .cookieMask img */
 
-    @media (max-width:1100px){ /* Medium screens */
-      :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; } /* scale down */
-      .logoStripInner{ column-gap:24px; row-gap:14px; } /* tighten gaps */
-    } /* end 1100px */
+    @media (max-width:1100px){
+      :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; }
+      .logoStripInner{ column-gap:24px; row-gap:14px; }
+      .menuShell{ grid-template-columns: 1.2fr 0.8fr; }
+    }
 
-    @media (max-width:900px){ /* Smaller screens */
-      :root{ --header-h: 220px; --logo-area-bottom: 92px; } /* shorter header */
-      .tileTitle{ font-size:32px; } /* slightly smaller */
-    } /* end 900px */
+    @media (max-width:900px){
+      :root{ --header-h: 220px; --logo-area-bottom: 92px; }
+      .menuShell{ grid-template-columns: 1fr; }
+      .previewBar{ grid-template-rows: 1fr 1fr 1fr; }
+      .tileTitle{ font-size:32px; }
+    }
 
-    @media (max-width:680px){ /* Phone-ish */
-      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; } /* single column */
-      .tile{ min-height:160px; } /* ensure touch height */
-      .bottomRow{ flex-direction:column; align-items:flex-start; } /* stack title + menu */
-      .menuBtn{ align-self:flex-end; } /* menu on right */
-      .previewBar{ grid-template-rows: 1fr 1fr 1fr; } /* keep stacked */
-    } /* end 680px */
+    @media (max-width:680px){
+      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; }
+      .tile{ min-height:160px; }
+      .bottomRow{ flex-direction:column; align-items:flex-start; }
+      .menuBtn{ align-self:flex-end; }
+    }
   </style> <!-- ====== STYLES END ====== -->
 </head> <!-- end head -->
 
@@ -674,24 +667,24 @@
     <header class="header"> <!-- Header -->
       <div class="logoStrip" aria-label="Game logos"> <!-- Logo area -->
         <div class="logoStripInner"> <!-- Logo wrap -->
-          <img class="gameLogo" src="./cpot-150x150.png"       alt="Cash Pot" /> <!-- Cash Pot -->
-          <img class="gameLogo" src="./dollaz-150x150.png"     alt="Dollaz" /> <!-- Dollaz -->
-          <img class="gameLogo" src="./hotpick-150x150.png"    alt="Hot Pick" /> <!-- Hot Pick -->
-          <img class="gameLogo" src="./JustBet-150x150.png"    alt="Just Bet" /> <!-- Just Bet -->
-          <img class="gameLogo" src="./lotto-150x150.png"      alt="Lotto" /> <!-- Lotto -->
-          <img class="gameLogo" src="./lucky5-150x150.png"     alt="Lucky 5" /> <!-- Lucky 5 -->
-          <img class="gameLogo" src="./mtime-150x150.png"      alt="Midday Time" /> <!-- Money Time / Midday -->
-          <img class="gameLogo" src="./pick2-150x150.png"      alt="Pick 2" /> <!-- Pick 2 -->
-          <img class="gameLogo" src="./pick3-150x150.png"      alt="Pick 3" /> <!-- Pick 3 -->
-          <img class="gameLogo" src="./pick4-150x150.png"      alt="Pick 4" /> <!-- Pick 4 -->
-          <img class="gameLogo" src="./superlotto-150x150.png" alt="Super Lotto" /> <!-- Super Lotto -->
-          <img class="gameLogo" src="./topdraw-150x150.png"    alt="Top Draw" /> <!-- Top Draw -->
+          <img class="gameLogo" src="./cpot-150x150.png"       alt="Cash Pot" />
+          <img class="gameLogo" src="./dollaz-150x150.png"     alt="Dollaz" />
+          <img class="gameLogo" src="./hotpick-150x150.png"    alt="Hot Pick" />
+          <img class="gameLogo" src="./JustBet-150x150.png"    alt="Just Bet" />
+          <img class="gameLogo" src="./lotto-150x150.png"      alt="Lotto" />
+          <img class="gameLogo" src="./lucky5-150x150.png"     alt="Lucky 5" />
+          <img class="gameLogo" src="./mtime-150x150.png"      alt="Midday Time" />
+          <img class="gameLogo" src="./pick2-150x150.png"      alt="Pick 2" />
+          <img class="gameLogo" src="./pick3-150x150.png"      alt="Pick 3" />
+          <img class="gameLogo" src="./pick4-150x150.png"      alt="Pick 4" />
+          <img class="gameLogo" src="./superlotto-150x150.png" alt="Super Lotto" />
+          <img class="gameLogo" src="./topdraw-150x150.png"    alt="Top Draw" />
         </div> <!-- end .logoStripInner -->
       </div> <!-- end .logoStrip -->
 
       <div class="bottomRow"> <!-- Title + menu -->
-        <div class="title" id="headerTitle">SUPREME VENTURES RESULTS</div> <!-- Header title -->
-        <button class="menuBtn" id="menuBtn" type="button">MENU</button> <!-- Menu button -->
+        <div class="title" id="headerTitle">SUPREME VENTURES RESULTS</div>
+        <button class="menuBtn" id="menuBtn" type="button">MENU</button>
       </div> <!-- end .bottomRow -->
     </header> <!-- end header -->
 
@@ -699,242 +692,238 @@
       <div class="console"> <!-- Console frame -->
 
         <!-- ================= MENU PAGE GAME RESULTS SHORTLIST ================= -->
-        <!-- MENU PAGE GAME RESULTS SHORTLIST: Wrapper holds the 4 tiles + 3 mini preview cards -->
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews"> <!-- Menu + previews wrapper -->
 
-          <!-- MENU PAGE GAME RESULTS SHORTLIST: The original 2x2 menu grid (unchanged tiles) -->
           <nav class="menuView" id="menuView" aria-label="Main menu"> <!-- Menu grid -->
 
-            <div class="tileSlot"> <!-- Slot 1 -->
-              <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results"> <!-- Latest Results tile -->
-                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-                <div class="tileContent"> <!-- Text wrapper -->
-                  <div class="tileTitle">LATEST RESULTS</div> <!-- Title -->
-                  <span class="sub">VIEW TODAY’S DRAW RESULTS</span> <!-- Subtitle -->
-                </div> <!-- end tileContent -->
-              </a> <!-- end tile link -->
-            </div> <!-- end tileSlot -->
+            <div class="tileSlot">
+              <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results">
+                <span class="dot" aria-hidden="true"></span>
+                <div class="tileContent">
+                  <div class="tileTitle">LATEST RESULTS</div>
+                  <span class="sub">VIEW TODAY’S DRAW RESULTS</span>
+                </div>
+              </a>
+            </div>
 
-            <div class="tileSlot"> <!-- Slot 2 -->
-              <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results"> <!-- Past Results tile -->
-                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-                <div class="tileContent"> <!-- Text wrapper -->
-                  <div class="tileTitle">PAST RESULTS</div> <!-- Title -->
-                  <span class="sub">SEARCH PREVIOUS DRAWS</span> <!-- Subtitle -->
-                </div> <!-- end tileContent -->
-              </a> <!-- end tile link -->
-            </div> <!-- end tileSlot -->
+            <div class="tileSlot">
+              <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results">
+                <span class="dot" aria-hidden="true"></span>
+                <div class="tileContent">
+                  <div class="tileTitle">PAST RESULTS</div>
+                  <span class="sub">SEARCH PREVIOUS DRAWS</span>
+                </div>
+              </a>
+            </div>
 
-            <div class="tileSlot"> <!-- Slot 3 -->
-              <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games"> <!-- Games tile -->
-                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-                <div class="tileContent"> <!-- Text wrapper -->
-                  <div class="tileTitle">GAMES</div> <!-- Title -->
-                  <span class="sub">BROWSE AVAILABLE GAMES</span> <!-- Subtitle -->
-                </div> <!-- end tileContent -->
-              </a> <!-- end tile link -->
-            </div> <!-- end tileSlot -->
+            <div class="tileSlot">
+              <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games">
+                <span class="dot" aria-hidden="true"></span>
+                <div class="tileContent">
+                  <div class="tileTitle">GAMES</div>
+                  <span class="sub">BROWSE AVAILABLE GAMES</span>
+                </div>
+              </a>
+            </div>
 
-            <div class="tileSlot"> <!-- Slot 4 -->
-              <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming"> <!-- Responsible Gaming tile -->
-                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-                <div class="tileContent"> <!-- Text wrapper -->
-                  <div class="tileTitle">RESPONSIBLE GAMING</div> <!-- Title -->
-                  <span class="sub">GENERAL INFORMATION</span> <!-- Subtitle -->
-                </div> <!-- end tileContent -->
-              </a> <!-- end tile link -->
-            </div> <!-- end tileSlot -->
+            <div class="tileSlot">
+              <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming">
+                <span class="dot" aria-hidden="true"></span>
+                <div class="tileContent">
+                  <div class="tileTitle">RESPONSIBLE GAMING</div>
+                  <span class="sub">GENERAL INFORMATION</span>
+                </div>
+              </a>
+            </div>
 
           </nav> <!-- end menuView -->
 
-          <!-- MENU PAGE GAME RESULTS SHORTLIST: Mini live previews (stacked vertically) -->
-          <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews"> <!-- Preview strip -->
+          <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
-            <!-- MENU PAGE GAME RESULTS SHORTLIST: CASH POT (top two cards preview) -->
-            <div class="previewCard" id="pvCardCashPot" style="--p-scale:1.15; --p-top:-620px; --p-left:0px;"> <!-- Cash Pot preview card -->
-              <div class="previewLabel">CASH POT</div> <!-- Preview label -->
-              <div class="previewViewport"> <!-- Clipped viewport -->
-                <iframe class="previewFrame" id="pvCashPot" title="Cash Pot preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
-              </div> <!-- end previewViewport -->
-            </div> <!-- end previewCard -->
+            <div class="previewCard" id="pvCardCashPot" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;">
+              <div class="previewLabel">CASH POT</div>
+              <div class="previewViewport">
+                <iframe class="previewFrame" id="pvCashPot" title="Cash Pot preview" referrerpolicy="no-referrer"></iframe>
+              </div>
+            </div>
 
-            <!-- MENU PAGE GAME RESULTS SHORTLIST: LOTTO (top two cards preview) -->
-            <div class="previewCard" id="pvCardLotto" style="--p-scale:1.15; --p-top:-620px; --p-left:0px;"> <!-- Lotto preview card -->
-              <div class="previewLabel">LOTTO</div> <!-- Preview label -->
-              <div class="previewViewport"> <!-- Clipped viewport -->
-                <iframe class="previewFrame" id="pvLotto" title="Lotto preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
-              </div> <!-- end previewViewport -->
-            </div> <!-- end previewCard -->
+            <div class="previewCard" id="pvCardLotto" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;">
+              <div class="previewLabel">LOTTO</div>
+              <div class="previewViewport">
+                <iframe class="previewFrame" id="pvLotto" title="Lotto preview" referrerpolicy="no-referrer"></iframe>
+              </div>
+            </div>
 
-            <!-- MENU PAGE GAME RESULTS SHORTLIST: SUPER LOTTO (top two cards preview) -->
-            <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:1.15; --p-top:-650px; --p-left:0px;"> <!-- Super Lotto preview card -->
-              <div class="previewLabel">SUPER LOTTO</div> <!-- Preview label -->
-              <div class="previewViewport"> <!-- Clipped viewport -->
-                <iframe class="previewFrame" id="pvSuperLotto" title="Super Lotto preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
-              </div> <!-- end previewViewport -->
-            </div> <!-- end previewCard -->
+            <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;">
+              <div class="previewLabel">SUPER LOTTO</div>
+              <div class="previewViewport">
+                <iframe class="previewFrame" id="pvSuperLotto" title="Super Lotto preview" referrerpolicy="no-referrer"></iframe>
+              </div>
+            </div>
 
           </section> <!-- end previewBar -->
 
         </div> <!-- end menuShell -->
         <!-- ================= END MENU PAGE GAME RESULTS SHORTLIST ================= -->
 
-        <section class="pageView" id="pageView" aria-label="Web view"> <!-- Page view (iframe mode) -->
-          <div class="frameWrap" id="frameWrap"> <!-- Iframe wrapper -->
-            <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe> <!-- Iframe -->
+        <section class="pageView" id="pageView" aria-label="Web view">
+          <div class="frameWrap" id="frameWrap">
+            <iframe id="frame" src="about:blank" referrerpolicy="no-referrer" title="Supreme Ventures website"></iframe>
 
-            <div class="zoomControls" aria-label="Zoom controls"> <!-- Zoom UI -->
-              <button class="zoomBtn" id="zoomOut" type="button" aria-label="Zoom out">-</button> <!-- Zoom out -->
-              <button class="zoomBtn" id="zoomIn"  type="button" aria-label="Zoom in">+</button> <!-- Zoom in -->
-            </div> <!-- end zoomControls -->
+            <div class="zoomControls" aria-label="Zoom controls">
+              <button class="zoomBtn" id="zoomOut" type="button" aria-label="Zoom out">-</button>
+              <button class="zoomBtn" id="zoomIn"  type="button" aria-label="Zoom in">+</button>
+            </div>
 
-            <div class="loading" id="loading" aria-hidden="true"> <!-- Loading overlay -->
-              <div class="spinner" aria-label="Loading"></div> <!-- Spinner -->
-            </div> <!-- end loading -->
+            <div class="loading" id="loading" aria-hidden="true">
+              <div class="spinner" aria-label="Loading"></div>
+            </div>
 
-            <div class="topMask" id="topMask" aria-hidden="true"> <!-- Top mask -->
-              <img src="./sv-logo.png" alt="Supreme Ventures Group" /> <!-- Mask logo -->
-            </div> <!-- end topMask -->
+            <div class="topMask" id="topMask" aria-hidden="true">
+              <img src="./sv-logo.png" alt="Supreme Ventures Group" />
+            </div>
 
-            <div class="cookieMask" id="cookieMask" aria-hidden="true"> <!-- Bottom mask -->
-              <img src="./sv-logo.png" alt="Supreme Ventures Group" /> <!-- Mask logo -->
-            </div> <!-- end cookieMask -->
-          </div> <!-- end frameWrap -->
-        </section> <!-- end pageView -->
+            <div class="cookieMask" id="cookieMask" aria-hidden="true">
+              <img src="./sv-logo.png" alt="Supreme Ventures Group" />
+            </div>
+          </div>
+        </section>
 
-      </div> <!-- end console -->
-    </div> <!-- end content -->
-  </div> <!-- end app -->
+      </div>
+    </div>
+  </div>
 
   <script> // ====== SCRIPT START ======
-    const menuView    = document.getElementById('menuView'); // Menu grid element
-    const pageView    = document.getElementById('pageView'); // Iframe page view container
-    const frameWrap   = document.getElementById('frameWrap'); // Iframe wrapper (used for centering math)
-    const frame       = document.getElementById('frame'); // Iframe element
-    const menuBtn     = document.getElementById('menuBtn'); // Menu button
-    const headerTitle = document.getElementById('headerTitle'); // Header title element
-    const cookieMask  = document.getElementById('cookieMask'); // Cookie mask overlay
-    const topMask     = document.getElementById('topMask'); // Top mask overlay
-    const loading     = document.getElementById('loading'); // Loading overlay
+    const menuView    = document.getElementById('menuView');
+    const pageView    = document.getElementById('pageView');
+    const frameWrap   = document.getElementById('frameWrap');
+    const frame       = document.getElementById('frame');
+    const menuBtn     = document.getElementById('menuBtn');
+    const headerTitle = document.getElementById('headerTitle');
+    const cookieMask  = document.getElementById('cookieMask');
+    const topMask     = document.getElementById('topMask');
+    const loading     = document.getElementById('loading');
 
-    const menuShell   = document.getElementById('menuShell'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: wrapper for tiles + previews
-    const previewBar  = document.getElementById('previewBar'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: preview strip container
+    const menuShell   = document.getElementById('menuShell');
+    const previewBar  = document.getElementById('previewBar');
 
-    const pvCashPot   = document.getElementById('pvCashPot'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: CASH POT preview iframe
-    const pvLotto     = document.getElementById('pvLotto'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: LOTTO preview iframe
-    const pvSuperLotto= document.getElementById('pvSuperLotto'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: SUPER LOTTO preview iframe
+    const pvCashPot   = document.getElementById('pvCashPot');
+    const pvLotto     = document.getElementById('pvLotto');
+    const pvSuperLotto= document.getElementById('pvSuperLotto');
 
-    const zoomIn  = document.getElementById('zoomIn'); // Zoom in button
-    const zoomOut = document.getElementById('zoomOut'); // Zoom out button
-    let currentZoom = 1; // Current zoom value
+    const zoomIn  = document.getElementById('zoomIn');
+    const zoomOut = document.getElementById('zoomOut');
+    let currentZoom = 1;
 
-    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // Idle timeout (2 minutes)
-    let idleTimer = null; // Idle timer handle
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000;
+    let idleTimer = null;
 
-    document.querySelectorAll('.gameLogo').forEach(img => { // For each logo image
-      img.addEventListener('error', () => { img.style.display = 'none'; }); // Hide logo if missing/broken
-    }); // End logo error handlers
+    document.querySelectorAll('.gameLogo').forEach(img => {
+      img.addEventListener('error', () => { img.style.display = 'none'; });
+    });
 
-    function setIdleTimer(){ // Reset idle timer function
-      if (idleTimer) clearTimeout(idleTimer); // Clear existing timer
-      idleTimer = setTimeout(() => { // Start new timer
-        if (pageView.style.display === 'block') showMenu(); // If in page view, return to menu
-      }, IDLE_TIMEOUT_MS); // Using timeout duration
-    } // End setIdleTimer
+    function setIdleTimer(){
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (pageView.style.display === 'block') showMenu();
+      }, IDLE_TIMEOUT_MS);
+    }
 
-    ['click','touchstart','mousemove','keydown'].forEach(evt => { // List of activity events
-      window.addEventListener(evt, setIdleTimer, { passive:true }); // Reset timer on any activity
-    }); // End event binding loop
+    ['click','touchstart','mousemove','keydown'].forEach(evt => {
+      window.addEventListener(evt, setIdleTimer, { passive:true });
+    });
 
-    function showLoading(on){ // Toggle loading overlay
-      loading.style.display = on ? 'flex' : 'none'; // Show/hide overlay
-      loading.setAttribute('aria-hidden', on ? 'false' : 'true'); // Update accessibility state
-    } // End showLoading
+    function showLoading(on){
+      loading.style.display = on ? 'flex' : 'none';
+      loading.setAttribute('aria-hidden', on ? 'false' : 'true');
+    }
 
-    function recenterIframe(){ // Center the zoomed iframe in the visible window
-      const rect = frameWrap.getBoundingClientRect(); // Get wrapper size
-      const offsetX = (rect.width  * (currentZoom - 1)) / 2; // Horizontal extra content /2
-      const offsetY = (rect.height * (currentZoom - 1)) / 2; // Vertical extra content /2
-      frame.style.left = (-offsetX) + 'px'; // Shift iframe left to center
-      frame.style.top  = (-offsetY) + 'px'; // Shift iframe up to center
-    } // End recenterIframe
+    function recenterIframe(){
+      const rect = frameWrap.getBoundingClientRect();
+      const offsetX = (rect.width  * (currentZoom - 1)) / 2;
+      const offsetY = (rect.height * (currentZoom - 1)) / 2;
+      frame.style.left = (-offsetX) + 'px';
+      frame.style.top  = (-offsetY) + 'px';
+    }
 
-    function applyZoom(z){ // Apply zoom while clamping
-      currentZoom = Math.max(0.75, Math.min(1.6, z)); // Clamp zoom range
-      document.documentElement.style.setProperty('--iframe-zoom', currentZoom); // Update CSS variable for transform
-      recenterIframe(); // Recenter after zoom change
-    } // End applyZoom
+    function applyZoom(z){
+      currentZoom = Math.max(0.75, Math.min(1.6, z));
+      document.documentElement.style.setProperty('--iframe-zoom', currentZoom);
+      recenterIframe();
+    }
 
     /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
-    function loadPreviews(){ // ✅ MENU PAGE GAME RESULTS SHORTLIST: load/refresh preview iframes
-      const bust = '?kiosk_preview=' + Date.now(); // Cache buster for previews
-      pvCashPot.src    = 'https://supremeventures.com/game/cash-pot/' + bust; // CASH POT preview source
-      pvLotto.src      = 'https://supremeventures.com/game/lotto/' + bust; // LOTTO preview source
-      pvSuperLotto.src = 'https://supremeventures.com/game/super-lotto/' + bust; // SUPER LOTTO preview source
-    } // End loadPreviews
+    function loadPreviews(){
+      const bust = '?kiosk_preview=' + Date.now();
+      pvCashPot.src    = 'https://supremeventures.com/game/cash-pot/' + bust;
+      pvLotto.src      = 'https://supremeventures.com/game/lotto/' + bust;
+      pvSuperLotto.src = 'https://supremeventures.com/game/super-lotto/' + bust;
+    }
     /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
 
-    function showMenu(){ // Return to menu state
-      showLoading(false); // Hide loading
-      frame.src = 'about:blank'; // Clear iframe
-      cookieMask.style.display = 'none'; // Hide cookie mask
-      topMask.style.display = 'none'; // Hide top mask
+    function showMenu(){
+      showLoading(false);
+      frame.src = 'about:blank';
+      cookieMask.style.display = 'none';
+      topMask.style.display = 'none';
 
-      menuShell.style.display = 'flex'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: show menu wrapper (tiles + previews)
-      previewBar.style.display = 'grid'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: show preview strip
-      loadPreviews(); // ✅ MENU PAGE GAME RESULTS SHORTLIST: refresh previews on menu view
+      menuShell.style.display = 'grid';
+      previewBar.style.display = 'grid';
+      loadPreviews();
 
-      pageView.style.display = 'none'; // Hide page view
-      headerTitle.textContent = 'SUPREME VENTURES RESULTS'; // Reset header title
-      menuBtn.setAttribute('aria-pressed', 'true'); // Mark menu active
-      applyZoom(1); // Reset zoom to 1x
-    } // End showMenu
+      pageView.style.display = 'none';
+      headerTitle.textContent = 'SUPREME VENTURES RESULTS';
+      menuBtn.setAttribute('aria-pressed', 'true');
+      applyZoom(1);
 
-    function showPage(url, label, zoom=1){ // Show iframe page state
-      menuShell.style.display = 'none'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: hide menu (tiles + previews)
-      pageView.style.display = 'block'; // Show iframe view
-      cookieMask.style.display = 'flex'; // Show cookie mask
-      topMask.style.display = 'flex'; // Show top mask
-      headerTitle.textContent = label.toUpperCase(); // Set title based on tile label
-      menuBtn.setAttribute('aria-pressed', 'false'); // Mark menu inactive
+      menuShell.scrollTop = 0; /* optional: reset scroll to top when returning */
+    }
 
-      applyZoom(zoom); // Apply per-page starting zoom
+    function showPage(url, label, zoom=1){
+      menuShell.style.display = 'none';
+      pageView.style.display = 'block';
+      cookieMask.style.display = 'flex';
+      topMask.style.display = 'flex';
+      headerTitle.textContent = label.toUpperCase();
+      menuBtn.setAttribute('aria-pressed', 'false');
 
-      showLoading(true); // Show loading overlay
-      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now(); // Cache buster
-      frame.src = url + bust; // Load page into iframe
-    } // End showPage
+      applyZoom(zoom);
 
-    frame.addEventListener('load', () => { // When iframe finishes loading
-      showLoading(false); // Hide loading overlay
-      recenterIframe(); // Ensure centering after load
-    }); // End iframe load handler
+      showLoading(true);
+      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
+      frame.src = url + bust;
+    }
 
-    menuBtn.addEventListener('click', showMenu); // Menu button returns to menu
+    frame.addEventListener('load', () => {
+      showLoading(false);
+      recenterIframe();
+    });
 
-    document.querySelectorAll('.tile').forEach(tile => { // For each tile link
-      tile.addEventListener('click', e => { // On tile click
-        e.preventDefault(); // Prevent navigation
-        const url = tile.dataset.url; // Read URL from data attribute
-        const zoom = parseFloat(tile.dataset.zoom || '1'); // Read per-page zoom (default 1)
-        const label = tile.querySelector('.tileTitle').textContent.trim(); // Get label text
-        showPage(url, label, zoom); // Open page view
-      }); // End tile click handler
-    }); // End tiles loop
+    menuBtn.addEventListener('click', showMenu);
 
-    zoomIn.addEventListener('click', () => applyZoom(currentZoom + 0.1)); // Zoom in by step
-    zoomOut.addEventListener('click', () => applyZoom(currentZoom - 0.1)); // Zoom out by step
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('click', e => {
+        e.preventDefault();
+        const url = tile.dataset.url;
+        const zoom = parseFloat(tile.dataset.zoom || '1');
+        const label = tile.querySelector('.tileTitle').textContent.trim();
+        showPage(url, label, zoom);
+      });
+    });
 
-    window.addEventListener('resize', () => { // On window resize
-      if (pageView.style.display === 'block') recenterIframe(); // Keep centered if viewing a page
-    }); // End resize handler
+    zoomIn.addEventListener('click', () => applyZoom(currentZoom + 0.1));
+    zoomOut.addEventListener('click', () => applyZoom(currentZoom - 0.1));
 
-    window.addEventListener('keydown', (e) => { // Keyboard shortcuts
-      if (e.key === 'Escape') showMenu(); // ESC returns to menu
-    }); // End keydown handler
+    window.addEventListener('resize', () => {
+      if (pageView.style.display === 'block') recenterIframe();
+    });
 
-    showMenu(); // Initialize in menu mode
-    setIdleTimer(); // Start idle timer
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') showMenu();
+    });
+
+    showMenu();
+    setIdleTimer();
   </script> <!-- ====== SCRIPT END ====== -->
-</body> <!-- end body -->
-</html> <!-- end document -->
+</body>
+</html>
