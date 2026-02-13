@@ -419,6 +419,77 @@
         var(--focus); /* focus ring */
     } /* end .tile:focus-visible */
 
+    /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
+    /* MENU PAGE GAME RESULTS SHORTLIST: Layout wrapper for 4 tiles + preview strip */
+    .menuShell{ /* Wraps the 4 buttons + previews */
+      width:100%; /* full width */
+      height:100%; /* full height */
+      display:flex; /* vertical stack */
+      flex-direction:column; /* tiles on top, previews below */
+      gap:var(--gap); /* spacing */
+    } /* end .menuShell */
+
+    /* MENU PAGE GAME RESULTS SHORTLIST: Keep your existing menu grid, but let it flex inside wrapper */
+    .menuShell .menuView{ /* Menu grid inside menuShell */
+      flex:1; /* take remaining height above preview strip */
+      min-height:0; /* allow flex shrink */
+    } /* end .menuShell .menuView */
+
+    /* MENU PAGE GAME RESULTS SHORTLIST: Preview strip row (3 previews) */
+    .previewBar{ /* Row of mini previews */
+      height:250px; /* preview strip height (tune) */
+      display:grid; /* grid layout */
+      grid-template-columns:1fr 1fr 1fr; /* 3 previews */
+      gap:var(--gap); /* spacing */
+    } /* end .previewBar */
+
+    /* MENU PAGE GAME RESULTS SHORTLIST: Single preview card container */
+    .previewCard{ /* Each preview container */
+      border-radius:18px; /* rounding */
+      overflow:hidden; /* clip the iframe */
+      background:#fff; /* white base */
+      border:1px solid rgba(0,0,0,.12); /* subtle border */
+      box-shadow:0 10px 22px rgba(0,0,0,.14); /* depth */
+      position:relative; /* anchor children */
+    } /* end .previewCard */
+
+    /* MENU PAGE GAME RESULTS SHORTLIST: Label pill */
+    .previewLabel{ /* Label on top of preview */
+      position:absolute; /* overlay */
+      top:10px; /* offset */
+      left:10px; /* offset */
+      padding:8px 10px; /* padding */
+      border-radius:12px; /* rounding */
+      background:rgba(11,122,59,.92); /* SV green pill */
+      color:#fff; /* white text */
+      font-weight:900; /* bold */
+      font-size:14px; /* small */
+      letter-spacing:.6px; /* spacing */
+      z-index:3; /* above iframe */
+      pointer-events:none; /* non-interactive */
+    } /* end .previewLabel */
+
+    /* MENU PAGE GAME RESULTS SHORTLIST: Clipped window inside each preview */
+    .previewViewport{ /* The clipped “window” */
+      position:absolute; /* fill card */
+      inset:0; /* full cover */
+      overflow:hidden; /* clip */
+    } /* end .previewViewport */
+
+    /* MENU PAGE GAME RESULTS SHORTLIST: The mini iframe used for preview */
+    .previewFrame{ /* The preview iframe */
+      position:absolute; /* allow crop shifting */
+      top:var(--p-top, 0px); /* crop Y (negative moves content up) */
+      left:var(--p-left, 0px); /* crop X */
+      width:100%; /* base width */
+      height:100%; /* base height */
+      transform-origin: top left; /* stable zoom */
+      transform: scale(var(--p-scale, 1)); /* crop scale */
+      border:0; /* no border */
+      pointer-events:none; /* prevent touch/click inside preview */
+    } /* end .previewFrame */
+    /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
+
     .pageView{ /* Page container (iframe mode) */
       width:100%; /* full width */
       height:100%; /* full height */
@@ -483,7 +554,7 @@
       transform:translateY(3px); /* push down */
       box-shadow:
         inset 6px 6px 12px rgba(0,0,0,.25), /* inset shadow */
-        inset -4px -4px 10px rgba(255,255,255,.25); /* ✅ softer inset highlight (works with green) */
+        inset -4px -4px 10px rgba(255,255,255,.25); /* softer inset highlight */
     } /* end .zoomBtn:active */
 
     .loading{ /* Loading overlay */
@@ -556,12 +627,14 @@
     @media (max-width:1100px){ /* Medium screens */
       :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; } /* scale down */
       .logoStripInner{ column-gap:24px; row-gap:14px; } /* tighten gaps */
+      .previewBar{ height:210px; } /* reduce preview strip height */
     } /* end 1100px */
 
     @media (max-width:900px){ /* Smaller screens */
       :root{ --header-h: 220px; --logo-area-bottom: 92px; } /* shorter header */
       .tileTitle{ font-size:34px; } /* smaller title */
       .sub{ font-size:18px; } /* smaller subtitle */
+      .previewBar{ height:190px; } /* reduce preview strip height */
     } /* end 900px */
 
     @media (max-width:680px){ /* Phone-ish */
@@ -569,6 +642,8 @@
       .tile{ min-height:160px; } /* ensure touch height */
       .bottomRow{ flex-direction:column; align-items:flex-start; } /* stack title + menu */
       .menuBtn{ align-self:flex-end; } /* menu on right */
+      .previewBar{ grid-template-columns:1fr; height:auto; } /* stack previews */
+      .previewCard{ height:220px; } /* fixed preview card height */
     } /* end 680px */
   </style> <!-- ====== STYLES END ====== -->
 </head> <!-- end head -->
@@ -603,49 +678,86 @@
     <div class="content"> <!-- Content -->
       <div class="console"> <!-- Console frame -->
 
-        <nav class="menuView" id="menuView" aria-label="Main menu"> <!-- Menu grid -->
+        <!-- ================= MENU PAGE GAME RESULTS SHORTLIST ================= -->
+        <!-- MENU PAGE GAME RESULTS SHORTLIST: Wrapper holds the 4 tiles + 3 mini preview cards -->
+        <div class="menuShell" id="menuShell" aria-label="Menu + game previews"> <!-- Menu + previews wrapper -->
 
-          <div class="tileSlot"> <!-- Slot 1 -->
-            <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results"> <!-- Latest Results tile -->
-              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-              <div class="tileContent"> <!-- Text wrapper -->
-                <div class="tileTitle">LATEST RESULTS</div> <!-- Title -->
-                <span class="sub">VIEW TODAY’S DRAW RESULTS</span> <!-- Subtitle -->
-              </div> <!-- end tileContent -->
-            </a> <!-- end tile link -->
-          </div> <!-- end tileSlot -->
+          <!-- MENU PAGE GAME RESULTS SHORTLIST: The original 2x2 menu grid (unchanged tiles) -->
+          <nav class="menuView" id="menuView" aria-label="Main menu"> <!-- Menu grid -->
 
-          <div class="tileSlot"> <!-- Slot 2 -->
-            <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results"> <!-- Past Results tile -->
-              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-              <div class="tileContent"> <!-- Text wrapper -->
-                <div class="tileTitle">PAST RESULTS</div> <!-- Title -->
-                <span class="sub">SEARCH PREVIOUS DRAWS</span> <!-- Subtitle -->
-              </div> <!-- end tileContent -->
-            </a> <!-- end tile link -->
-          </div> <!-- end tileSlot -->
+            <div class="tileSlot"> <!-- Slot 1 -->
+              <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results"> <!-- Latest Results tile -->
+                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+                <div class="tileContent"> <!-- Text wrapper -->
+                  <div class="tileTitle">LATEST RESULTS</div> <!-- Title -->
+                  <span class="sub">VIEW TODAY’S DRAW RESULTS</span> <!-- Subtitle -->
+                </div> <!-- end tileContent -->
+              </a> <!-- end tile link -->
+            </div> <!-- end tileSlot -->
 
-          <div class="tileSlot"> <!-- Slot 3 -->
-            <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games"> <!-- Games tile -->
-              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-              <div class="tileContent"> <!-- Text wrapper -->
-                <div class="tileTitle">GAMES</div> <!-- Title -->
-                <span class="sub">BROWSE AVAILABLE GAMES</span> <!-- Subtitle -->
-              </div> <!-- end tileContent -->
-            </a> <!-- end tile link -->
-          </div> <!-- end tileSlot -->
+            <div class="tileSlot"> <!-- Slot 2 -->
+              <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results"> <!-- Past Results tile -->
+                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+                <div class="tileContent"> <!-- Text wrapper -->
+                  <div class="tileTitle">PAST RESULTS</div> <!-- Title -->
+                  <span class="sub">SEARCH PREVIOUS DRAWS</span> <!-- Subtitle -->
+                </div> <!-- end tileContent -->
+              </a> <!-- end tile link -->
+            </div> <!-- end tileSlot -->
 
-          <div class="tileSlot"> <!-- Slot 4 -->
-            <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming"> <!-- Responsible Gaming tile -->
-              <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
-              <div class="tileContent"> <!-- Text wrapper -->
-                <div class="tileTitle">RESPONSIBLE GAMING</div> <!-- Title -->
-                <span class="sub">GENERAL INFORMATION</span> <!-- Subtitle -->
-              </div> <!-- end tileContent -->
-            </a> <!-- end tile link -->
-          </div> <!-- end tileSlot -->
+            <div class="tileSlot"> <!-- Slot 3 -->
+              <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games"> <!-- Games tile -->
+                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+                <div class="tileContent"> <!-- Text wrapper -->
+                  <div class="tileTitle">GAMES</div> <!-- Title -->
+                  <span class="sub">BROWSE AVAILABLE GAMES</span> <!-- Subtitle -->
+                </div> <!-- end tileContent -->
+              </a> <!-- end tile link -->
+            </div> <!-- end tileSlot -->
 
-        </nav> <!-- end menuView -->
+            <div class="tileSlot"> <!-- Slot 4 -->
+              <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming"> <!-- Responsible Gaming tile -->
+                <span class="dot" aria-hidden="true"></span> <!-- Gold dot -->
+                <div class="tileContent"> <!-- Text wrapper -->
+                  <div class="tileTitle">RESPONSIBLE GAMING</div> <!-- Title -->
+                  <span class="sub">GENERAL INFORMATION</span> <!-- Subtitle -->
+                </div> <!-- end tileContent -->
+              </a> <!-- end tile link -->
+            </div> <!-- end tileSlot -->
+
+          </nav> <!-- end menuView -->
+
+          <!-- MENU PAGE GAME RESULTS SHORTLIST: Mini live previews (cropped iframes) -->
+          <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews"> <!-- Preview strip -->
+
+            <!-- MENU PAGE GAME RESULTS SHORTLIST: CASH POT (top two cards preview) -->
+            <div class="previewCard" id="pvCardCashPot" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;"> <!-- Cash Pot preview card -->
+              <div class="previewLabel">CASH POT</div> <!-- Preview label -->
+              <div class="previewViewport"> <!-- Clipped viewport -->
+                <iframe class="previewFrame" id="pvCashPot" title="Cash Pot preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
+              </div> <!-- end previewViewport -->
+            </div> <!-- end previewCard -->
+
+            <!-- MENU PAGE GAME RESULTS SHORTLIST: LOTTO (top two cards preview) -->
+            <div class="previewCard" id="pvCardLotto" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;"> <!-- Lotto preview card -->
+              <div class="previewLabel">LOTTO</div> <!-- Preview label -->
+              <div class="previewViewport"> <!-- Clipped viewport -->
+                <iframe class="previewFrame" id="pvLotto" title="Lotto preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
+              </div> <!-- end previewViewport -->
+            </div> <!-- end previewCard -->
+
+            <!-- MENU PAGE GAME RESULTS SHORTLIST: SUPER LOTTO (top two cards preview) -->
+            <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;"> <!-- Super Lotto preview card -->
+              <div class="previewLabel">SUPER LOTTO</div> <!-- Preview label -->
+              <div class="previewViewport"> <!-- Clipped viewport -->
+                <iframe class="previewFrame" id="pvSuperLotto" title="Super Lotto preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
+              </div> <!-- end previewViewport -->
+            </div> <!-- end previewCard -->
+
+          </section> <!-- end previewBar -->
+
+        </div> <!-- end menuShell -->
+        <!-- ================= END MENU PAGE GAME RESULTS SHORTLIST ================= -->
 
         <section class="pageView" id="pageView" aria-label="Web view"> <!-- Page view (iframe mode) -->
           <div class="frameWrap" id="frameWrap"> <!-- Iframe wrapper -->
@@ -684,6 +796,13 @@
     const cookieMask  = document.getElementById('cookieMask'); // Cookie mask overlay
     const topMask     = document.getElementById('topMask'); // Top mask overlay
     const loading     = document.getElementById('loading'); // Loading overlay
+
+    const menuShell   = document.getElementById('menuShell'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: wrapper for tiles + previews
+    const previewBar  = document.getElementById('previewBar'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: preview strip container
+
+    const pvCashPot   = document.getElementById('pvCashPot'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: CASH POT preview iframe
+    const pvLotto     = document.getElementById('pvLotto'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: LOTTO preview iframe
+    const pvSuperLotto= document.getElementById('pvSuperLotto'); // ✅ MENU PAGE GAME RESULTS SHORTLIST: SUPER LOTTO preview iframe
 
     const zoomIn  = document.getElementById('zoomIn'); // Zoom in button
     const zoomOut = document.getElementById('zoomOut'); // Zoom out button
@@ -726,12 +845,25 @@
       recenterIframe(); // Recenter after zoom change
     } // End applyZoom
 
+    /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
+    function loadPreviews(){ // ✅ MENU PAGE GAME RESULTS SHORTLIST: load/refresh preview iframes
+      const bust = '?kiosk_preview=' + Date.now(); // Cache buster for previews
+      pvCashPot.src    = 'https://supremeventures.com/game/cash-pot/' + bust; // CASH POT preview source
+      pvLotto.src      = 'https://supremeventures.com/game/lotto/' + bust; // LOTTO preview source
+      pvSuperLotto.src = 'https://supremeventures.com/game/super-lotto/' + bust; // SUPER LOTTO preview source
+    } // End loadPreviews
+    /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
+
     function showMenu(){ // Return to menu state
       showLoading(false); // Hide loading
       frame.src = 'about:blank'; // Clear iframe
       cookieMask.style.display = 'none'; // Hide cookie mask
       topMask.style.display = 'none'; // Hide top mask
-      menuView.style.display = 'grid'; // Show menu grid
+
+      menuShell.style.display = 'flex'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: show menu wrapper (tiles + previews)
+      previewBar.style.display = 'grid'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: show preview strip
+      loadPreviews(); // ✅ MENU PAGE GAME RESULTS SHORTLIST: refresh previews on menu view
+
       pageView.style.display = 'none'; // Hide page view
       headerTitle.textContent = 'SUPREME VENTURES RESULTS'; // Reset header title
       menuBtn.setAttribute('aria-pressed', 'true'); // Mark menu active
@@ -739,7 +871,7 @@
     } // End showMenu
 
     function showPage(url, label, zoom=1){ // Show iframe page state
-      menuView.style.display = 'none'; // Hide menu grid
+      menuShell.style.display = 'none'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: hide menu (tiles + previews)
       pageView.style.display = 'block'; // Show iframe view
       cookieMask.style.display = 'flex'; // Show cookie mask
       topMask.style.display = 'flex'; // Show top mask
