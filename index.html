@@ -267,15 +267,6 @@
 
     .console > *{ position:relative; z-index:1; } /* Ensure content above inner lip */
 
-    .menuView{ /* 2x2 menu grid */
-      width:100%; /* Full width */
-      height:100%; /* Full height */
-      display:grid; /* CSS grid */
-      grid-template-columns:1fr 1fr; /* Two columns */
-      grid-template-rows:1fr 1fr; /* Two rows */
-      gap:var(--gap); /* Tile gap */
-    } /* end .menuView */
-
     .tileSlot{ /* Cutout “ring” / slot */
       position:relative; /* Position pseudo lip */
       border-radius:var(--ring-radius); /* Slot rounding */
@@ -420,32 +411,57 @@
     } /* end .tile:focus-visible */
 
     /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
-    /* MENU PAGE GAME RESULTS SHORTLIST: Two-column layout (tiles left, previews right) */
+    /* MENU PAGE GAME RESULTS SHORTLIST: Wrapper holds the 4 tiles + previews (STACKED: buttons top, previews below) */
     .menuShell{ /* Wraps the 4 buttons + previews */
       width:100%; /* full width */
       height:100%; /* full height */
-      display:grid; /* ✅ grid for side-by-side layout */
-      grid-template-columns: 1.35fr 0.65fr; /* ✅ tiles get more width, previews column on right */
+      display:flex; /* ✅ stack vertically */
+      flex-direction:column; /* ✅ buttons on top, previews below */
       gap:var(--gap); /* spacing */
-      align-items:stretch; /* full height */
     } /* end .menuShell */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Keep your existing menu grid, but tighten the tile “rings” */
-    .menuShell .menuView{ /* Menu grid inside menuShell */
-      height:100%; /* full height */
-    } /* end .menuShell .menuView */
+    /* MENU PAGE GAME RESULTS SHORTLIST: Make the menu grid shrink (no more giant tiles) */
+    .menuView{ /* 2x2 menu grid */
+      width:100%; /* Full width */
+      height:auto; /* ✅ shrink to content */
+      display:grid; /* CSS grid */
+      grid-template-columns:1fr 1fr; /* Two columns */
+      grid-template-rows:auto auto; /* ✅ auto rows (no 1fr stretching) */
+      gap:var(--gap); /* Tile gap */
+      align-content:start; /* ✅ pack toward top */
+    } /* end .menuView */
 
-    .menuShell .tileSlot{ /* ✅ smaller ring padding so tiles frame text better */
-      padding:10px; /* was 12px */
+    /* MENU PAGE GAME RESULTS SHORTLIST: Reduce ring padding so tiles frame text better */
+    .menuShell .tileSlot{ /* tighter ring */
+      padding:8px; /* ✅ smaller than before */
       border-radius:40px; /* slightly tighter corners */
     } /* end .menuShell .tileSlot */
 
-    /* MENU PAGE GAME RESULTS SHORTLIST: Preview column (3 windows stacked vertically) */
+    /* MENU PAGE GAME RESULTS SHORTLIST: Reduce tile bulk */
+    .menuShell .tile{ /* tile itself */
+      min-height:170px; /* ✅ controls overall button height */
+    } /* end .menuShell .tile */
+
+    .menuShell .tileContent{ /* text wrapper */
+      padding:18px; /* ✅ tighter */
+    } /* end .menuShell .tileContent */
+
+    .menuShell .tileTitle{ /* main label */
+      font-size:32px; /* ✅ slightly smaller */
+    } /* end .menuShell .tileTitle */
+
+    .menuShell .sub{ /* subtitle */
+      font-size:15px; /* ✅ smaller */
+    } /* end .menuShell .sub */
+
+    /* MENU PAGE GAME RESULTS SHORTLIST: Preview area BELOW the buttons (3 stacked windows) */
     .previewBar{ /* Column of mini previews */
-      height:100%; /* fill console height */
+      width:100%; /* full width */
+      flex:1; /* ✅ take remaining height */
+      min-height:0; /* ✅ allow proper flex sizing */
       display:grid; /* grid layout */
-      grid-template-columns:1fr; /* ✅ single column */
-      grid-template-rows:1fr 1fr 1fr; /* ✅ three rows */
+      grid-template-columns:1fr; /* single column */
+      grid-template-rows:1fr 1fr 1fr; /* three rows */
       gap:var(--gap); /* spacing */
     } /* end .previewBar */
 
@@ -494,6 +510,7 @@
       transform: scale(var(--p-scale, 1)); /* crop scale */
       border:0; /* no border */
       pointer-events:none; /* prevent touch/click inside preview */
+      background:#fff; /* keep white */
     } /* end .previewFrame */
     /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
 
@@ -634,13 +651,10 @@
     @media (max-width:1100px){ /* Medium screens */
       :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; } /* scale down */
       .logoStripInner{ column-gap:24px; row-gap:14px; } /* tighten gaps */
-      .menuShell{ grid-template-columns: 1.2fr 0.8fr; } /* keep 2-col */
     } /* end 1100px */
 
     @media (max-width:900px){ /* Smaller screens */
       :root{ --header-h: 220px; --logo-area-bottom: 92px; } /* shorter header */
-      .menuShell{ grid-template-columns: 1fr; } /* ✅ stack (see below) */
-      .previewBar{ grid-template-rows: 1fr 1fr 1fr; } /* keep vertical */
       .tileTitle{ font-size:32px; } /* slightly smaller */
     } /* end 900px */
 
@@ -649,6 +663,7 @@
       .tile{ min-height:160px; } /* ensure touch height */
       .bottomRow{ flex-direction:column; align-items:flex-start; } /* stack title + menu */
       .menuBtn{ align-self:flex-end; } /* menu on right */
+      .previewBar{ grid-template-rows: 1fr 1fr 1fr; } /* keep stacked */
     } /* end 680px */
   </style> <!-- ====== STYLES END ====== -->
 </head> <!-- end head -->
@@ -736,7 +751,7 @@
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews"> <!-- Preview strip -->
 
             <!-- MENU PAGE GAME RESULTS SHORTLIST: CASH POT (top two cards preview) -->
-            <div class="previewCard" id="pvCardCashPot" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;"> <!-- Cash Pot preview card -->
+            <div class="previewCard" id="pvCardCashPot" style="--p-scale:1.15; --p-top:-620px; --p-left:0px;"> <!-- Cash Pot preview card -->
               <div class="previewLabel">CASH POT</div> <!-- Preview label -->
               <div class="previewViewport"> <!-- Clipped viewport -->
                 <iframe class="previewFrame" id="pvCashPot" title="Cash Pot preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
@@ -744,7 +759,7 @@
             </div> <!-- end previewCard -->
 
             <!-- MENU PAGE GAME RESULTS SHORTLIST: LOTTO (top two cards preview) -->
-            <div class="previewCard" id="pvCardLotto" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;"> <!-- Lotto preview card -->
+            <div class="previewCard" id="pvCardLotto" style="--p-scale:1.15; --p-top:-620px; --p-left:0px;"> <!-- Lotto preview card -->
               <div class="previewLabel">LOTTO</div> <!-- Preview label -->
               <div class="previewViewport"> <!-- Clipped viewport -->
                 <iframe class="previewFrame" id="pvLotto" title="Lotto preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
@@ -752,7 +767,7 @@
             </div> <!-- end previewCard -->
 
             <!-- MENU PAGE GAME RESULTS SHORTLIST: SUPER LOTTO (top two cards preview) -->
-            <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:1.10; --p-top:-520px; --p-left:0px;"> <!-- Super Lotto preview card -->
+            <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:1.15; --p-top:-650px; --p-left:0px;"> <!-- Super Lotto preview card -->
               <div class="previewLabel">SUPER LOTTO</div> <!-- Preview label -->
               <div class="previewViewport"> <!-- Clipped viewport -->
                 <iframe class="previewFrame" id="pvSuperLotto" title="Super Lotto preview" referrerpolicy="no-referrer"></iframe> <!-- Preview iframe -->
@@ -865,7 +880,7 @@
       cookieMask.style.display = 'none'; // Hide cookie mask
       topMask.style.display = 'none'; // Hide top mask
 
-      menuShell.style.display = 'grid'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: show menu wrapper (tiles + previews)
+      menuShell.style.display = 'flex'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: show menu wrapper (tiles + previews)
       previewBar.style.display = 'grid'; // ✅ MENU PAGE GAME RESULTS SHORTLIST: show preview strip
       loadPreviews(); // ✅ MENU PAGE GAME RESULTS SHORTLIST: refresh previews on menu view
 
