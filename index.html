@@ -505,13 +505,30 @@
       pointer-events:none;
     }
 
+    /* ✅ NEW: helper hint (only while preview is interactive) */
+    .previewHint{
+      position:absolute;
+      right:12px;
+      bottom:12px;
+      padding:8px 10px;
+      border-radius:12px;
+      background:rgba(0,0,0,.65);
+      color:#fff;
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:.4px;
+      z-index:12;
+      display:none;
+      pointer-events:none;
+    }
+
     .previewViewport{
       position:absolute;
       inset:0;
       overflow:hidden;
     }
 
-    /* ✅ Step 1 (you already did): scale compensation so the preview fills the card */
+    /* ✅ Step 1: scale compensation so the preview fills the card */
     .previewFrame{
       position:absolute;
       top:var(--p-top, 0px);
@@ -523,16 +540,26 @@
       transform-origin: top left;
       transform: scale(var(--p-scale, 1));
       border:0;
+
+      /* default = NOT clickable */
       pointer-events:none;
+    }
+
+    /* ✅ TEMP: allow clicking inside previews to accept cookies */
+    .previewInteractive .previewFrame{
+      pointer-events:auto;
+    }
+    .previewInteractive .previewHint{
+      display:block;
     }
 
     /* ✅ UPDATED: mask must be below label, above iframe */
     .previewMaskTop{
       position:absolute;
       top:0; left:0; right:0;
-      height:90px;                 /* was 110px */
+      height:90px;
       background:#ffffff;
-      z-index:6;                   /* was 4 */
+      z-index:6;
       pointer-events:none;
       border-bottom:1px solid rgba(0,0,0,.08);
     }
@@ -784,9 +811,10 @@
 
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
-            <!-- ✅ Cash Pot: includes preview mask -->
+            <!-- ✅ Cash Pot: includes preview mask + hint -->
             <div class="previewCard" id="pvCardCashPot" style="--p-scale:1; --p-top:-220px; --p-left:0px;">
               <div class="previewLabel">CASH POT</div>
+              <div class="previewHint">TAP “ACCEPT ALL” ONCE</div>
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
               <div class="previewViewport">
@@ -797,6 +825,7 @@
             <!-- ✅ Lotto -->
             <div class="previewCard" id="pvCardLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
               <div class="previewLabel">LOTTO</div>
+              <div class="previewHint">TAP “ACCEPT ALL” ONCE</div>
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
               <div class="previewViewport">
@@ -807,6 +836,7 @@
             <!-- ✅ Super Lotto -->
             <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
               <div class="previewLabel">SUPER LOTTO</div>
+              <div class="previewHint">TAP “ACCEPT ALL” ONCE</div>
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
               <div class="previewViewport">
@@ -906,6 +936,14 @@
       recenterIframe();
     }
 
+    /* ✅ NEW: enable clicking inside preview cards briefly (to accept cookies) */
+    function enablePreviewConsentMode(ms = 30000){
+      document.body.classList.add('previewInteractive');
+      setTimeout(() => {
+        document.body.classList.remove('previewInteractive');
+      }, ms);
+    }
+
     /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
     function loadPreviews(){
       const bust = '?kiosk_preview=' + Date.now();
@@ -924,6 +962,9 @@
       menuShell.style.display = 'grid';
       previewBar.style.display = 'grid';
       loadPreviews();
+
+      /* ✅ allow 30 seconds to tap "Accept All" in previews */
+      enablePreviewConsentMode(30000);
 
       pageView.style.display = 'none';
       headerTitle.textContent = 'SUPREME VENTURES RESULTS';
