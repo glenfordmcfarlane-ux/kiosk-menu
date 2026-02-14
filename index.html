@@ -489,6 +489,7 @@
       --p-left: var(--pv-left);
     }
 
+    /* ✅ UPDATED: label must sit above the mask */
     .previewLabel{
       position:absolute;
       top:10px;
@@ -500,7 +501,7 @@
       font-weight:900;
       font-size:14px;
       letter-spacing:.6px;
-      z-index:3;
+      z-index:10; /* was 3 */
       pointer-events:none;
     }
 
@@ -525,24 +526,23 @@
       pointer-events:none;
     }
 
-    /* ✅ Step 2: mask the cookie/privacy banner area on preview cards */
+    /* ✅ UPDATED: mask must be below label, above iframe */
     .previewMaskTop{
       position:absolute;
       top:0; left:0; right:0;
-      height:110px;                 /* adjust if needed */
+      height:90px;                 /* was 110px */
       background:#ffffff;
-      z-index:4;                    /* above iframe + label */
+      z-index:6;                   /* was 4 */
       pointer-events:none;
       border-bottom:1px solid rgba(0,0,0,.08);
     }
 
-    /* ✅ Step 3: (optional) small bottom mask if needed later */
     .previewMaskBottom{
       position:absolute;
       left:0; right:0; bottom:0;
-      height:0px;                   /* set to e.g. 60px if you ever need it */
+      height:0px;
       background:#ffffff;
-      z-index:4;
+      z-index:6;
       pointer-events:none;
       border-top:1px solid rgba(0,0,0,.08);
     }
@@ -784,38 +784,31 @@
 
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
-            <!-- ✅ Cash Pot: now includes preview mask (Step 2) -->
+            <!-- ✅ Cash Pot: includes preview mask -->
             <div class="previewCard" id="pvCardCashPot" style="--p-scale:1; --p-top:-220px; --p-left:0px;">
               <div class="previewLabel">CASH POT</div>
-
-              <!-- ✅ Step 2: cookie/privacy mask -->
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
-
               <div class="previewViewport">
                 <iframe class="previewFrame" id="pvCashPot" title="Cash Pot preview" referrerpolicy="no-referrer"></iframe>
               </div>
             </div>
 
-            <!-- ✅ Lotto: mask added too (Step 2) -->
+            <!-- ✅ Lotto -->
             <div class="previewCard" id="pvCardLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
               <div class="previewLabel">LOTTO</div>
-
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
-
               <div class="previewViewport">
                 <iframe class="previewFrame" id="pvLotto" title="Lotto preview" referrerpolicy="no-referrer"></iframe>
               </div>
             </div>
 
-            <!-- ✅ Super Lotto: mask added too (Step 2) -->
+            <!-- ✅ Super Lotto -->
             <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
               <div class="previewLabel">SUPER LOTTO</div>
-
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
-
               <div class="previewViewport">
                 <iframe class="previewFrame" id="pvSuperLotto" title="Super Lotto preview" referrerpolicy="no-referrer"></iframe>
               </div>
