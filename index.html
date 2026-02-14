@@ -1,22 +1,13 @@
 <!doctype html>
-<!-- Document type: HTML5 -->
 <html lang="en">
-<!-- Root element + language -->
 <head>
-  <!-- Head: metadata, title, styles -->
   <meta charset="utf-8" />
-  <!-- Character encoding -->
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <!-- Kiosk-friendly viewport -->
   <meta name="theme-color" content="#0b7a3b" />
-  <!-- Browser UI theme color -->
   <title>Supreme Ventures Results Kiosk</title>
-  <!-- Page title -->
 
   <style>
-    /* ====== STYLES START ====== */
     :root{
-      /* CSS variables (easy tuning) */
       --sv-green:#0b7a3b;
       --sv-green-dark:#075c2c;
       --sv-gold:#f2c300;
@@ -66,10 +57,10 @@
 
       --iframe-zoom: 1;
 
-      /* ✅ Preview tune variables (defaults) */
-      --pv-scale: 0.95;    /* starting zoom for preview iframes */
-      --pv-top: -320px;    /* starting crop Y */
-      --pv-left: 0px;      /* starting crop X */
+      /* Preview defaults (kept, but previews may be blocked by browser policy) */
+      --pv-scale: 0.95;
+      --pv-top: -320px;
+      --pv-left: 0px;
     }
 
     *{ box-sizing:border-box; }
@@ -89,11 +80,7 @@
       overscroll-behavior:none;
     }
 
-    .app{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
+    .app{ height:100%; display:flex; flex-direction:column; }
 
     .header{
       min-height:var(--header-h);
@@ -174,22 +161,18 @@
       border:3px solid rgba(242,195,0,.95);
       background:linear-gradient(145deg, #ffe58a, #caa800);
       color:#1a1a1a;
-
       font-size:var(--menu-font);
       font-weight:900;
       letter-spacing:.5px;
-
       padding:var(--menu-pad-y) var(--menu-pad-x);
       border-radius:var(--menu-radius);
       cursor:pointer;
       user-select:none;
       -webkit-tap-highlight-color:transparent;
       position:relative;
-
       box-shadow:
         0 14px 0 #9e8500,
         0 34px 64px rgba(0,0,0,.30);
-
       transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
     }
 
@@ -244,8 +227,6 @@
       border-radius:var(--console-radius);
       padding:var(--console-pad);
       position:relative;
-
-      /* ✅ allow the menuShell scrollbar to be visible and usable */
       overflow:visible;
 
       background:
@@ -296,11 +277,9 @@
       position:relative;
       border-radius:var(--ring-radius);
       padding:var(--ring-gap);
-
       background:
         linear-gradient(180deg, rgba(0,0,0,.10), rgba(255,255,255,.10)),
         linear-gradient(180deg, #edf1f6 0%, #d7dde6 100%);
-
       box-shadow:
         inset 12px 12px 18px var(--ring-shadow-dark),
         inset -12px -12px 18px var(--ring-shadow-light),
@@ -329,16 +308,12 @@
       color:#fff;
       user-select:none;
       -webkit-tap-highlight-color:transparent;
-
       border-radius:var(--bevel-radius);
       padding:0;
-
       background:linear-gradient(180deg,#0d5f35,#0a4e2b);
-
       box-shadow:
         20px 22px 44px rgba(0,0,0,.42),
         -10px -10px 22px rgba(255,255,255,.55);
-
       transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
     }
 
@@ -347,14 +322,11 @@
       position:absolute;
       inset:var(--bevel);
       border-radius:var(--face-radius);
-
       background:
         radial-gradient(circle at 30% 25%, #20b76a 0%, #0b7a3b 50%, #075c2c 100%);
-
       box-shadow:
         inset 8px 8px 16px rgba(255,255,255,.22),
         inset -14px -18px 30px rgba(0,0,0,.55);
-
       z-index:0;
     }
 
@@ -384,11 +356,7 @@
       z-index:3;
     }
 
-    .tileContent{
-      position:relative;
-      z-index:2;
-      padding:22px;
-    }
+    .tileContent{ position:relative; z-index:2; padding:22px; }
 
     .tileTitle{
       font-size:34px;
@@ -421,12 +389,6 @@
       filter:saturate(.98);
     }
 
-    .tile:active::before{
-      box-shadow:
-        inset 8px 8px 16px rgba(0,0,0,.55),
-        inset -6px -6px 14px rgba(255,255,255,.18);
-    }
-
     .tile:focus-visible{
       outline:none;
       box-shadow:
@@ -437,7 +399,6 @@
 
     /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
 
-    /* ✅ Vertical scrollbar ONLY when needed (menu page only) */
     .menuShell{
       width:100%;
       height:100%;
@@ -453,18 +414,13 @@
       -webkit-overflow-scrolling:touch;
     }
 
-    /* Optional: nicer scrollbar in Chromium */
     .menuShell::-webkit-scrollbar{ width:10px; }
     .menuShell::-webkit-scrollbar-track{ background:rgba(0,0,0,.06); border-radius:10px; }
     .menuShell::-webkit-scrollbar-thumb{ background:rgba(11,122,59,.55); border-radius:10px; }
     .menuShell::-webkit-scrollbar-thumb:hover{ background:rgba(11,122,59,.75); }
 
     .menuShell .menuView{ height:100%; }
-
-    .menuShell .tileSlot{
-      padding:10px;
-      border-radius:40px;
-    }
+    .menuShell .tileSlot{ padding:10px; border-radius:40px; }
 
     .previewBar{
       height:100%;
@@ -483,13 +439,11 @@
       position:relative;
       min-height:240px;
 
-      /* ✅ allow per-card overrides, but also have good defaults */
       --p-scale: var(--pv-scale);
       --p-top: var(--pv-top);
       --p-left: var(--pv-left);
     }
 
-    /* ✅ UPDATED: label must sit above the mask */
     .previewLabel{
       position:absolute;
       top:10px;
@@ -501,24 +455,7 @@
       font-weight:900;
       font-size:14px;
       letter-spacing:.6px;
-      z-index:10; /* was 3 */
-      pointer-events:none;
-    }
-
-    /* ✅ NEW: helper hint (only while preview is interactive) */
-    .previewHint{
-      position:absolute;
-      right:12px;
-      bottom:12px;
-      padding:8px 10px;
-      border-radius:12px;
-      background:rgba(0,0,0,.65);
-      color:#fff;
-      font-weight:900;
-      font-size:12px;
-      letter-spacing:.4px;
-      z-index:12;
-      display:none;
+      z-index:10;
       pointer-events:none;
     }
 
@@ -528,32 +465,19 @@
       overflow:hidden;
     }
 
-    /* ✅ Step 1: scale compensation so the preview fills the card */
+    /* Keep iframe in case it ever renders, but we no longer rely on it */
     .previewFrame{
       position:absolute;
       top:var(--p-top, 0px);
       left:var(--p-left, 0px);
-
       width: calc(100% / var(--p-scale, 1));
       height: calc(100% / var(--p-scale, 1));
-
       transform-origin: top left;
       transform: scale(var(--p-scale, 1));
       border:0;
-
-      /* default = NOT clickable */
-      pointer-events:none;
+      pointer-events:none; /* always non-interactive */
     }
 
-    /* ✅ TEMP: allow clicking inside previews to accept cookies */
-    .previewInteractive .previewFrame{
-      pointer-events:auto;
-    }
-    .previewInteractive .previewHint{
-      display:block;
-    }
-
-    /* ✅ UPDATED: mask must be below label, above iframe */
     .previewMaskTop{
       position:absolute;
       top:0; left:0; right:0;
@@ -572,6 +496,33 @@
       z-index:6;
       pointer-events:none;
       border-top:1px solid rgba(0,0,0,.08);
+    }
+
+    /* ✅ NEW: Always-works “Open” button overlay */
+    .previewOpen{
+      position:absolute;
+      right:14px;
+      bottom:14px;
+      z-index:12;
+      border:none;
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.6px;
+      cursor:pointer;
+      color:#fff;
+      background:linear-gradient(180deg, var(--sv-green), var(--sv-green-dark));
+      box-shadow:
+        8px 10px 18px rgba(0,0,0,.22),
+        -6px -6px 12px rgba(255,255,255,.65);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .previewOpen:active{
+      transform:translateY(2px);
+      box-shadow:
+        inset 6px 6px 12px rgba(0,0,0,.25),
+        inset -4px -4px 10px rgba(255,255,255,.25);
     }
 
     /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
@@ -595,7 +546,7 @@
       background:#fff;
     }
 
-    iframe{
+    iframe#frame{
       position:absolute;
       top:0;
       left:0;
@@ -625,14 +576,11 @@
       font-size:28px;
       font-weight:900;
       cursor:pointer;
-
       background:linear-gradient(180deg, var(--sv-green), var(--sv-green-dark));
       color:#ffffff;
-
       box-shadow:
         6px 6px 14px rgba(0,0,0,.25),
         -4px -4px 10px rgba(255,255,255,.8);
-
       transition:all .15s ease;
     }
 
@@ -709,28 +657,7 @@
       object-fit:contain;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
-
-    @media (max-width:1100px){
-      :root{ --logo-h: 92px; --title-size: 34px; --menu-font: 22px; }
-      .logoStripInner{ column-gap:24px; row-gap:14px; }
-      .menuShell{ grid-template-columns: 1.2fr 0.8fr; }
-    }
-
-    @media (max-width:900px){
-      :root{ --header-h: 220px; --logo-area-bottom: 92px; }
-      .menuShell{ grid-template-columns: 1fr; }
-      .previewBar{ grid-template-rows: 1fr 1fr 1fr; }
-      .tileTitle{ font-size:32px; }
-    }
-
-    @media (max-width:680px){
-      .menuView{ grid-template-columns:1fr; grid-template-rows:auto; }
-      .tile{ min-height:160px; }
-      .bottomRow{ flex-direction:column; align-items:flex-start; }
-      .menuBtn{ align-self:flex-end; }
-    }
   </style>
-  <!-- ====== STYLES END ====== -->
 </head>
 
 <body>
@@ -762,11 +689,8 @@
     <div class="content">
       <div class="console">
 
-        <!-- ================= MENU PAGE GAME RESULTS SHORTLIST ================= -->
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
-
           <nav class="menuView" id="menuView" aria-label="Main menu">
-
             <div class="tileSlot">
               <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results">
                 <span class="dot" aria-hidden="true"></span>
@@ -806,48 +730,55 @@
                 </div>
               </a>
             </div>
-
           </nav>
 
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
-
-            <!-- ✅ Cash Pot: includes preview mask + hint -->
             <div class="previewCard" id="pvCardCashPot" style="--p-scale:1; --p-top:-220px; --p-left:0px;">
               <div class="previewLabel">CASH POT</div>
-              <div class="previewHint">TAP “ACCEPT ALL” ONCE</div>
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
+
+              <button class="previewOpen" type="button"
+                data-url="https://supremeventures.com/game/cash-pot/"
+                data-zoom="1.10"
+                data-label="Cash Pot">OPEN</button>
+
               <div class="previewViewport">
                 <iframe class="previewFrame" id="pvCashPot" title="Cash Pot preview" referrerpolicy="no-referrer"></iframe>
               </div>
             </div>
 
-            <!-- ✅ Lotto -->
             <div class="previewCard" id="pvCardLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
               <div class="previewLabel">LOTTO</div>
-              <div class="previewHint">TAP “ACCEPT ALL” ONCE</div>
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
+
+              <button class="previewOpen" type="button"
+                data-url="https://supremeventures.com/game/lotto/"
+                data-zoom="1.10"
+                data-label="Lotto">OPEN</button>
+
               <div class="previewViewport">
                 <iframe class="previewFrame" id="pvLotto" title="Lotto preview" referrerpolicy="no-referrer"></iframe>
               </div>
             </div>
 
-            <!-- ✅ Super Lotto -->
             <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
               <div class="previewLabel">SUPER LOTTO</div>
-              <div class="previewHint">TAP “ACCEPT ALL” ONCE</div>
               <div class="previewMaskTop"></div>
               <div class="previewMaskBottom"></div>
+
+              <button class="previewOpen" type="button"
+                data-url="https://supremeventures.com/game/super-lotto/"
+                data-zoom="1.10"
+                data-label="Super Lotto">OPEN</button>
+
               <div class="previewViewport">
                 <iframe class="previewFrame" id="pvSuperLotto" title="Super Lotto preview" referrerpolicy="no-referrer"></iframe>
               </div>
             </div>
-
           </section>
-
         </div>
-        <!-- ================= END MENU PAGE GAME RESULTS SHORTLIST ================= -->
 
         <section class="pageView" id="pageView" aria-label="Web view">
           <div class="frameWrap" id="frameWrap">
@@ -877,8 +808,6 @@
   </div>
 
   <script>
-    // ====== SCRIPT START ======
-    const menuView    = document.getElementById('menuView');
     const pageView    = document.getElementById('pageView');
     const frameWrap   = document.getElementById('frameWrap');
     const frame       = document.getElementById('frame');
@@ -936,22 +865,12 @@
       recenterIframe();
     }
 
-    /* ✅ NEW: enable clicking inside preview cards briefly (to accept cookies) */
-    function enablePreviewConsentMode(ms = 30000){
-      document.body.classList.add('previewInteractive');
-      setTimeout(() => {
-        document.body.classList.remove('previewInteractive');
-      }, ms);
-    }
-
-    /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
     function loadPreviews(){
       const bust = '?kiosk_preview=' + Date.now();
       pvCashPot.src    = 'https://supremeventures.com/game/cash-pot/' + bust;
       pvLotto.src      = 'https://supremeventures.com/game/lotto/' + bust;
       pvSuperLotto.src = 'https://supremeventures.com/game/super-lotto/' + bust;
     }
-    /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
 
     function showMenu(){
       showLoading(false);
@@ -962,9 +881,6 @@
       menuShell.style.display = 'grid';
       previewBar.style.display = 'grid';
       loadPreviews();
-
-      /* ✅ allow 30 seconds to tap "Accept All" in previews */
-      enablePreviewConsentMode(30000);
 
       pageView.style.display = 'none';
       headerTitle.textContent = 'SUPREME VENTURES RESULTS';
@@ -1006,6 +922,16 @@
       });
     });
 
+    // ✅ Preview OPEN buttons (works even if previews are blank)
+    document.querySelectorAll('.previewOpen').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.dataset.url;
+        const zoom = parseFloat(btn.dataset.zoom || '1');
+        const label = btn.dataset.label || 'Game';
+        showPage(url, label, zoom);
+      });
+    });
+
     zoomIn.addEventListener('click', () => applyZoom(currentZoom + 0.1));
     zoomOut.addEventListener('click', () => applyZoom(currentZoom - 0.1));
 
@@ -1020,6 +946,5 @@
     showMenu();
     setIdleTimer();
   </script>
-  <!-- ====== SCRIPT END ====== -->
 </body>
 </html>
