@@ -868,7 +868,7 @@
     async function loadPreviewData(){
       try{
         const bust = '?v=' + Date.now();
-        const res = await fetch('./data/lottery_previews.json' + bust, { cache: 'no-store' });
+        const res = await fetch('https://glenfordmcfarlane-ux.github.io/sv-results-kiosk/data/lottery_previews.json' + bust, { cache: 'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const json = await res.json();
         previewTargets.forEach(t => renderPreview(t.el, json[t.key]));
