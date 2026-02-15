@@ -56,11 +56,6 @@
       --ring-shadow-light: rgba(255,255,255,.65);
 
       --iframe-zoom: 1;
-
-      /* Preview defaults (kept, but previews may be blocked by browser policy) */
-      --pv-scale: 0.95;
-      --pv-top: -320px;
-      --pv-left: 0px;
     }
 
     *{ box-sizing:border-box; }
@@ -186,30 +181,6 @@
       pointer-events:none;
     }
 
-    .menuBtn:hover{
-      transform:translateY(-4px);
-      box-shadow:
-        0 18px 0 #9e8500,
-        0 40px 78px rgba(0,0,0,.34);
-      filter:saturate(1.05);
-    }
-
-    .menuBtn:active{
-      transform:translateY(8px);
-      box-shadow:
-        0 6px 0 #9e8500,
-        0 18px 32px rgba(0,0,0,.26);
-      filter:saturate(.98);
-    }
-
-    .menuBtn:focus-visible{
-      outline:none;
-      box-shadow:
-        0 14px 0 #9e8500,
-        0 34px 64px rgba(0,0,0,.30),
-        var(--focus);
-    }
-
     .content{
       flex:1;
       min-height:0;
@@ -224,8 +195,8 @@
     .console{
       width:100%;
       height:100%;
-      border-radius:var(--console-radius);
-      padding:var(--console-pad);
+      border-radius:28px;
+      padding:22px;
       position:relative;
       overflow:visible;
 
@@ -242,27 +213,28 @@
         linear-gradient(180deg, #f2f4f7 0%, #d8dee6 100%);
 
       box-shadow:
-        18px 18px 40px var(--console-edge-dark),
-        -10px -10px 26px var(--console-edge-light),
-        inset 10px 10px 18px var(--console-inset-dark),
-        inset -10px -10px 18px var(--console-inset-light);
-    }
-
-    .console::before{
-      content:"";
-      position:absolute;
-      inset:12px;
-      border-radius:calc(var(--console-radius) - 12px);
-      background:
-        radial-gradient(700px 520px at 20% 20%, rgba(255,255,255,.22), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,.06), rgba(255,255,255,.02));
-      box-shadow:
-        inset 10px 10px 18px rgba(0,0,0,.10),
-        inset -10px -10px 18px rgba(255,255,255,.45);
-      pointer-events:none;
+        18px 18px 40px rgba(0,0,0,.22),
+        -10px -10px 26px rgba(255,255,255,.75),
+        inset 10px 10px 18px rgba(0,0,0,.18),
+        inset -10px -10px 18px rgba(255,255,255,.55);
     }
 
     .console > *{ position:relative; z-index:1; }
+
+    .menuShell{
+      width:100%;
+      height:100%;
+      min-height:0;
+      display:grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap:18px;
+      align-items:stretch;
+
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding-right:6px;
+      -webkit-overflow-scrolling:touch;
+    }
 
     .menuView{
       width:100%;
@@ -270,31 +242,20 @@
       display:grid;
       grid-template-columns:1fr 1fr;
       grid-template-rows:1fr 1fr;
-      gap:var(--gap);
+      gap:18px;
     }
 
     .tileSlot{
       position:relative;
-      border-radius:var(--ring-radius);
-      padding:var(--ring-gap);
+      border-radius:46px;
+      padding:12px;
       background:
         linear-gradient(180deg, rgba(0,0,0,.10), rgba(255,255,255,.10)),
         linear-gradient(180deg, #edf1f6 0%, #d7dde6 100%);
       box-shadow:
-        inset 12px 12px 18px var(--ring-shadow-dark),
-        inset -12px -12px 18px var(--ring-shadow-light),
+        inset 12px 12px 18px rgba(0,0,0,.20),
+        inset -12px -12px 18px rgba(255,255,255,.65),
         0 10px 24px rgba(0,0,0,.06);
-    }
-
-    .tileSlot::before{
-      content:"";
-      position:absolute;
-      inset:var(--ring-thickness);
-      border-radius:calc(var(--ring-radius) - var(--ring-thickness));
-      box-shadow:
-        inset 2px 2px 0 rgba(255,255,255,.55),
-        inset -2px -2px 0 rgba(0,0,0,.08);
-      pointer-events:none;
     }
 
     .tile{
@@ -308,40 +269,25 @@
       color:#fff;
       user-select:none;
       -webkit-tap-highlight-color:transparent;
-      border-radius:var(--bevel-radius);
+      border-radius:44px;
       padding:0;
       background:linear-gradient(180deg,#0d5f35,#0a4e2b);
       box-shadow:
         20px 22px 44px rgba(0,0,0,.42),
         -10px -10px 22px rgba(255,255,255,.55);
-      transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
     }
 
     .tile::before{
       content:"";
       position:absolute;
-      inset:var(--bevel);
-      border-radius:var(--face-radius);
+      inset:12px;
+      border-radius:32px;
       background:
         radial-gradient(circle at 30% 25%, #20b76a 0%, #0b7a3b 50%, #075c2c 100%);
       box-shadow:
         inset 8px 8px 16px rgba(255,255,255,.22),
         inset -14px -18px 30px rgba(0,0,0,.55);
       z-index:0;
-    }
-
-    .tile::after{
-      content:"";
-      position:absolute;
-      left:calc(var(--bevel) + 10px);
-      right:calc(var(--bevel) + 10px);
-      top:calc(var(--bevel) + 10px);
-      height:40%;
-      border-radius:calc(var(--face-radius) - 10px);
-      background:linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0));
-      filter:blur(.25px);
-      z-index:1;
-      pointer-events:none;
     }
 
     .tile .dot{
@@ -357,77 +303,15 @@
     }
 
     .tileContent{ position:relative; z-index:2; padding:22px; }
-
-    .tileTitle{
-      font-size:34px;
-      font-weight:900;
-      line-height:1.05;
-      text-shadow:0 10px 18px rgba(0,0,0,.35);
-    }
-
-    .sub{
-      display:block;
-      margin-top:8px;
-      font-size:16px;
-      font-weight:800;
-      color:rgba(255,255,255,.92);
-    }
-
-    .tile:hover{
-      transform:translateY(-6px);
-      box-shadow:
-        26px 28px 56px rgba(0,0,0,.48),
-        -12px -12px 26px rgba(255,255,255,.62);
-      filter:saturate(1.06);
-    }
-
-    .tile:active{
-      transform:translateY(4px) scale(var(--tap));
-      box-shadow:
-        10px 10px 22px rgba(0,0,0,.42),
-        -4px -4px 10px rgba(255,255,255,.40);
-      filter:saturate(.98);
-    }
-
-    .tile:focus-visible{
-      outline:none;
-      box-shadow:
-        20px 22px 44px rgba(0,0,0,.42),
-        -10px -10px 22px rgba(255,255,255,.55),
-        var(--focus);
-    }
-
-    /* ================= MENU PAGE GAME RESULTS SHORTLIST ================= */
-
-    .menuShell{
-      width:100%;
-      height:100%;
-      min-height:0;
-      display:grid;
-      grid-template-columns: 1.35fr 0.65fr;
-      gap:var(--gap);
-      align-items:stretch;
-
-      overflow-y:auto;
-      overflow-x:hidden;
-      padding-right:6px;
-      -webkit-overflow-scrolling:touch;
-    }
-
-    .menuShell::-webkit-scrollbar{ width:10px; }
-    .menuShell::-webkit-scrollbar-track{ background:rgba(0,0,0,.06); border-radius:10px; }
-    .menuShell::-webkit-scrollbar-thumb{ background:rgba(11,122,59,.55); border-radius:10px; }
-    .menuShell::-webkit-scrollbar-thumb:hover{ background:rgba(11,122,59,.75); }
-
-    .menuShell .menuView{ height:100%; }
-    .menuShell .tileSlot{ padding:10px; border-radius:40px; }
+    .tileTitle{ font-size:34px; font-weight:900; line-height:1.05; text-shadow:0 10px 18px rgba(0,0,0,.35); }
+    .sub{ display:block; margin-top:8px; font-size:16px; font-weight:800; color:rgba(255,255,255,.92); }
 
     .previewBar{
       height:100%;
       display:grid;
       grid-template-columns:1fr;
       grid-template-rows:1fr 1fr 1fr;
-      gap:var(--gap);
+      gap:18px;
     }
 
     .previewCard{
@@ -438,10 +322,6 @@
       box-shadow:0 10px 22px rgba(0,0,0,.14);
       position:relative;
       min-height:240px;
-
-      --p-scale: var(--pv-scale);
-      --p-top: var(--pv-top);
-      --p-left: var(--pv-left);
     }
 
     .previewLabel{
@@ -459,46 +339,61 @@
       pointer-events:none;
     }
 
-    .previewViewport{
+    /* ✅ NEW: Data preview UI */
+    .previewData{
       position:absolute;
       inset:0;
-      overflow:hidden;
+      padding:56px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:12px;
+      background:#fff;
+      color:#103b25;
+    }
+    .previewMeta{
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.4px;
+      opacity:.9;
+    }
+    .previewNumbers{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    .ball{
+      min-width:44px;
+      height:44px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      font-size:18px;
+      background:linear-gradient(180deg,#f3f6f9,#dfe6ee);
+      box-shadow:
+        inset 2px 2px 0 rgba(255,255,255,.8),
+        inset -2px -2px 0 rgba(0,0,0,.08),
+        0 8px 18px rgba(0,0,0,.10);
+    }
+    .ball.plus{
+      min-width:auto;
+      padding:0 10px;
+      border-radius:14px;
+      font-size:16px;
+      background:linear-gradient(180deg,#fff2b8,#f2c300);
+      color:#1a1a1a;
+    }
+    .previewNote{
+      margin-top:4px;
+      font-size:12px;
+      font-weight:900;
+      opacity:.75;
     }
 
-    /* Keep iframe in case it ever renders, but we no longer rely on it */
-    .previewFrame{
-      position:absolute;
-      top:var(--p-top, 0px);
-      left:var(--p-left, 0px);
-      width: calc(100% / var(--p-scale, 1));
-      height: calc(100% / var(--p-scale, 1));
-      transform-origin: top left;
-      transform: scale(var(--p-scale, 1));
-      border:0;
-      pointer-events:none; /* always non-interactive */
-    }
-
-    .previewMaskTop{
-      position:absolute;
-      top:0; left:0; right:0;
-      height:90px;
-      background:#ffffff;
-      z-index:6;
-      pointer-events:none;
-      border-bottom:1px solid rgba(0,0,0,.08);
-    }
-
-    .previewMaskBottom{
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height:0px;
-      background:#ffffff;
-      z-index:6;
-      pointer-events:none;
-      border-top:1px solid rgba(0,0,0,.08);
-    }
-
-    /* ✅ NEW: Always-works “Open” button overlay */
+    /* ✅ Open button overlay */
     .previewOpen{
       position:absolute;
       right:14px;
@@ -525,13 +420,11 @@
         inset -4px -4px 10px rgba(255,255,255,.25);
     }
 
-    /* ================= END MENU PAGE GAME RESULTS SHORTLIST ================= */
-
     .pageView{
       width:100%;
       height:100%;
       display:none;
-      border-radius:var(--radius);
+      border-radius:20px;
       overflow:hidden;
       border:1px solid rgba(0,0,0,.12);
       background:#ffffff;
@@ -581,14 +474,6 @@
       box-shadow:
         6px 6px 14px rgba(0,0,0,.25),
         -4px -4px 10px rgba(255,255,255,.8);
-      transition:all .15s ease;
-    }
-
-    .zoomBtn:active{
-      transform:translateY(3px);
-      box-shadow:
-        inset 6px 6px 12px rgba(0,0,0,.25),
-        inset -4px -4px 10px rgba(255,255,255,.25);
     }
 
     .loading{
@@ -610,7 +495,6 @@
       border-top-color: rgba(11,122,59,.9);
       animation: spin .9s linear infinite;
     }
-
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
     .topMask{
@@ -733,50 +617,52 @@
           </nav>
 
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
-            <div class="previewCard" id="pvCardCashPot" style="--p-scale:1; --p-top:-220px; --p-left:0px;">
+
+            <div class="previewCard" id="pvCardCashPot">
               <div class="previewLabel">CASH POT</div>
-              <div class="previewMaskTop"></div>
-              <div class="previewMaskBottom"></div>
 
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/cash-pot/"
                 data-zoom="1.10"
                 data-label="Cash Pot">OPEN</button>
 
-              <div class="previewViewport">
-                <iframe class="previewFrame" id="pvCashPot" title="Cash Pot preview" referrerpolicy="no-referrer"></iframe>
+              <div class="previewData" id="pvCashPotData">
+                <div class="previewMeta">LOADING…</div>
+                <div class="previewNumbers"></div>
+                <div class="previewNote"></div>
               </div>
             </div>
 
-            <div class="previewCard" id="pvCardLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
+            <div class="previewCard" id="pvCardLotto">
               <div class="previewLabel">LOTTO</div>
-              <div class="previewMaskTop"></div>
-              <div class="previewMaskBottom"></div>
 
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/lotto/"
                 data-zoom="1.10"
                 data-label="Lotto">OPEN</button>
 
-              <div class="previewViewport">
-                <iframe class="previewFrame" id="pvLotto" title="Lotto preview" referrerpolicy="no-referrer"></iframe>
+              <div class="previewData" id="pvLottoData">
+                <div class="previewMeta">LOADING…</div>
+                <div class="previewNumbers"></div>
+                <div class="previewNote"></div>
               </div>
             </div>
 
-            <div class="previewCard" id="pvCardSuperLotto" style="--p-scale:0.95; --p-top:-320px; --p-left:0px;">
+            <div class="previewCard" id="pvCardSuperLotto">
               <div class="previewLabel">SUPER LOTTO</div>
-              <div class="previewMaskTop"></div>
-              <div class="previewMaskBottom"></div>
 
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/super-lotto/"
                 data-zoom="1.10"
                 data-label="Super Lotto">OPEN</button>
 
-              <div class="previewViewport">
-                <iframe class="previewFrame" id="pvSuperLotto" title="Super Lotto preview" referrerpolicy="no-referrer"></iframe>
+              <div class="previewData" id="pvSuperLottoData">
+                <div class="previewMeta">LOADING…</div>
+                <div class="previewNumbers"></div>
+                <div class="previewNote"></div>
               </div>
             </div>
+
           </section>
         </div>
 
@@ -820,10 +706,6 @@
     const menuShell   = document.getElementById('menuShell');
     const previewBar  = document.getElementById('previewBar');
 
-    const pvCashPot   = document.getElementById('pvCashPot');
-    const pvLotto     = document.getElementById('pvLotto');
-    const pvSuperLotto= document.getElementById('pvSuperLotto');
-
     const zoomIn  = document.getElementById('zoomIn');
     const zoomOut = document.getElementById('zoomOut');
     let currentZoom = 1;
@@ -865,13 +747,6 @@
       recenterIframe();
     }
 
-    function loadPreviews(){
-      const bust = '?kiosk_preview=' + Date.now();
-      pvCashPot.src    = 'https://supremeventures.com/game/cash-pot/' + bust;
-      pvLotto.src      = 'https://supremeventures.com/game/lotto/' + bust;
-      pvSuperLotto.src = 'https://supremeventures.com/game/super-lotto/' + bust;
-    }
-
     function showMenu(){
       showLoading(false);
       frame.src = 'about:blank';
@@ -880,7 +755,6 @@
 
       menuShell.style.display = 'grid';
       previewBar.style.display = 'grid';
-      loadPreviews();
 
       pageView.style.display = 'none';
       headerTitle.textContent = 'SUPREME VENTURES RESULTS';
@@ -888,6 +762,8 @@
       applyZoom(1);
 
       menuShell.scrollTop = 0;
+
+      loadPreviewData(); // ✅ load JSON previews
     }
 
     function showPage(url, label, zoom=1){
@@ -922,7 +798,6 @@
       });
     });
 
-    // ✅ Preview OPEN buttons (works even if previews are blank)
     document.querySelectorAll('.previewOpen').forEach(btn => {
       btn.addEventListener('click', () => {
         const url = btn.dataset.url;
@@ -942,6 +817,72 @@
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') showMenu();
     });
+
+    /* ========= Preview Data Loader (reads local JSON) ========= */
+    const previewTargets = [
+      { key: 'cash_pot',    el: document.getElementById('pvCashPotData') },
+      { key: 'lotto',       el: document.getElementById('pvLottoData') },
+      { key: 'super_lotto', el: document.getElementById('pvSuperLottoData') },
+    ];
+
+    function renderPreview(el, game){
+      const meta = el.querySelector('.previewMeta');
+      const nums = el.querySelector('.previewNumbers');
+      const note = el.querySelector('.previewNote');
+
+      if (!game){
+        meta.textContent = 'NO DATA';
+        nums.innerHTML = '';
+        note.textContent = '';
+        return;
+      }
+
+      const metaParts = [];
+      if (game.drawDate) metaParts.push(game.drawDate);
+      if (game.drawTime) metaParts.push(game.drawTime);
+      meta.textContent = metaParts.join(' • ') || (game.title || 'RESULT');
+
+      nums.innerHTML = '';
+      (game.numbers || []).forEach(n => {
+        const b = document.createElement('div');
+        b.className = 'ball';
+        b.textContent = n;
+        nums.appendChild(b);
+      });
+
+      if (game.bonus){
+        const plus = document.createElement('div');
+        plus.className = 'ball plus';
+        plus.textContent = '+';
+        nums.appendChild(plus);
+
+        const b2 = document.createElement('div');
+        b2.className = 'ball';
+        b2.textContent = game.bonus;
+        nums.appendChild(b2);
+      }
+
+      note.textContent = game.note || '';
+    }
+
+    async function loadPreviewData(){
+      try{
+        const bust = '?v=' + Date.now();
+        const res = await fetch('./data/lottery_previews.json' + bust, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        previewTargets.forEach(t => renderPreview(t.el, json[t.key]));
+      }catch(err){
+        previewTargets.forEach(t => {
+          const meta = t.el.querySelector('.previewMeta');
+          const nums = t.el.querySelector('.previewNumbers');
+          const note = t.el.querySelector('.previewNote');
+          meta.textContent = 'PREVIEW UNAVAILABLE';
+          nums.innerHTML = '';
+          note.textContent = 'WAITING FOR DATA FILE…';
+        });
+      }
+    }
 
     showMenu();
     setIdleTimer();
