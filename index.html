@@ -339,7 +339,6 @@
       pointer-events:none;
     }
 
-    /* ✅ NEW: Data preview UI */
     .previewData{
       position:absolute;
       inset:0;
@@ -393,7 +392,6 @@
       opacity:.75;
     }
 
-    /* ✅ Open button overlay */
     .previewOpen{
       position:absolute;
       right:14px;
@@ -763,7 +761,7 @@
 
       menuShell.scrollTop = 0;
 
-      loadPreviewData(); // ✅ load JSON previews
+      loadPreviewData();
     }
 
     function showPage(url, label, zoom=1){
@@ -818,7 +816,7 @@
       if (e.key === 'Escape') showMenu();
     });
 
-    /* ========= Preview Data Loader (reads local JSON) ========= */
+    /* ========= Preview Data Loader (reads JSON from sv-results-kiosk) ========= */
     const previewTargets = [
       { key: 'cash_pot',    el: document.getElementById('pvCashPotData') },
       { key: 'lotto',       el: document.getElementById('pvLottoData') },
@@ -866,12 +864,50 @@
     }
 
     async function loadPreviewData(){
+      // Absolute URL so kiosk-menu always pulls the right JSON file
+      const DATA_URL = 'https://glenfordmcfarlane-ux.github.io/sv-results-kiosk/data/lottery_previews.json';
+
       try{
         const bust = '?v=' + Date.now();
-        const res = await fetch('https://glenfordmcfarlane-ux.github.io/sv-results-kiosk/data/lottery_previews.json' + bust, { cache: 'no-store' });
+        const res = await fetch(DATA_URL + bust, { cache: 'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
+
         const json = await res.json();
-        previewTargets.forEach(t => renderPreview(t.el, json[t.key]));
+        const games = json.games || {};
+
+        function toPreview(key, g){
+          if (!g) return null;
+
+          // Cash Pot: single number + label + draw no
+          if (key === 'cash_pot'){
+            const latest = g.latest || null;
+            if (!latest){
+              return { drawDate: g.date || '', drawTime: '', numbers: [], bonus:null, note:'NO LATEST DRAW' };
+            }
+            return {
+              drawDate: g.date || '',
+              drawTime: latest.time || '',
+              numbers: (latest.number != null) ? [latest.number] : [],
+              bonus: null,
+              note: [latest.label, latest.draw_no ? `#${latest.draw_no}` : ''].filter(Boolean).join(' • ')
+            };
+          }
+
+          // Lotto / Super Lotto
+          return {
+            drawDate: g.date || '',
+            drawTime: '',
+            numbers: Array.isArray(g.numbers) ? g.numbers : [],
+            bonus: g.bonus ?? null,
+            note: g.next_jackpot ? `Next Jackpot: ${g.next_jackpot}` : ''
+          };
+        }
+
+        previewTargets.forEach(t => {
+          const g = games[t.key];
+          renderPreview(t.el, toPreview(t.key, g));
+        });
+
       }catch(err){
         previewTargets.forEach(t => {
           const meta = t.el.querySelector('.previewMeta');
@@ -881,6 +917,7 @@
           nums.innerHTML = '';
           note.textContent = 'WAITING FOR DATA FILE…';
         });
+        console.error('Preview load failed:', err);
       }
     }
 
