@@ -41,19 +41,6 @@
 
       --console-radius: 28px;
       --console-pad: 22px;
-      --console-edge-dark: rgba(0,0,0,.22);
-      --console-edge-light: rgba(255,255,255,.75);
-      --console-inset-dark: rgba(0,0,0,.18);
-      --console-inset-light: rgba(255,255,255,.55);
-
-      --tile-shadow-dark: rgba(0,0,0,.58);
-      --tile-shadow-light: rgba(255,255,255,.72);
-
-      --ring-radius: 46px;
-      --ring-thickness: 10px;
-      --ring-gap: 12px;
-      --ring-shadow-dark: rgba(0,0,0,.20);
-      --ring-shadow-light: rgba(255,255,255,.65);
 
       --iframe-zoom: 1;
     }
@@ -156,11 +143,11 @@
       border:3px solid rgba(242,195,0,.95);
       background:linear-gradient(145deg, #ffe58a, #caa800);
       color:#1a1a1a;
-      font-size:var(--menu-font);
+      font-size:28px;
       font-weight:900;
       letter-spacing:.5px;
-      padding:var(--menu-pad-y) var(--menu-pad-x);
-      border-radius:var(--menu-radius);
+      padding:22px 48px;
+      border-radius:26px;
       cursor:pointer;
       user-select:none;
       -webkit-tap-highlight-color:transparent;
@@ -176,7 +163,7 @@
       position:absolute;
       left:10px; right:10px; top:10px;
       height:44%;
-      border-radius:calc(var(--menu-radius) - 8px);
+      border-radius:18px;
       background:linear-gradient(to bottom, rgba(255,255,255,.45), rgba(255,255,255,0));
       pointer-events:none;
     }
@@ -411,12 +398,6 @@
         -6px -6px 12px rgba(255,255,255,.65);
       -webkit-tap-highlight-color:transparent;
     }
-    .previewOpen:active{
-      transform:translateY(2px);
-      box-shadow:
-        inset 6px 6px 12px rgba(0,0,0,.25),
-        inset -4px -4px 10px rgba(255,255,255,.25);
-    }
 
     .pageView{
       width:100%;
@@ -574,8 +555,8 @@
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
-              <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15" aria-label="Open Latest Results">
-                <span class="dot" aria-hidden="true"></span>
+              <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15">
+                <span class="dot"></span>
                 <div class="tileContent">
                   <div class="tileTitle">LATEST RESULTS</div>
                   <span class="sub">VIEW TODAY’S DRAW RESULTS</span>
@@ -584,8 +565,8 @@
             </div>
 
             <div class="tileSlot">
-              <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10" aria-label="Open Past Results">
-                <span class="dot" aria-hidden="true"></span>
+              <a class="tile" href="#" data-url="https://supremeventures.com/past-results/" data-zoom="1.10">
+                <span class="dot"></span>
                 <div class="tileContent">
                   <div class="tileTitle">PAST RESULTS</div>
                   <span class="sub">SEARCH PREVIOUS DRAWS</span>
@@ -594,8 +575,8 @@
             </div>
 
             <div class="tileSlot">
-              <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00" aria-label="Open Games">
-                <span class="dot" aria-hidden="true"></span>
+              <a class="tile" href="#" data-url="https://supremeventures.com/games/" data-zoom="1.00">
+                <span class="dot"></span>
                 <div class="tileContent">
                   <div class="tileTitle">GAMES</div>
                   <span class="sub">BROWSE AVAILABLE GAMES</span>
@@ -604,8 +585,8 @@
             </div>
 
             <div class="tileSlot">
-              <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20" aria-label="Responsible Gaming">
-                <span class="dot" aria-hidden="true"></span>
+              <a class="tile" href="#" data-url="https://supremeventures.com/responsible-gaming/" data-zoom="1.20">
+                <span class="dot"></span>
                 <div class="tileContent">
                   <div class="tileTitle">RESPONSIBLE GAMING</div>
                   <span class="sub">GENERAL INFORMATION</span>
@@ -616,9 +597,8 @@
 
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
-            <div class="previewCard" id="pvCardCashPot">
+            <div class="previewCard">
               <div class="previewLabel">CASH POT</div>
-
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/cash-pot/"
                 data-zoom="1.10"
@@ -631,9 +611,8 @@
               </div>
             </div>
 
-            <div class="previewCard" id="pvCardLotto">
+            <div class="previewCard">
               <div class="previewLabel">LOTTO</div>
-
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/lotto/"
                 data-zoom="1.10"
@@ -646,9 +625,8 @@
               </div>
             </div>
 
-            <div class="previewCard" id="pvCardSuperLotto">
+            <div class="previewCard">
               <div class="previewLabel">SUPER LOTTO</div>
-
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/super-lotto/"
                 data-zoom="1.10"
@@ -760,7 +738,6 @@
       applyZoom(1);
 
       menuShell.scrollTop = 0;
-
       loadPreviewData();
     }
 
@@ -769,12 +746,12 @@
       pageView.style.display = 'block';
       cookieMask.style.display = 'flex';
       topMask.style.display = 'flex';
-      headerTitle.textContent = label.toUpperCase();
+      headerTitle.textContent = String(label || 'PAGE').toUpperCase();
       menuBtn.setAttribute('aria-pressed', 'false');
 
       applyZoom(zoom);
-
       showLoading(true);
+
       const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
       frame.src = url + bust;
     }
@@ -791,7 +768,7 @@
         e.preventDefault();
         const url = tile.dataset.url;
         const zoom = parseFloat(tile.dataset.zoom || '1');
-        const label = tile.querySelector('.tileTitle').textContent.trim();
+        const label = tile.querySelector('.tileTitle')?.textContent?.trim() || 'PAGE';
         showPage(url, label, zoom);
       });
     });
@@ -816,12 +793,16 @@
       if (e.key === 'Escape') showMenu();
     });
 
-    /* ========= Preview Data Loader (reads JSON from sv-results-kiosk) ========= */
+    /* ========= Preview Data Loader (ROBUST) ========= */
     const previewTargets = [
       { key: 'cash_pot',    el: document.getElementById('pvCashPotData') },
       { key: 'lotto',       el: document.getElementById('pvLottoData') },
       { key: 'super_lotto', el: document.getElementById('pvSuperLottoData') },
     ];
+
+    function stripHtml(s){
+      return String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    }
 
     function renderPreview(el, game){
       const meta = el.querySelector('.previewMeta');
@@ -836,15 +817,15 @@
       }
 
       const metaParts = [];
-      if (game.drawDate) metaParts.push(game.drawDate);
-      if (game.drawTime) metaParts.push(game.drawTime);
-      meta.textContent = metaParts.join(' • ') || (game.title || 'RESULT');
+      if (game.drawDate) metaParts.push(stripHtml(game.drawDate));
+      if (game.drawTime) metaParts.push(stripHtml(game.drawTime));
+      meta.textContent = metaParts.join(' • ') || (stripHtml(game.title) || 'RESULT');
 
       nums.innerHTML = '';
-      (game.numbers || []).forEach(n => {
+      (Array.isArray(game.numbers) ? game.numbers : []).forEach(n => {
         const b = document.createElement('div');
         b.className = 'ball';
-        b.textContent = n;
+        b.textContent = String(n);
         nums.appendChild(b);
       });
 
@@ -856,57 +837,120 @@
 
         const b2 = document.createElement('div');
         b2.className = 'ball';
-        b2.textContent = game.bonus;
+        b2.textContent = String(game.bonus);
         nums.appendChild(b2);
       }
 
-      note.textContent = game.note || '';
+      note.textContent = stripHtml(game.note || '');
+    }
+
+    function normalizeFromAnySchema(rawJson){
+      // Accept BOTH:
+      // 1) { games: { cash_pot:{...}, lotto:{...}, super_lotto:{...} } }
+      // 2) { cash_pot:{...}, lotto:{...}, super_lotto:{...} }
+      const games = rawJson?.games && typeof rawJson.games === 'object'
+        ? rawJson.games
+        : rawJson;
+
+      function jackpotText(g){
+        const j = g?.next_jackpot ?? g?.jackpot ?? null;
+        if (j) return `Next Jackpot: ${j}`;
+        // If script already wrote a note like "Next Jackpot: $39M", keep it.
+        return g?.note ? String(g.note) : '';
+      }
+
+      function normCashPot(g){
+        if (!g) return null;
+
+        // NEW format already:
+        // { title, drawDate, drawTime, numbers:["30"], note:"..." }
+        if (Array.isArray(g.numbers) || g.drawDate || g.drawTime){
+          const numbers = Array.isArray(g.numbers) ? g.numbers : [];
+          return {
+            title: g.title || 'Cash Pot',
+            drawDate: stripHtml(g.drawDate || g.date || ''),
+            drawTime: stripHtml(g.drawTime || ''),
+            numbers: numbers.map(String),
+            bonus: null,
+            note: stripHtml(g.note || '')
+          };
+        }
+
+        // OLD format:
+        // { label, date, latest:{time, number, label, draw_no}, ... }
+        const latest = g.latest || null;
+        if (!latest){
+          return {
+            title: g.label || 'Cash Pot',
+            drawDate: stripHtml(g.date || ''),
+            drawTime: '',
+            numbers: [],
+            bonus: null,
+            note: 'NO LATEST DRAW'
+          };
+        }
+
+        const noteParts = [];
+        if (latest.label) noteParts.push(latest.label);
+        if (latest.draw_no) noteParts.push(`#${latest.draw_no}`);
+
+        return {
+          title: g.label || 'Cash Pot',
+          drawDate: stripHtml(g.date || ''),
+          drawTime: stripHtml(latest.time || ''),
+          numbers: (latest.number != null) ? [String(latest.number)] : [],
+          bonus: null,
+          note: noteParts.join(' • ')
+        };
+      }
+
+      function normLottoLike(g, titleFallback){
+        if (!g) return null;
+
+        // If the script already outputs the "final preview format"
+        if (Array.isArray(g.numbers) || g.drawDate){
+          return {
+            title: g.title || titleFallback,
+            drawDate: stripHtml(g.drawDate || g.date || ''),
+            drawTime: stripHtml(g.drawTime || ''),
+            numbers: (Array.isArray(g.numbers) ? g.numbers : []).map(String),
+            bonus: (g.bonus != null && g.bonus !== '') ? String(g.bonus) : null,
+            note: stripHtml(g.note || jackpotText(g))
+          };
+        }
+
+        // Old schema: { label, date, numbers:[], bonus, next_jackpot }
+        return {
+          title: g.label || titleFallback,
+          drawDate: stripHtml(g.date || ''),
+          drawTime: '',
+          numbers: (Array.isArray(g.numbers) ? g.numbers : []).map(String),
+          bonus: (g.bonus != null && g.bonus !== '') ? String(g.bonus) : null,
+          note: stripHtml(jackpotText(g))
+        };
+      }
+
+      return {
+        cash_pot: normCashPot(games?.cash_pot),
+        lotto: normLottoLike(games?.lotto, 'Lotto'),
+        super_lotto: normLottoLike(games?.super_lotto, 'Super Lotto'),
+      };
     }
 
     async function loadPreviewData(){
-      // Absolute URL so kiosk-menu always pulls the right JSON file
-      const DATA_URL = 'https://glenfordmcfarlane-ux.github.io/sv-results-kiosk/data/lottery_previews.json';
+      // ✅ Always pull from sv-results-kiosk (absolute URL)
+      const DATA_URL =
+        'https://glenfordmcfarlane-ux.github.io/sv-results-kiosk/data/lottery_previews.json';
 
       try{
         const bust = '?v=' + Date.now();
         const res = await fetch(DATA_URL + bust, { cache: 'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
 
-        const json = await res.json();
-        const games = json.games || {};
+        const rawJson = await res.json();
+        const normalized = normalizeFromAnySchema(rawJson);
 
-        function toPreview(key, g){
-          if (!g) return null;
-
-          // Cash Pot: single number + label + draw no
-          if (key === 'cash_pot'){
-            const latest = g.latest || null;
-            if (!latest){
-              return { drawDate: g.date || '', drawTime: '', numbers: [], bonus:null, note:'NO LATEST DRAW' };
-            }
-            return {
-              drawDate: g.date || '',
-              drawTime: latest.time || '',
-              numbers: (latest.number != null) ? [latest.number] : [],
-              bonus: null,
-              note: [latest.label, latest.draw_no ? `#${latest.draw_no}` : ''].filter(Boolean).join(' • ')
-            };
-          }
-
-          // Lotto / Super Lotto
-          return {
-            drawDate: g.date || '',
-            drawTime: '',
-            numbers: Array.isArray(g.numbers) ? g.numbers : [],
-            bonus: g.bonus ?? null,
-            note: g.next_jackpot ? `Next Jackpot: ${g.next_jackpot}` : ''
-          };
-        }
-
-        previewTargets.forEach(t => {
-          const g = games[t.key];
-          renderPreview(t.el, toPreview(t.key, g));
-        });
+        previewTargets.forEach(t => renderPreview(t.el, normalized[t.key] || null));
 
       }catch(err){
         previewTargets.forEach(t => {
