@@ -399,6 +399,85 @@
       -webkit-tap-highlight-color:transparent;
     }
 
+    /* =========================
+       CASH POT 2-ROW PREVIEW UI
+       ========================= */
+    .cpList{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:4px;
+      width:100%;
+    }
+    .cpRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .cpTime{
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.6px;
+      padding:8px 10px;
+      border-radius:12px;
+      background:rgba(11,122,59,.10);
+      border:1px solid rgba(11,122,59,.22);
+      color:#0b3f22;
+    }
+    .cpNum{
+      min-width:52px;
+      height:52px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      font-size:20px;
+      background:linear-gradient(180deg,#f3f6f9,#dfe6ee);
+      box-shadow:
+        inset 2px 2px 0 rgba(255,255,255,.8),
+        inset -2px -2px 0 rgba(0,0,0,.08),
+        0 10px 18px rgba(0,0,0,.10);
+    }
+    .cpLabel{
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+      font-weight:1000;
+      letter-spacing:.5px;
+      background:linear-gradient(180deg,#0b7a3b,#075c2c);
+      color:#fff;
+      box-shadow:0 10px 18px rgba(0,0,0,.14);
+    }
+    .cpPlus{
+      font-weight:1000;
+      opacity:.8;
+      margin:0 2px;
+    }
+    .cpColor{
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      font-size:12px;
+      text-transform:uppercase;
+      box-shadow:
+        inset 2px 2px 0 rgba(255,255,255,.7),
+        inset -2px -2px 0 rgba(0,0,0,.08),
+        0 10px 18px rgba(0,0,0,.10);
+      border:1px solid rgba(0,0,0,.12);
+    }
+    .cpColor.white{ background:linear-gradient(180deg,#ffffff,#e9eef3); color:#1a1a1a; }
+    .cpColor.red{ background:linear-gradient(180deg,#ff6b6b,#d84040); color:#fff; }
+    .cpColor.blue{ background:linear-gradient(180deg,#59a8ff,#2e6fd6); color:#fff; }
+    .cpColor.green{ background:linear-gradient(180deg,#57d28f,#1fa45c); color:#fff; }
+    .cpColor.yellow{ background:linear-gradient(180deg,#fff2b8,#f2c300); color:#1a1a1a; }
+    .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
+
     .pageView{
       width:100%;
       height:100%;
@@ -793,7 +872,7 @@
       if (e.key === 'Escape') showMenu();
     });
 
-    /* ========= Preview Data Loader (ROBUST) ========= */
+    /* ========= Preview Data Loader ========= */
     const previewTargets = [
       { key: 'cash_pot',    el: document.getElementById('pvCashPotData') },
       { key: 'lotto',       el: document.getElementById('pvLottoData') },
@@ -804,7 +883,8 @@
       return String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     }
 
-    function renderPreview(el, game){
+    /* ---------- Standard Lotto/Super render ---------- */
+    function renderStandard(el, game){
       const meta = el.querySelector('.previewMeta');
       const nums = el.querySelector('.previewNumbers');
       const note = el.querySelector('.previewNote');
@@ -816,10 +896,7 @@
         return;
       }
 
-      const metaParts = [];
-      if (game.drawDate) metaParts.push(stripHtml(game.drawDate));
-      if (game.drawTime) metaParts.push(stripHtml(game.drawTime));
-      meta.textContent = metaParts.join(' • ') || (stripHtml(game.title) || 'RESULT');
+      meta.textContent = stripHtml(game.drawDate || game.date || game.title || 'RESULT');
 
       nums.innerHTML = '';
       (Array.isArray(game.numbers) ? game.numbers : []).forEach(n => {
@@ -841,7 +918,149 @@
         nums.appendChild(b2);
       }
 
-      note.textContent = stripHtml(game.note || '');
+      const jp = game.next_jackpot ?? game.jackpot ?? null;
+      note.textContent = jp ? `Next Jackpot: ${jp}` : stripHtml(game.note || '');
+    }
+
+    /* ---------- Cash Pot helpers (time-aware 2 rows) ---------- */
+    function parseTimeToMinutes(t){
+      // "8:30AM" => minutes since midnight
+      if (!t) return null;
+      const m = String(t).match(/(\d{1,2}):(\d{2})(AM|PM)/i);
+      if (!m) return null;
+      let hh = parseInt(m[1],10);
+      const mm = parseInt(m[2],10);
+      const ap = m[3].toUpperCase();
+      if (ap === 'PM' && hh !== 12) hh += 12;
+      if (ap === 'AM' && hh === 12) hh = 0;
+      return hh*60 + mm;
+    }
+
+    function nowMinutesJamaica(){
+      // robust: use Intl with America/Jamaica
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Jamaica',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).formatToParts(new Date());
+      const hh = parseInt(parts.find(p=>p.type==='hour')?.value || '0',10);
+      const mm = parseInt(parts.find(p=>p.type==='minute')?.value || '0',10);
+      return hh*60 + mm;
+    }
+
+    function pickTwoCashPotDraws(draws){
+      const nowMins = nowMinutesJamaica();
+      const enhanced = draws.map(d => ({
+        ...d,
+        mins: parseTimeToMinutes(d.at)
+      })).filter(d => d.mins != null);
+
+      if (!enhanced.length) return draws.slice(0,2);
+
+      const completed = enhanced.filter(d => d.mins <= nowMins);
+      if (completed.length >= 2) return completed.slice(-2);
+      if (completed.length === 1){
+        const next = enhanced.find(d => d.mins > nowMins);
+        return next ? [completed[0], next] : [completed[0]];
+      }
+      return enhanced.slice(0,2);
+    }
+
+    function renderCashPot(el, cash){
+      const meta = el.querySelector('.previewMeta');
+      const nums = el.querySelector('.previewNumbers');
+      const note = el.querySelector('.previewNote');
+
+      if (!cash){
+        meta.textContent = 'NO DATA';
+        nums.innerHTML = '';
+        note.textContent = '';
+        return;
+      }
+
+      // If NEW format exists: { drawDate, draws:[...] }
+      const drawDate = stripHtml(cash.drawDate || cash.date || '');
+      meta.textContent = drawDate || 'CASH POT';
+
+      nums.innerHTML = '';
+      note.textContent = '';
+
+      const draws = Array.isArray(cash.draws) ? cash.draws : null;
+
+      if (draws && draws.length){
+        const list = document.createElement('div');
+        list.className = 'cpList';
+
+        pickTwoCashPotDraws(draws).forEach(d => {
+          const row = document.createElement('div');
+          row.className = 'cpRow';
+
+          const time = document.createElement('div');
+          time.className = 'cpTime';
+          const bits = [
+            stripHtml(d.time || ''),
+            d.at ? String(d.at).toUpperCase() : '',
+            d.draw_no ? `#${stripHtml(d.draw_no)}` : ''
+          ].filter(Boolean);
+          time.textContent = bits.join('  ');
+
+          const num = document.createElement('div');
+          num.className = 'cpNum';
+          num.textContent = d.number != null ? String(d.number) : '';
+
+          const label = document.createElement('div');
+          label.className = 'cpLabel';
+          label.textContent = stripHtml(d.label || '—').toUpperCase();
+
+          const plus1 = document.createElement('div');
+          plus1.className = 'cpPlus';
+          plus1.textContent = '+';
+
+          const c1 = document.createElement('div');
+          const col1 = (d.colors && d.colors[0]) ? String(d.colors[0]).toLowerCase() : 'white';
+          c1.className = `cpColor ${col1}`;
+          c1.textContent = col1;
+
+          const plus2 = document.createElement('div');
+          plus2.className = 'cpPlus';
+          plus2.textContent = '+';
+
+          const c2 = document.createElement('div');
+          const col2 = (d.colors && d.colors[1]) ? String(d.colors[1]).toLowerCase() : 'white';
+          c2.className = `cpColor ${col2}`;
+          c2.textContent = col2;
+
+          row.appendChild(time);
+          row.appendChild(num);
+          row.appendChild(label);
+          row.appendChild(plus1);
+          row.appendChild(c1);
+          row.appendChild(plus2);
+          row.appendChild(c2);
+
+          list.appendChild(row);
+        });
+
+        nums.appendChild(list);
+        return;
+      }
+
+      // FALLBACK (old/simple format): { drawTime, numbers:[...], note }
+      const fallbackNumbers = Array.isArray(cash.numbers) ? cash.numbers : [];
+      if (fallbackNumbers.length){
+        const b = document.createElement('div');
+        b.className = 'ball';
+        b.textContent = String(fallbackNumbers[0]);
+        nums.appendChild(b);
+        note.textContent = stripHtml(cash.note || '');
+        return;
+      }
+
+      // Nothing usable
+      meta.textContent = 'NO DATA';
+      nums.innerHTML = '';
+      note.textContent = '';
     }
 
     function normalizeFromAnySchema(rawJson){
@@ -852,93 +1071,14 @@
         ? rawJson.games
         : rawJson;
 
-      function jackpotText(g){
-        const j = g?.next_jackpot ?? g?.jackpot ?? null;
-        if (j) return `Next Jackpot: ${j}`;
-        // If script already wrote a note like "Next Jackpot: $39M", keep it.
-        return g?.note ? String(g.note) : '';
-      }
-
-      function normCashPot(g){
-        if (!g) return null;
-
-        // NEW format already:
-        // { title, drawDate, drawTime, numbers:["30"], note:"..." }
-        if (Array.isArray(g.numbers) || g.drawDate || g.drawTime){
-          const numbers = Array.isArray(g.numbers) ? g.numbers : [];
-          return {
-            title: g.title || 'Cash Pot',
-            drawDate: stripHtml(g.drawDate || g.date || ''),
-            drawTime: stripHtml(g.drawTime || ''),
-            numbers: numbers.map(String),
-            bonus: null,
-            note: stripHtml(g.note || '')
-          };
-        }
-
-        // OLD format:
-        // { label, date, latest:{time, number, label, draw_no}, ... }
-        const latest = g.latest || null;
-        if (!latest){
-          return {
-            title: g.label || 'Cash Pot',
-            drawDate: stripHtml(g.date || ''),
-            drawTime: '',
-            numbers: [],
-            bonus: null,
-            note: 'NO LATEST DRAW'
-          };
-        }
-
-        const noteParts = [];
-        if (latest.label) noteParts.push(latest.label);
-        if (latest.draw_no) noteParts.push(`#${latest.draw_no}`);
-
-        return {
-          title: g.label || 'Cash Pot',
-          drawDate: stripHtml(g.date || ''),
-          drawTime: stripHtml(latest.time || ''),
-          numbers: (latest.number != null) ? [String(latest.number)] : [],
-          bonus: null,
-          note: noteParts.join(' • ')
-        };
-      }
-
-      function normLottoLike(g, titleFallback){
-        if (!g) return null;
-
-        // If the script already outputs the "final preview format"
-        if (Array.isArray(g.numbers) || g.drawDate){
-          return {
-            title: g.title || titleFallback,
-            drawDate: stripHtml(g.drawDate || g.date || ''),
-            drawTime: stripHtml(g.drawTime || ''),
-            numbers: (Array.isArray(g.numbers) ? g.numbers : []).map(String),
-            bonus: (g.bonus != null && g.bonus !== '') ? String(g.bonus) : null,
-            note: stripHtml(g.note || jackpotText(g))
-          };
-        }
-
-        // Old schema: { label, date, numbers:[], bonus, next_jackpot }
-        return {
-          title: g.label || titleFallback,
-          drawDate: stripHtml(g.date || ''),
-          drawTime: '',
-          numbers: (Array.isArray(g.numbers) ? g.numbers : []).map(String),
-          bonus: (g.bonus != null && g.bonus !== '') ? String(g.bonus) : null,
-          note: stripHtml(jackpotText(g))
-        };
-      }
-
       return {
-        cash_pot: normCashPot(games?.cash_pot),
-        lotto: normLottoLike(games?.lotto, 'Lotto'),
-        super_lotto: normLottoLike(games?.super_lotto, 'Super Lotto'),
+        cash_pot: games?.cash_pot || null,
+        lotto: games?.lotto || null,
+        super_lotto: games?.super_lotto || null,
       };
     }
 
     async function loadPreviewData(){
-      // ✅ Always pull from sv-results-kiosk (absolute URL)
       const DATA_URL =
         'https://glenfordmcfarlane-ux.github.io/sv-results-kiosk/data/lottery_previews.json';
 
@@ -948,9 +1088,14 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
 
         const rawJson = await res.json();
-        const normalized = normalizeFromAnySchema(rawJson);
+        const data = normalizeFromAnySchema(rawJson);
 
-        previewTargets.forEach(t => renderPreview(t.el, normalized[t.key] || null));
+        // Cash Pot special
+        renderCashPot(previewTargets[0].el, data.cash_pot);
+
+        // Lotto & Super Lotto standard
+        renderStandard(previewTargets[1].el, data.lotto);
+        renderStandard(previewTargets[2].el, data.super_lotto);
 
       }catch(err){
         previewTargets.forEach(t => {
