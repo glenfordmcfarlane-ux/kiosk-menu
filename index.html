@@ -16,33 +16,25 @@
       --bg2:#dfe4ea;
       --surface:#e7ebf0;
 
-      --radius:20px;
       --gap:18px;
       --header-h:290px;
 
-      --focus: 0 0 0 4px rgba(242,195,0,.45);
-      --tap: 0.985;
-
-      --bevel: 12px;
-      --bevel-radius: 44px;
-      --face-radius: 32px;
-
       --title-size: 44px;
       --logo-h: 120px;
-      --menu-font: 28px;
-      --menu-pad-y: 22px;
-      --menu-pad-x: 48px;
-      --menu-radius: 26px;
 
       --header-bottom-pad: 22px;
       --header-side-pad: 34px;
       --logo-area-top: 18px;
       --logo-area-bottom: 115px;
 
-      --console-radius: 28px;
-      --console-pad: 22px;
-
       --iframe-zoom: 1;
+
+      /* NEW: menu tile sizing (smaller tiles, SAME text sizes) */
+      --tile-min-h: 140px;
+      --tile-ideal-h: 18vh;
+      --tile-max-h: 210px;
+      --tile-pad: 8px;      /* was 12 */
+      --tile-inset: 10px;   /* was 12 */
     }
 
     *{ box-sizing:border-box; }
@@ -52,12 +44,10 @@
       margin:0;
       font-family:"Trebuchet MS", Trebuchet, Verdana, sans-serif;
       text-transform:uppercase;
-
       background:
         radial-gradient(1200px 800px at 18% 12%, rgba(255,255,255,.85), transparent 55%),
         radial-gradient(900px 650px at 70% 20%, rgba(255,255,255,.55), transparent 60%),
         linear-gradient(180deg, var(--bg1), var(--bg2));
-
       color:#0c1a12;
       overscroll-behavior:none;
     }
@@ -186,7 +176,6 @@
       padding:22px;
       position:relative;
       overflow:visible;
-
       background:
         repeating-linear-gradient(
           135deg,
@@ -198,7 +187,6 @@
         radial-gradient(900px 700px at 20% 15%, rgba(255,255,255,.85), transparent 55%),
         radial-gradient(900px 700px at 85% 35%, rgba(255,255,255,.35), transparent 60%),
         linear-gradient(180deg, #f2f4f7 0%, #d8dee6 100%);
-
       box-shadow:
         18px 18px 40px rgba(0,0,0,.22),
         -10px -10px 26px rgba(255,255,255,.75),
@@ -208,54 +196,47 @@
 
     .console > *{ position:relative; z-index:1; }
 
+    /* =============================
+       NEW LAYOUT:
+       - 2x2 buttons at top
+       - previews BELOW (cash pot full width, lotto & super side-by-side)
+       - optional blank area under
+       ============================= */
     .menuShell{
-  width:100%;
-  height:100%;
-  min-height:0;
+      width:100%;
+      height:100%;
+      min-height:0;
+      display:grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap:var(--gap);
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding-right:6px;
+      -webkit-overflow-scrolling:touch;
+      align-content:start;
+    }
 
-  /* ✅ FORCE SINGLE COLUMN STACK */
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding-right:6px;
-  -webkit-overflow-scrolling:touch;
-}
-
-    .menuShell{
-  width:100%;
-  height:100%;
-  min-height:0;
-
-  /* ✅ FORCE SINGLE COLUMN STACK */
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding-right:6px;
-  -webkit-overflow-scrolling:touch;
-}
+    .menuView{
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-auto-rows: clamp(var(--tile-min-h), var(--tile-ideal-h), var(--tile-max-h));
+      gap:var(--gap);
+    }
 
     .tileSlot{
-  position:relative;
-  border-radius:46px;
-  padding:12px;
-
-  /* ✅ smaller tile area (text stays same because tileTitle/sub unchanged) */
-  height:190px;
-
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.10), rgba(255,255,255,.10)),
-    linear-gradient(180deg, #edf1f6 0%, #d7dde6 100%);
-  box-shadow:
-    inset 12px 12px 18px rgba(0,0,0,.20),
-    inset -12px -12px 18px rgba(255,255,255,.65),
-    0 10px 24px rgba(0,0,0,.06);
-}
+      position:relative;
+      border-radius:42px;
+      padding:var(--tile-pad);
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.10), rgba(255,255,255,.10)),
+        linear-gradient(180deg, #edf1f6 0%, #d7dde6 100%);
+      box-shadow:
+        inset 10px 10px 16px rgba(0,0,0,.18),
+        inset -10px -10px 16px rgba(255,255,255,.65),
+        0 10px 24px rgba(0,0,0,.06);
+    }
 
     .tile{
       position:relative;
@@ -268,19 +249,19 @@
       color:#fff;
       user-select:none;
       -webkit-tap-highlight-color:transparent;
-      border-radius:44px;
+      border-radius:40px;
       padding:0;
       background:linear-gradient(180deg,#0d5f35,#0a4e2b);
       box-shadow:
-        20px 22px 44px rgba(0,0,0,.42),
+        16px 18px 36px rgba(0,0,0,.38),
         -10px -10px 22px rgba(255,255,255,.55);
     }
 
     .tile::before{
       content:"";
       position:absolute;
-      inset:12px;
-      border-radius:32px;
+      inset:var(--tile-inset);
+      border-radius:30px;
       background:
         radial-gradient(circle at 30% 25%, #20b76a 0%, #0b7a3b 50%, #075c2c 100%);
       box-shadow:
@@ -291,30 +272,33 @@
 
     .tile .dot{
       position:absolute;
-      top:18px;
-      right:18px;
-      width:14px;
-      height:14px;
+      top:16px;
+      right:16px;
+      width:12px;
+      height:12px;
       border-radius:50%;
       background:var(--sv-gold);
       box-shadow:0 0 0 7px rgba(242,195,0,.16);
       z-index:3;
     }
 
+    /* IMPORTANT: keep label text sizes EXACTLY the same as before */
     .tileContent{ position:relative; z-index:2; padding:22px; }
     .tileTitle{ font-size:34px; font-weight:900; line-height:1.05; text-shadow:0 10px 18px rgba(0,0,0,.35); }
     .sub{ display:block; margin-top:8px; font-size:16px; font-weight:800; color:rgba(255,255,255,.92); }
 
-   .previewBar{
-  width:100%;
-  display:grid;
-  grid-template-columns:1fr;
-
-  /* ✅ stack cards naturally */
-  grid-auto-rows:auto;
-
-  gap:18px;
-}
+    /* Preview area BELOW buttons */
+    .previewBar{
+      width:100%;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "cash cash"
+        "lotto super"
+        "spare spare";
+      gap:var(--gap);
+      align-content:start;
+    }
 
     .previewCard{
       border-radius:18px;
@@ -323,8 +307,13 @@
       border:1px solid rgba(0,0,0,.12);
       box-shadow:0 10px 22px rgba(0,0,0,.14);
       position:relative;
-      min-height:240px;
+      min-height:220px;
     }
+
+    .previewCard.cash  { grid-area: cash;  min-height:240px; }
+    .previewCard.lotto { grid-area: lotto; min-height:240px; }
+    .previewCard.super { grid-area: super; min-height:240px; }
+    .previewCard.spare { grid-area: spare; min-height:220px; }
 
     .previewLabel{
       position:absolute;
@@ -493,6 +482,33 @@
     .cpColor.yellow{ background:linear-gradient(180deg,#fff2b8,#f2c300); color:#1a1a1a; }
     .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
 
+    /* Optional blank area card */
+    .spareInner{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:26px;
+      color:#0b3f22;
+      text-align:center;
+      font-weight:900;
+      letter-spacing:.5px;
+      opacity:.65;
+    }
+    .spareInner .dash{
+      width:100%;
+      height:100%;
+      border:3px dashed rgba(11,122,59,.25);
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      line-height:1.25;
+      font-size:14px;
+    }
+
     .pageView{
       width:100%;
       height:100%;
@@ -614,6 +630,18 @@
       object-fit:contain;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
+
+    /* Small screens: stack lotto/super vertically */
+    @media (max-width: 900px){
+      .previewBar{
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "cash"
+          "lotto"
+          "super"
+          "spare";
+      }
+    }
   </style>
 </head>
 
@@ -647,6 +675,7 @@
       <div class="console">
 
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
+          <!-- 2x2 BUTTONS (kept) -->
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
               <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15">
@@ -689,9 +718,10 @@
             </div>
           </nav>
 
+          <!-- PREVIEWS BELOW BUTTONS (layout guide) -->
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
-            <div class="previewCard">
+            <div class="previewCard cash">
               <div class="previewLabel">CASH POT</div>
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/cash-pot/"
@@ -705,7 +735,7 @@
               </div>
             </div>
 
-            <div class="previewCard">
+            <div class="previewCard lotto">
               <div class="previewLabel">LOTTO</div>
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/lotto/"
@@ -719,7 +749,7 @@
               </div>
             </div>
 
-            <div class="previewCard">
+            <div class="previewCard super">
               <div class="previewLabel">SUPER LOTTO</div>
               <button class="previewOpen" type="button"
                 data-url="https://supremeventures.com/game/super-lotto/"
@@ -730,6 +760,15 @@
                 <div class="previewMeta">LOADING…</div>
                 <div class="previewNumbers"></div>
                 <div class="previewNote"></div>
+              </div>
+            </div>
+
+            <!-- Optional placeholder area (as per your guide) -->
+            <div class="previewCard spare" aria-hidden="true">
+              <div class="spareInner">
+                <div class="dash">
+                  LEAVE THIS SPACE FOR OTHER GAMES RESULTS PREVIEW WE MAY ADD LATER
+                </div>
               </div>
             </div>
 
@@ -939,7 +978,6 @@
 
     /* ---------- Cash Pot helpers (time-aware 2 rows) ---------- */
     function parseTimeToMinutes(t){
-      // "8:30AM" => minutes since midnight
       if (!t) return null;
       const m = String(t).match(/(\d{1,2}):(\d{2})(AM|PM)/i);
       if (!m) return null;
@@ -952,7 +990,6 @@
     }
 
     function nowMinutesJamaica(){
-      // robust: use Intl with America/Jamaica
       const parts = new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/Jamaica',
         hour: '2-digit',
@@ -994,7 +1031,6 @@
         return;
       }
 
-      // If NEW format exists: { drawDate, draws:[...] }
       const drawDate = stripHtml(cash.drawDate || cash.date || '');
       meta.textContent = drawDate || 'CASH POT';
 
@@ -1061,7 +1097,6 @@
         return;
       }
 
-      // FALLBACK (old/simple format): { drawTime, numbers:[...], note }
       const fallbackNumbers = Array.isArray(cash.numbers) ? cash.numbers : [];
       if (fallbackNumbers.length){
         const b = document.createElement('div');
@@ -1072,16 +1107,12 @@
         return;
       }
 
-      // Nothing usable
       meta.textContent = 'NO DATA';
       nums.innerHTML = '';
       note.textContent = '';
     }
 
     function normalizeFromAnySchema(rawJson){
-      // Accept BOTH:
-      // 1) { games: { cash_pot:{...}, lotto:{...}, super_lotto:{...} } }
-      // 2) { cash_pot:{...}, lotto:{...}, super_lotto:{...} }
       const games = rawJson?.games && typeof rawJson.games === 'object'
         ? rawJson.games
         : rawJson;
@@ -1105,10 +1136,7 @@
         const rawJson = await res.json();
         const data = normalizeFromAnySchema(rawJson);
 
-        // Cash Pot special
         renderCashPot(previewTargets[0].el, data.cash_pot);
-
-        // Lotto & Super Lotto standard
         renderStandard(previewTargets[1].el, data.lotto);
         renderStandard(previewTargets[2].el, data.super_lotto);
 
