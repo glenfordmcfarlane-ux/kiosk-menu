@@ -29,6 +29,7 @@
 
       --iframe-zoom: 1;
 
+      /* Menu tile sizing */
       --tile-min-h: 140px;
       --tile-ideal-h: 18vh;
       --tile-max-h: 210px;
@@ -195,6 +196,7 @@
 
     .console > *{ position:relative; z-index:1; }
 
+    /* Layout shell */
     .menuShell{
       width:100%;
       height:100%;
@@ -210,6 +212,7 @@
       align-content:start;
     }
 
+    /* 2x2 menu buttons */
     .menuView{
       width:100%;
       display:grid;
@@ -279,6 +282,7 @@
     .tileTitle{ font-size:34px; font-weight:900; line-height:1.05; text-shadow:0 10px 18px rgba(0,0,0,.35); }
     .sub{ display:block; margin-top:8px; font-size:16px; font-weight:800; color:rgba(255,255,255,.92); }
 
+    /* Preview area */
     .previewBar{
       width:100%;
       display:grid;
@@ -301,17 +305,9 @@
       min-height:220px;
     }
 
-    .previewCard.cash  { grid-area: cash;  min-height:280px; }
+    .previewCard.cash  { grid-area: cash;  min-height:240px; }
     .previewCard.lotto { grid-area: lotto; min-height:240px; }
     .previewCard.super { grid-area: super; min-height:240px; }
-
-    /* NEW: Yodeck embedded feed card */
-    .previewCard.yodeck{
-      grid-area:yodeck;
-      min-height:520px; /* adjust if you want taller */
-      background:#000;
-      border:1px solid rgba(0,0,0,.18);
-    }
 
     .previewLabel{
       position:absolute;
@@ -334,17 +330,11 @@
       padding:56px 18px 18px;
       display:flex;
       flex-direction:column;
-      justify-content:center;
+      justify-content:flex-start; /* IMPORTANT: avoid vertical centering */
       gap:12px;
       background:#fff;
       color:#103b25;
     }
-
-    .previewCard.cash .previewData{
-      justify-content:flex-start;
-      padding-bottom:70px;
-    }
-
     .previewMeta{
       font-size:14px;
       font-weight:900;
@@ -407,17 +397,19 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    /* Cash pot layout */
+    /* =========================
+       CASH POT: show 4 draws using right-side space
+       (left column: newest two, right column: next two)
+       ========================= */
     .cpList{
       display:grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(2, auto);
-      grid-auto-flow: column;
+      grid-auto-flow: column;     /* fill DOWN first, then next column */
       column-gap: 22px;
       row-gap: 12px;
       width:100%;
       margin-top:4px;
-      align-items:start;
     }
 
     .cpRow{
@@ -426,7 +418,9 @@
       gap:10px;
       flex-wrap:nowrap;
       justify-content:flex-start;
+      white-space:nowrap;
     }
+
     .cpTime{
       font-size:12px;
       font-weight:1000;
@@ -436,7 +430,6 @@
       background:rgba(11,122,59,.10);
       border:1px solid rgba(11,122,59,.22);
       color:#0b3f22;
-      white-space:nowrap;
     }
     .cpNum{
       min-width:52px;
@@ -452,7 +445,6 @@
         inset 2px 2px 0 rgba(255,255,255,.8),
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 10px 18px rgba(0,0,0,.10);
-      flex:0 0 auto;
     }
     .cpLabel{
       padding:10px 12px;
@@ -463,14 +455,11 @@
       background:linear-gradient(180deg,#0b7a3b,#075c2c);
       color:#fff;
       box-shadow:0 10px 18px rgba(0,0,0,.14);
-      white-space:nowrap;
-      flex:0 0 auto;
     }
     .cpPlus{
       font-weight:1000;
       opacity:.8;
       margin:0 2px;
-      flex:0 0 auto;
     }
     .cpColor{
       width:44px;
@@ -487,7 +476,6 @@
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 10px 18px rgba(0,0,0,.10);
       border:1px solid rgba(0,0,0,.12);
-      flex:0 0 auto;
     }
     .cpColor.white{ background:linear-gradient(180deg,#ffffff,#e9eef3); color:#1a1a1a; }
     .cpColor.red{ background:linear-gradient(180deg,#ff6b6b,#d84040); color:#fff; }
@@ -496,52 +484,64 @@
     .cpColor.yellow{ background:linear-gradient(180deg,#fff2b8,#f2c300); color:#1a1a1a; }
     .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
 
-/* NEW: Yodeck embedded feed card (fixed 1080x809 display area) */
-.previewCard.yodeck{
-  grid-area:yodeck;
-  min-height: 0;
-  background:#000;
-  border:1px solid rgba(0,0,0,.18);
-}
+    /* =========================
+       YODECK EMBED (fixed 1080 x 809)
+       ========================= */
+    .previewCard.yodeck{
+      grid-area:yodeck;
+      min-height: 860px;  /* ensures the fixed player has room */
+      background:#000;
+      border:1px solid rgba(0,0,0,.18);
+    }
 
-/* Center the fixed-size player */
-.yodeckWrap{
-  position:absolute;
-  inset:0;
-  background:#000;
-  padding:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+    .yodeckWrap{
+      position:absolute;
+      inset:0;
+      background:#000;
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
 
-/* This is the FIXED DIMENSION you requested */
-.yodeckFrameShell{
-  width:1080px;
-  height:809px;
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow:0 14px 40px rgba(0,0,0,.35);
-  background:#000;
-  border:1px solid rgba(255,255,255,.10);
-}
+    .yodeckFrameShell{
+      width:1080px;
+      height:809px;           /* requested dims */
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 14px 40px rgba(0,0,0,.35);
+      background:#000;
+      border:1px solid rgba(255,255,255,.10);
+    }
 
-/* iframe fills the fixed shell */
-.yodeckFrame{
-  width:100%;
-  height:100%;
-  border:0;
-  background:#000;
-}
+    .yodeckFrame{
+      width:100%;
+      height:100%;
+      border:0;
+      background:#000;
+    }
 
-/* Safety: if the kiosk screen is smaller than 1080px wide, scale down */
-@media (max-width: 1120px){
-  .yodeckFrameShell{
-    width:100%;
-    height:auto;
-    aspect-ratio: 1080 / 809;
-  }
-}
+    /* If kiosk width is smaller than 1080px, scale down proportionally */
+    @media (max-width: 1120px){
+      .yodeckFrameShell{
+        width:100%;
+        height:auto;
+        aspect-ratio: 1080 / 809;
+      }
+      .previewCard.yodeck{ min-height: 0; }
+    }
+
+    /* Small screens: stack lotto/super vertically */
+    @media (max-width: 900px){
+      .previewBar{
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "cash"
+          "lotto"
+          "super"
+          "yodeck";
+      }
+    }
 
     .pageView{
       width:100%;
@@ -664,23 +664,6 @@
       object-fit:contain;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
-
-    @media (max-width: 900px){
-      .previewBar{
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "cash"
-          "lotto"
-          "super"
-          "yodeck";
-      }
-      .cpList{
-        grid-template-columns:1fr;
-        grid-template-rows:auto;
-        grid-auto-flow: row;
-      }
-      .previewCard.yodeck{ min-height:360px; }
-    }
   </style>
 </head>
 
@@ -712,8 +695,9 @@
 
     <div class="content">
       <div class="console">
-        <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
 
+        <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
+          <!-- 2x2 BUTTONS -->
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
               <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15">
@@ -756,6 +740,7 @@
             </div>
           </nav>
 
+          <!-- PREVIEWS BELOW BUTTONS -->
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
             <div class="previewCard cash">
@@ -800,18 +785,18 @@
               </div>
             </div>
 
-            <!-- NEW: Embedded Yodeck Playlist feed -->
-            <div class="previewCard yodeck" aria-label="SV Playlist feed">
+            <!-- NEW: Yodeck embedded playlist under Lotto + Super Lotto -->
+            <div class="previewCard yodeck" aria-label="Yodeck playlist feed">
               <div class="yodeckWrap">
                 <div class="yodeckFrameShell">
                   <iframe
                     class="yodeckFrame"
                     title="SV_PLAYLIST_EF"
                     src="https://embed-player.yodeck.com/?uuid=64dd0e2d66944acb954679d5511ebc3f"
-                    style="background-color:black; border:none;"
+                    style="background-color:black;"
                     allow="autoplay; fullscreen; geolocation"
-                    allowfullscreen>
-                  </iframe>
+                    allowfullscreen
+                  ></iframe>
                 </div>
               </div>
             </div>
@@ -970,6 +955,7 @@
       if (e.key === 'Escape') showMenu();
     });
 
+    /* ========= Preview Data Loader ========= */
     const previewTargets = [
       { key: 'cash_pot',    el: document.getElementById('pvCashPotData') },
       { key: 'lotto',       el: document.getElementById('pvLottoData') },
@@ -980,6 +966,7 @@
       return String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     }
 
+    /* ---------- Standard Lotto/Super render ---------- */
     function renderStandard(el, game){
       const meta = el.querySelector('.previewMeta');
       const nums = el.querySelector('.previewNumbers');
@@ -1018,51 +1005,17 @@
       note.textContent = jp ? `Next Jackpot: ${jp}` : stripHtml(game.note || '');
     }
 
-    /* ===== CASH POT TIME FIX ===== */
-    const CASH_SCHEDULE_MINUTES = {
-      EARLYBIRD: 8*60 + 30,
-      MORNING: 10*60 + 30,
-      MIDDAY: 13*60 + 0,
-      MIDAFTERNOON: 15*60 + 0,
-      DRIVETIME: 17*60 + 0,
-      EVENING: 20*60 + 25
-    };
-
-    function parseTimeToMinutesFlexible(t){
+    /* ---------- Cash Pot helpers (time-aware 4 rows) ---------- */
+    function parseTimeToMinutes(t){
       if (!t) return null;
-      const s = String(t).replace(/\s+/g,'').toUpperCase();
-
-      let m = s.match(/^(\d{1,2}):(\d{2})(AM|PM)$/);
-      if (m){
-        let hh = parseInt(m[1],10);
-        const mm = parseInt(m[2],10);
-        const ap = m[3];
-        if (ap === 'PM' && hh !== 12) hh += 12;
-        if (ap === 'AM' && hh === 12) hh = 0;
-        return hh*60 + mm;
-      }
-
-      m = s.match(/^(\d{1,2})(AM|PM)$/);
-      if (m){
-        let hh = parseInt(m[1],10);
-        const ap = m[2];
-        if (ap === 'PM' && hh !== 12) hh += 12;
-        if (ap === 'AM' && hh === 12) hh = 0;
-        return hh*60;
-      }
-
-      return null;
-    }
-
-    function minutesToDisplay(mins){
-      if (mins == null) return '';
-      let hh = Math.floor(mins/60);
-      const mm = mins % 60;
-      const ap = hh >= 12 ? 'PM' : 'AM';
-      let h12 = hh % 12;
-      if (h12 === 0) h12 = 12;
-      const mm2 = String(mm).padStart(2,'0');
-      return `${h12}:${mm2}${ap}`;
+      const m = String(t).match(/(\d{1,2}):(\d{2})(AM|PM)/i);
+      if (!m) return null;
+      let hh = parseInt(m[1],10);
+      const mm = parseInt(m[2],10);
+      const ap = m[3].toUpperCase();
+      if (ap === 'PM' && hh !== 12) hh += 12;
+      if (ap === 'AM' && hh === 12) hh = 0;
+      return hh*60 + mm;
     }
 
     function nowMinutesJamaica(){
@@ -1077,33 +1030,30 @@
       return hh*60 + mm;
     }
 
-    function drawMinutes(d){
-      const minsFromAt = parseTimeToMinutesFlexible(d?.at);
-      if (minsFromAt != null) return minsFromAt;
-      const key = String(d?.time || '').toUpperCase().trim();
-      return (key && key in CASH_SCHEDULE_MINUTES) ? CASH_SCHEDULE_MINUTES[key] : null;
-    }
-
     function pickFourCashPotDraws(draws){
       const nowMins = nowMinutesJamaica();
 
-      const enhanced = (Array.isArray(draws) ? draws : [])
-        .map(d => ({ ...d, mins: drawMinutes(d) }))
+      const enhanced = draws
+        .map(d => ({ ...d, mins: parseTimeToMinutes(d.at) }))
         .filter(d => d.mins != null)
-        .sort((a,b) => a.mins - b.mins);
+        .sort((a,b) => a.mins - b.mins); // chronological
 
-      if (!enhanced.length) return (Array.isArray(draws) ? draws : []).slice(0,4);
+      if (!enhanced.length) return draws.slice(0,4);
 
       const completed = enhanced.filter(d => d.mins <= nowMins);
       const upcoming  = enhanced.filter(d => d.mins >  nowMins);
 
+      // Prefer last 4 completed; if fewer, pad with upcoming
       let pick = completed.slice(-4);
       if (pick.length < 4){
         pick = pick.concat(upcoming.slice(0, 4 - pick.length));
       }
 
+      // Order newest-to-oldest so cpList fills:
+      // left column: newest two, right column: next two
       pick.sort((a,b) => b.mins - a.mins);
-      return pick.slice(0,4);
+
+      return pick;
     }
 
     function renderCashPot(el, cash){
@@ -1134,16 +1084,11 @@
           const row = document.createElement('div');
           row.className = 'cpRow';
 
-          const mins = drawMinutes(d);
-          const displayAt = d.at && String(d.at).trim()
-            ? String(d.at).toUpperCase().replace(/\s+/g,'')
-            : minutesToDisplay(mins);
-
           const time = document.createElement('div');
           time.className = 'cpTime';
           const bits = [
             stripHtml(d.time || ''),
-            displayAt,
+            d.at ? String(d.at).toUpperCase() : '',
             d.draw_no ? `#${stripHtml(d.draw_no)}` : ''
           ].filter(Boolean);
           time.textContent = bits.join('  ');
@@ -1186,6 +1131,16 @@
         });
 
         nums.appendChild(list);
+        return;
+      }
+
+      const fallbackNumbers = Array.isArray(cash.numbers) ? cash.numbers : [];
+      if (fallbackNumbers.length){
+        const b = document.createElement('div');
+        b.className = 'ball';
+        b.textContent = String(fallbackNumbers[0]);
+        nums.appendChild(b);
+        note.textContent = stripHtml(cash.note || '');
         return;
       }
 
