@@ -484,52 +484,43 @@
     .cpColor.yellow{ background:linear-gradient(180deg,#fff2b8,#f2c300); color:#1a1a1a; }
     .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
 
-    /* =========================
-       YODECK EMBED (fixed 1080 x 750)
-       ========================= */
-    .previewCard.yodeck{
-      grid-area:yodeck;
-      min-height: 750px;  /* ensures the fixed player has room */
-      background:#000;
-      border:1px solid rgba(0,0,0,.18);
-    }
+   /* =========================
+   YODECK EMBED WINDOW
+   1080 x 750 aspect ratio
+   ========================= */
 
-    .yodeckWrap{
-      position:absolute;
-      inset:0;
-      background:#000;
-      padding:14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
+.previewCard.yodeck{
+  grid-area: yodeck;
+  min-height: 780px;        /* gives space under lotto/super */
+  background:#000;
+  border:1px solid rgba(0,0,0,.18);
+  overflow:hidden;
+  border-radius:18px;
+}
 
-    .yodeckFrameShell{
-      width:1080px;
-      height:750px;           /* requested dims */
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:0 14px 40px rgba(0,0,0,.35);
-      background:#000;
-      border:1px solid rgba(255,255,255,.10);
-    }
+/* Defines the actual window size ratio */
+.yodeckFrame{
+  width:100%;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  border-radius:16px;
 
-    .yodeckFrame{
-      width:100%;
-      height:100%;
-      border:0;
-      background:#000;
-    }
+  /* THIS IS YOUR REQUESTED RATIO */
+  aspect-ratio: 1080 / 750;
+}
 
-    /* If kiosk width is smaller than 1080px, scale down proportionally */
-    @media (max-width: 1120px){
-      .yodeckFrameShell{
-        width:100%;
-        height:auto;
-        aspect-ratio: 1080 / 750;
-      }
-      .previewCard.yodeck{ min-height: 0; }
-    }
+/* Make iframe fill & crop (like object-fit: cover) */
+.yodeckFrame iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+
+  /* Adjust if needed */
+  transform: scale(1.15);
+  transform-origin:center center;
+}
 
     /* Small screens: stack lotto/super vertically */
     @media (max-width: 900px){
@@ -786,20 +777,17 @@
             </div>
 
             <!-- NEW: Yodeck embedded playlist under Lotto + Super Lotto -->
-            <div class="previewCard yodeck" aria-label="Yodeck playlist feed">
-              <div class="yodeckWrap">
-                <div class="yodeckFrameShell">
-                  <iframe
-                    class="yodeckFrame"
-                    title="SV_PLAYLIST_EF"
-                    src="https://embed-player.yodeck.com/?uuid=64dd0e2d66944acb954679d5511ebc3f"
-                    style="background-color:black;"
-                    allow="autoplay; fullscreen; geolocation"
-                    allowfullscreen
-                  ></iframe>
-                </div>
-              </div>
-            </div>
+           <!-- YODECK PROMO FEED -->
+<div class="previewCard yodeck">
+  <div class="yodeckFrame">
+    <iframe
+      title="SV_PLAYLIST_EF"
+      src="https://embed-player.yodeck.com/?uuid=64dd0e2d66944acb954679d5511ebc3f"
+      allow="autoplay; fullscreen; geolocation"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
 
           </section>
         </div>
