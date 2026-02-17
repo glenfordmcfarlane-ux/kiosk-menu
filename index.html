@@ -403,22 +403,24 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    /* =========================
-       CASH POT 2-ROW PREVIEW UI
-       ========================= */
-    .cpList{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      margin-top:4px;
-      width:100%;
-    }
-    .cpRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+    /* CASH POT: show 4 draws using the empty right-side space */
+.cpList{
+  display:grid;
+  grid-template-columns: 1fr 1fr;  /* LEFT column + RIGHT column */
+  column-gap: 22px;
+  row-gap: 12px;
+  width:100%;
+  margin-top:4px;
+}
+
+/* keep each draw EXACTLY like your current row */
+.cpRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:nowrap;
+  justify-content:flex-start;
+}
     .cpTime{
       font-size:12px;
       font-weight:1000;
@@ -994,23 +996,29 @@
       return hh*60 + mm;
     }
 
-    function pickTwoCashPotDraws(draws){
-      const nowMins = nowMinutesJamaica();
-      const enhanced = draws.map(d => ({
-        ...d,
-        mins: parseTimeToMinutes(d.at)
-      })).filter(d => d.mins != null);
+   function pickFourCashPotDraws(draws){
+  const nowMins = nowMinutesJamaica();
+  const enhanced = draws.map(d => ({
+    ...d,
+    mins: parseTimeToMinutes(d.at)
+  })).filter(d => d.mins != null);
 
-      if (!enhanced.length) return draws.slice(0,2);
+  if (!enhanced.length) return draws.slice(0,4);
 
-      const completed = enhanced.filter(d => d.mins <= nowMins);
-      if (completed.length >= 2) return completed.slice(-2);
-      if (completed.length === 1){
-        const next = enhanced.find(d => d.mins > nowMins);
-        return next ? [completed[0], next] : [completed[0]];
-      }
-      return enhanced.slice(0,2);
-    }
+  const completed = enhanced.filter(d => d.mins <= nowMins);
+
+  // Case A: at least 4 completed -> show last 4 completed
+  if (completed.length >= 4) return completed.slice(-4);
+
+  // Case B: some completed -> include upcoming to make 4
+  if (completed.length > 0){
+    const upcoming = enhanced.filter(d => d.mins > nowMins);
+    return completed.slice(-4).concat(upcoming.slice(0, 4 - completed.length));
+  }
+
+  // Case C: none completed yet -> show first 4 upcoming
+  return enhanced.slice(0,4);
+}
 
     function renderCashPot(el, cash){
       const meta = el.querySelector('.previewMeta');
@@ -1036,7 +1044,7 @@
         const list = document.createElement('div');
         list.className = 'cpList';
 
-        pickTwoCashPotDraws(draws).forEach(d => {
+        pickFourCashPotDraws(draws).forEach(d => {
           const row = document.createElement('div');
           row.className = 'cpRow';
 
