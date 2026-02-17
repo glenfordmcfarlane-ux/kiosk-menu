@@ -356,6 +356,18 @@
       gap:10px;
       align-items:center;
     }
+    /* CASH POT ONLY: override the global flex previewNumbers */
+.previewCard.cash .previewNumbers{
+  display:block;     /* stop flex from shrinking cpList */
+  width:100%;
+}
+
+/* ensure cpList takes full width so 2 columns can render */
+.cpList{
+  width:100%;
+}
+
+    
     .ball{
       min-width:44px;
       height:44px;
