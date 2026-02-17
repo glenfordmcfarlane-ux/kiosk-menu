@@ -403,27 +403,32 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-   /* =========================
-   CASH POT 2-CARD (SIDE-BY-SIDE) PREVIEW UI
+ /* =========================
+   CASH POT: 2 results side-by-side
+   BUT keep the SAME inline row layout
    ========================= */
+
 .cpList{
   display:grid;
-  grid-template-columns: 1fr 1fr; /* <-- side by side */
-  gap:12px;
+  grid-template-columns: 1fr 1fr; /* 2 results across */
+  gap:14px;
   margin-top:4px;
   width:100%;
 }
 
+/* keep everything on ONE line like your first screenshot */
 .cpRow{
   display:flex;
-  flex-direction:column;
-  align-items:flex-start;
+  align-items:center;
   gap:10px;
-  padding:12px;
-  border-radius:16px;
-  background:linear-gradient(180deg,#ffffff,#f3f6f9);
-  border:1px solid rgba(0,0,0,.10);
-  box-shadow:0 10px 18px rgba(0,0,0,.10);
+  flex-wrap:nowrap;           /* IMPORTANT: don't stack */
+  justify-content:flex-start;
+}
+
+/* If screen is tight, allow wrap (optional safety) */
+@media (max-width: 520px){
+  .cpList{ grid-template-columns: 1fr; }
+  .cpRow{ flex-wrap:wrap; }
 }
     .cpTime{
       font-size:12px;
