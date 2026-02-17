@@ -29,12 +29,12 @@
 
       --iframe-zoom: 1;
 
-      /* NEW: menu tile sizing (smaller tiles, SAME text sizes) */
+      /* menu tile sizing */
       --tile-min-h: 140px;
       --tile-ideal-h: 18vh;
       --tile-max-h: 210px;
-      --tile-pad: 8px;      /* was 12 */
-      --tile-inset: 10px;   /* was 12 */
+      --tile-pad: 8px;
+      --tile-inset: 10px;
     }
 
     *{ box-sizing:border-box; }
@@ -196,12 +196,6 @@
 
     .console > *{ position:relative; z-index:1; }
 
-    /* =============================
-       NEW LAYOUT:
-       - 2x2 buttons at top
-       - previews BELOW (cash pot full width, lotto & super side-by-side)
-       - optional blank area under
-       ============================= */
     .menuShell{
       width:100%;
       height:100%;
@@ -282,12 +276,10 @@
       z-index:3;
     }
 
-    /* IMPORTANT: keep label text sizes EXACTLY the same as before */
     .tileContent{ position:relative; z-index:2; padding:22px; }
     .tileTitle{ font-size:34px; font-weight:900; line-height:1.05; text-shadow:0 10px 18px rgba(0,0,0,.35); }
     .sub{ display:block; margin-top:8px; font-size:16px; font-weight:800; color:rgba(255,255,255,.92); }
 
-    /* Preview area BELOW buttons */
     .previewBar{
       width:100%;
       display:grid;
@@ -310,7 +302,8 @@
       min-height:220px;
     }
 
-    .previewCard.cash  { grid-area: cash;  min-height:240px; }
+    /* IMPORTANT: give the CASH card a bit more height so 4 rows always fit */
+    .previewCard.cash  { grid-area: cash;  min-height:280px; } /* was 240 */
     .previewCard.lotto { grid-area: lotto; min-height:240px; }
     .previewCard.super { grid-area: super; min-height:240px; }
     .previewCard.spare { grid-area: spare; min-height:220px; }
@@ -341,18 +334,27 @@
       background:#fff;
       color:#103b25;
     }
+
+    /* KEY FIX: Cash Pot preview must NOT be vertically centered */
+    .previewCard.cash .previewData{
+      justify-content:flex-start;  /* was center */
+      padding-bottom:70px;         /* reserve space for OPEN button */
+    }
+
     .previewMeta{
       font-size:14px;
       font-weight:900;
       letter-spacing:.4px;
       opacity:.9;
     }
+
     .previewNumbers{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       align-items:center;
     }
+
     .ball{
       min-width:44px;
       height:44px;
@@ -368,6 +370,7 @@
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 8px 18px rgba(0,0,0,.10);
     }
+
     .ball.plus{
       min-width:auto;
       padding:0 10px;
@@ -376,6 +379,7 @@
       background:linear-gradient(180deg,#fff2b8,#f2c300);
       color:#1a1a1a;
     }
+
     .previewNote{
       margin-top:4px;
       font-size:12px;
@@ -403,26 +407,30 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    /* CASH POT: show 4 draws using the empty right-side space */
-.cpList{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(2, auto); /* 2 rows per column */
-  grid-auto-flow: column;             /* KEY: fill down the column first */
-  column-gap: 22px;
-  row-gap: 12px;
-  width:100%;
-  margin-top:4px;
-}
+    /* CASH POT: 4 draws, arranged like:
+       LEFT column: newest, next-newest
+       RIGHT column: next, next
+    */
+    .cpList{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(2, auto);
+      grid-auto-flow: column; /* fill down the left column first */
+      column-gap: 22px;
+      row-gap: 12px;
+      width:100%;
+      margin-top:4px;
+      align-items:start;
+    }
 
-/* keep each draw EXACTLY like your current row */
-.cpRow{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:nowrap;
-  justify-content:flex-start;
-}
+    .cpRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:nowrap;
+      justify-content:flex-start;
+    }
+
     .cpTime{
       font-size:12px;
       font-weight:1000;
@@ -432,7 +440,9 @@
       background:rgba(11,122,59,.10);
       border:1px solid rgba(11,122,59,.22);
       color:#0b3f22;
+      white-space:nowrap;
     }
+
     .cpNum{
       min-width:52px;
       height:52px;
@@ -447,7 +457,9 @@
         inset 2px 2px 0 rgba(255,255,255,.8),
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 10px 18px rgba(0,0,0,.10);
+      flex:0 0 auto;
     }
+
     .cpLabel{
       padding:10px 12px;
       border-radius:14px;
@@ -457,12 +469,17 @@
       background:linear-gradient(180deg,#0b7a3b,#075c2c);
       color:#fff;
       box-shadow:0 10px 18px rgba(0,0,0,.14);
+      white-space:nowrap;
+      flex:0 0 auto;
     }
+
     .cpPlus{
       font-weight:1000;
       opacity:.8;
       margin:0 2px;
+      flex:0 0 auto;
     }
+
     .cpColor{
       width:44px;
       height:44px;
@@ -478,40 +495,15 @@
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 10px 18px rgba(0,0,0,.10);
       border:1px solid rgba(0,0,0,.12);
+      flex:0 0 auto;
     }
+
     .cpColor.white{ background:linear-gradient(180deg,#ffffff,#e9eef3); color:#1a1a1a; }
     .cpColor.red{ background:linear-gradient(180deg,#ff6b6b,#d84040); color:#fff; }
     .cpColor.blue{ background:linear-gradient(180deg,#59a8ff,#2e6fd6); color:#fff; }
     .cpColor.green{ background:linear-gradient(180deg,#57d28f,#1fa45c); color:#fff; }
     .cpColor.yellow{ background:linear-gradient(180deg,#fff2b8,#f2c300); color:#1a1a1a; }
     .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
-
-    /* Optional blank area card */
-    .spareInner{
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:26px;
-      color:#0b3f22;
-      text-align:center;
-      font-weight:900;
-      letter-spacing:.5px;
-      opacity:.65;
-    }
-    .spareInner .dash{
-      width:100%;
-      height:100%;
-      border:3px dashed rgba(11,122,59,.25);
-      border-radius:18px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      line-height:1.25;
-      font-size:14px;
-    }
 
     .pageView{
       width:100%;
@@ -635,7 +627,6 @@
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
 
-    /* Small screens: stack lotto/super vertically */
     @media (max-width: 900px){
       .previewBar{
         grid-template-columns: 1fr;
@@ -679,7 +670,6 @@
       <div class="console">
 
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
-          <!-- 2x2 BUTTONS (kept) -->
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
               <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15">
@@ -722,7 +712,6 @@
             </div>
           </nav>
 
-          <!-- PREVIEWS BELOW BUTTONS (layout guide) -->
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
             <div class="previewCard cash">
@@ -766,8 +755,6 @@
                 <div class="previewNote"></div>
               </div>
             </div>
-
-           
 
           </section>
         </div>
@@ -973,7 +960,7 @@
       note.textContent = jp ? `Next Jackpot: ${jp}` : stripHtml(game.note || '');
     }
 
-    /* ---------- Cash Pot helpers (time-aware 2 rows) ---------- */
+    /* ---------- Cash Pot helpers (time-aware) ---------- */
     function parseTimeToMinutes(t){
       if (!t) return null;
       const m = String(t).match(/(\d{1,2}):(\d{2})(AM|PM)/i);
@@ -998,32 +985,37 @@
       return hh*60 + mm;
     }
 
-  function pickFourCashPotDraws(draws){
-  const nowMins = nowMinutesJamaica();
+    // Picks 4 draws closest to "now":
+    // - Prefer 4 most recent COMPLETED
+    // - If fewer than 4 completed, pad with the NEXT upcoming
+    // - Return order newest -> oldest so grid shows:
+    //   LEFT column: newest, next-newest
+    //   RIGHT column: next, next
+    function pickFourCashPotDraws(draws){
+      const nowMins = nowMinutesJamaica();
 
-  const enhanced = draws
-    .map(d => ({ ...d, mins: parseTimeToMinutes(d.at) }))
-    .filter(d => d.mins != null)
-    .sort((a,b) => a.mins - b.mins); // chronological
+      const enhanced = draws
+        .map(d => ({ ...d, mins: parseTimeToMinutes(d.at) }))
+        .filter(d => d.mins != null)
+        .sort((a,b) => a.mins - b.mins); // chronological
 
-  if (!enhanced.length) return draws.slice(0,4);
+      if (!enhanced.length) return (Array.isArray(draws) ? draws : []).slice(0,4);
 
-  const completed = enhanced.filter(d => d.mins <= nowMins);
-  const upcoming  = enhanced.filter(d => d.mins >  nowMins);
+      const completed = enhanced.filter(d => d.mins <= nowMins);
+      const upcoming  = enhanced.filter(d => d.mins >  nowMins);
 
-  // Prefer last 4 completed
-  let pick = completed.slice(-4);
+      let pick = completed.slice(-4);
 
-  // If fewer than 4 completed, pad with next upcoming
-  if (pick.length < 4){
-    pick = pick.concat(upcoming.slice(0, 4 - pick.length));
-  }
+      if (pick.length < 4){
+        pick = pick.concat(upcoming.slice(0, 4 - pick.length));
+      }
 
-  // Display latest-first: EVENING, DRIVETIME, MIDAFTERNOON, MIDDAY
-  pick.sort((a,b) => b.mins - a.mins);
+      // newest first
+      pick.sort((a,b) => b.mins - a.mins);
 
-  return pick;
-}
+      // If still < 4 (edge-case), just return what we have
+      return pick.slice(0,4);
+    }
 
     function renderCashPot(el, cash){
       const meta = el.querySelector('.previewMeta');
@@ -1103,16 +1095,6 @@
         return;
       }
 
-      const fallbackNumbers = Array.isArray(cash.numbers) ? cash.numbers : [];
-      if (fallbackNumbers.length){
-        const b = document.createElement('div');
-        b.className = 'ball';
-        b.textContent = String(fallbackNumbers[0]);
-        nums.appendChild(b);
-        note.textContent = stripHtml(cash.note || '');
-        return;
-      }
-
       meta.textContent = 'NO DATA';
       nums.innerHTML = '';
       note.textContent = '';
@@ -1164,4 +1146,3 @@
   </script>
 </body>
 </html>
-
