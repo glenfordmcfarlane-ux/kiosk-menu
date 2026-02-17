@@ -403,22 +403,28 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    /* =========================
-       CASH POT 2-ROW PREVIEW UI
-       ========================= */
-    .cpList{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      margin-top:4px;
-      width:100%;
-    }
-    .cpRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+   /* =========================
+   CASH POT 2-CARD (SIDE-BY-SIDE) PREVIEW UI
+   ========================= */
+.cpList{
+  display:grid;
+  grid-template-columns: 1fr 1fr; /* <-- side by side */
+  gap:12px;
+  margin-top:4px;
+  width:100%;
+}
+
+.cpRow{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+  padding:12px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#ffffff,#f3f6f9);
+  border:1px solid rgba(0,0,0,.10);
+  box-shadow:0 10px 18px rgba(0,0,0,.10);
+}
     .cpTime{
       font-size:12px;
       font-weight:1000;
