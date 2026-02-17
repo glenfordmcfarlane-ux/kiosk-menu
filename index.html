@@ -29,9 +29,11 @@
 
       --iframe-zoom: 1;
 
-      --tile-min-h: 140px;
-      --tile-ideal-h: 18vh;
-      --tile-max-h: 210px;
+      /* ✅ REDUCED MENU TILE HEIGHTS (the 4 green buttons) */
+      --tile-min-h: 118px;
+      --tile-ideal-h: 14vh;
+      --tile-max-h: 175px;
+
       --tile-pad: 8px;
       --tile-inset: 10px;
     }
@@ -265,19 +267,20 @@
 
     .tile .dot{
       position:absolute;
-      top:16px;
-      right:16px;
-      width:12px;
-      height:12px;
+      top:14px;
+      right:14px;
+      width:11px;
+      height:11px;
       border-radius:50%;
       background:var(--sv-gold);
-      box-shadow:0 0 0 7px rgba(242,195,0,.16);
+      box-shadow:0 0 0 6px rgba(242,195,0,.16);
       z-index:3;
     }
 
-    .tileContent{ position:relative; z-index:2; padding:22px; }
-    .tileTitle{ font-size:34px; font-weight:900; line-height:1.05; text-shadow:0 10px 18px rgba(0,0,0,.35); }
-    .sub{ display:block; margin-top:8px; font-size:16px; font-weight:800; color:rgba(255,255,255,.92); }
+    /* ✅ slightly reduced typography/padding for tiles */
+    .tileContent{ position:relative; z-index:2; padding:16px; }
+    .tileTitle{ font-size:30px; font-weight:900; line-height:1.05; text-shadow:0 10px 18px rgba(0,0,0,.35); }
+    .sub{ display:block; margin-top:6px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92); }
 
     /* Preview area */
     .previewBar{
@@ -336,12 +339,7 @@
 
     /* KEEP your change */
     .previewCard.cash .previewData{
-      justify-content:flex-start;  /* instead of center */
-    }
-
-    /* Helps the cash list not “center float” */
-    .previewCard.cash .previewNumbers{
-      align-items:flex-start;
+      justify-content:flex-start;
     }
 
     .previewMeta{
@@ -350,24 +348,20 @@
       letter-spacing:.4px;
       opacity:.9;
     }
+
     .previewNumbers{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       align-items:center;
     }
-    /* CASH POT ONLY: override the global flex previewNumbers */
-.previewCard.cash .previewNumbers{
-  display:block;     /* stop flex from shrinking cpList */
-  width:100%;
-}
 
-/* ensure cpList takes full width so 2 columns can render */
-.cpList{
-  width:100%;
-}
+    /* CASH POT ONLY */
+    .previewCard.cash .previewNumbers{
+      display:block;
+      width:100%;
+    }
 
-    
     .ball{
       min-width:44px;
       height:44px;
@@ -418,21 +412,19 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    /* =========================
-       CASH POT: 4 draws in 2 columns
-       (fill DOWN first, then next column)
-       ========================= */
-   .cpList{
-  display:grid;
-  grid-template-columns: minmax(0,1fr) minmax(0,1fr); /* IMPORTANT */
-  grid-template-rows: repeat(2, auto);
-  grid-auto-flow: column;
-  column-gap: 22px;
-  row-gap: 12px;
-  width:100%;
-  margin-top:4px;
-  align-items:start;
-}
+    /* CASH POT: 4 draws in 2 columns */
+    .cpList{
+      display:grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      grid-template-rows: repeat(2, auto);
+      grid-auto-flow: column;
+      column-gap: 22px;
+      row-gap: 12px;
+      width:100%;
+      margin-top:4px;
+      align-items:start;
+    }
+
     .cpRow{
       display:flex;
       align-items:center;
@@ -440,7 +432,9 @@
       flex-wrap:nowrap;
       justify-content:flex-start;
       white-space:nowrap;
+      min-width:0;
     }
+
     .cpTime{
       font-size:12px;
       font-weight:1000;
@@ -450,7 +444,12 @@
       background:rgba(11,122,59,.10);
       border:1px solid rgba(11,122,59,.22);
       color:#0b3f22;
+      max-width:210px;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
+
     .cpNum{
       min-width:52px;
       height:52px;
@@ -465,7 +464,9 @@
         inset 2px 2px 0 rgba(255,255,255,.8),
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 10px 18px rgba(0,0,0,.10);
+      flex:0 0 auto;
     }
+
     .cpLabel{
       padding:10px 12px;
       border-radius:14px;
@@ -475,56 +476,20 @@
       background:linear-gradient(180deg,#0b7a3b,#075c2c);
       color:#fff;
       box-shadow:0 10px 18px rgba(0,0,0,.14);
+      max-width:130px;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      flex:0 1 auto;
     }
 
-.cpRow{ min-width:0; } /* IMPORTANT: allows shrink inside grid column */
-
-.cpTime{
-  max-width: 220px;          /* prevents blowing out the column */
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.cpLabel{
-  max-width: 120px;          /* prevents blowing out the column */
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-    
-
-/* --- CASH POT: prevent right column being clipped --- */
-.previewCard.cash .previewNumbers{
-  display:block;               /* don't let flex sizing fight the grid */
-}
-
-.cpList{
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* allow shrink */
-}
-
-.cpRow{
-  min-width:0;                 /* allow children to shrink */
-}
-
-.cpTime, .cpLabel{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;      /* truncate instead of pushing column wider */
-}
-
-.cpTime{
-  max-width: 210px;            /* adjust if you want more/less */
-}
-
-.cpLabel{
-  max-width: 130px;            /* adjust if you want more/less */
-}
-
-    
     .cpPlus{
       font-weight:1000;
       opacity:.8;
       margin:0 2px;
+      flex:0 0 auto;
     }
+
     .cpColor{
       width:44px;
       height:44px;
@@ -540,6 +505,7 @@
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 10px 18px rgba(0,0,0,.10);
       border:1px solid rgba(0,0,0,.12);
+      flex:0 0 auto;
     }
     .cpColor.white{ background:linear-gradient(180deg,#ffffff,#e9eef3); color:#1a1a1a; }
     .cpColor.red{ background:linear-gradient(180deg,#ff6b6b,#d84040); color:#fff; }
@@ -548,9 +514,7 @@
     .cpColor.yellow{ background:linear-gradient(180deg,#fff2b8,#f2c300); color:#1a1a1a; }
     .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
 
-    /* =========================
-       YODECK embed window (1080 x 750)
-       ========================= */
+    /* YODECK embed window (1080 x 750) */
     .yodeckWrap{
       position:relative;
       width:100%;
@@ -1041,39 +1005,48 @@
 
     /* ---------- Cash Pot helpers (time-aware 4 rows) ---------- */
 
-    // FIX: supports "8:30AM" AND "1PM"/"3PM"/"5PM"
+    // Schedule fallback (when JSON has no "at")
+    const CASH_SCHEDULE_MINUTES = {
+      EARLYBIRD: 8*60 + 30,
+      MORNING: 10*60 + 30,
+      MIDDAY: 13*60 + 0,
+      MIDAFTERNOON: 15*60 + 0,
+      DRIVETIME: 17*60 + 0,
+      EVENING: 20*60 + 25
+    };
+
     function parseTimeToMinutes(t){
-  if (!t) return null;
+      if (!t) return null;
 
-  const s = String(t).trim().toUpperCase();
+      const s = String(t).trim().toUpperCase();
 
-  // Supports "8:30AM" / "08:30 AM"
-  let m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
-  if (m){
-    let hh = parseInt(m[1],10);
-    const mm = parseInt(m[2],10);
-    const ap = m[3];
+      // "8:30AM" / "08:30 AM"
+      let m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+      if (m){
+        let hh = parseInt(m[1],10);
+        const mm = parseInt(m[2],10);
+        const ap = m[3];
 
-    if (ap === 'PM' && hh !== 12) hh += 12;
-    if (ap === 'AM' && hh === 12) hh = 0;
+        if (ap === 'PM' && hh !== 12) hh += 12;
+        if (ap === 'AM' && hh === 12) hh = 0;
 
-    return hh*60 + mm;
-  }
+        return hh*60 + mm;
+      }
 
-  // Supports "1PM" / "12AM" (no minutes)
-  m = s.match(/^(\d{1,2})\s*(AM|PM)$/);
-  if (m){
-    let hh = parseInt(m[1],10);
-    const ap = m[2];
+      // "1PM" / "12AM" (no minutes)
+      m = s.match(/^(\d{1,2})\s*(AM|PM)$/);
+      if (m){
+        let hh = parseInt(m[1],10);
+        const ap = m[2];
 
-    if (ap === 'PM' && hh !== 12) hh += 12;
-    if (ap === 'AM' && hh === 12) hh = 0;
+        if (ap === 'PM' && hh !== 12) hh += 12;
+        if (ap === 'AM' && hh === 12) hh = 0;
 
-    return hh*60; // :00
-  }
+        return hh*60;
+      }
 
-  return null;
-}
+      return null;
+    }
 
     function nowMinutesJamaica(){
       const parts = new Intl.DateTimeFormat('en-US', {
@@ -1087,28 +1060,37 @@
       return hh*60 + mm;
     }
 
+    function drawMinutes(d){
+      // 1) prefer explicit "at"
+      const minsFromAt = parseTimeToMinutes(d?.at);
+      if (minsFromAt != null) return minsFromAt;
+
+      // 2) fallback to draw name schedule (MIDDAY/MIDAFTERNOON/etc.)
+      const key = String(d?.time || '').toUpperCase().trim();
+      if (key && key in CASH_SCHEDULE_MINUTES) return CASH_SCHEDULE_MINUTES[key];
+
+      return null;
+    }
+
     function pickFourCashPotDraws(draws){
       const nowMins = nowMinutesJamaica();
 
-      const enhanced = draws
-        .map(d => ({ ...d, mins: parseTimeToMinutes(d.at) }))
+      const enhanced = (Array.isArray(draws) ? draws : [])
+        .map(d => ({ ...d, mins: drawMinutes(d) }))
         .filter(d => d.mins != null)
-        .sort((a,b) => a.mins - b.mins); // chronological
+        .sort((a,b) => a.mins - b.mins);
 
       if (!enhanced.length) return (Array.isArray(draws) ? draws : []).slice(0,4);
 
       const completed = enhanced.filter(d => d.mins <= nowMins);
       const upcoming  = enhanced.filter(d => d.mins >  nowMins);
 
-      // last 4 completed, then pad with upcoming
       let pick = completed.slice(-4);
       if (pick.length < 4){
         pick = pick.concat(upcoming.slice(0, 4 - pick.length));
       }
 
-      // newest-first (so left column = newest 2, right column = next 2 because grid-auto-flow:column)
       pick.sort((a,b) => b.mins - a.mins);
-
       return pick.slice(0,4);
     }
 
@@ -1142,6 +1124,7 @@
 
           const time = document.createElement('div');
           time.className = 'cpTime';
+
           const bits = [
             stripHtml(d.time || ''),
             d.at ? String(d.at).toUpperCase() : '',
@@ -1187,16 +1170,6 @@
         });
 
         nums.appendChild(list);
-        return;
-      }
-
-      const fallbackNumbers = Array.isArray(cash.numbers) ? cash.numbers : [];
-      if (fallbackNumbers.length){
-        const b = document.createElement('div');
-        b.className = 'ball';
-        b.textContent = String(fallbackNumbers[0]);
-        nums.appendChild(b);
-        note.textContent = stripHtml(cash.note || '');
         return;
       }
 
