@@ -475,6 +475,35 @@
       color:#fff;
       box-shadow:0 10px 18px rgba(0,0,0,.14);
     }
+
+/* --- CASH POT: prevent right column being clipped --- */
+.previewCard.cash .previewNumbers{
+  display:block;               /* don't let flex sizing fight the grid */
+}
+
+.cpList{
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* allow shrink */
+}
+
+.cpRow{
+  min-width:0;                 /* allow children to shrink */
+}
+
+.cpTime, .cpLabel{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;      /* truncate instead of pushing column wider */
+}
+
+.cpTime{
+  max-width: 210px;            /* adjust if you want more/less */
+}
+
+.cpLabel{
+  max-width: 130px;            /* adjust if you want more/less */
+}
+
+    
     .cpPlus{
       font-weight:1000;
       opacity:.8;
