@@ -29,7 +29,6 @@
 
       --iframe-zoom: 1;
 
-      /* Menu tile sizing */
       --tile-min-h: 140px;
       --tile-ideal-h: 18vh;
       --tile-max-h: 210px;
@@ -196,7 +195,6 @@
 
     .console > *{ position:relative; z-index:1; }
 
-    /* Layout shell */
     .menuShell{
       width:100%;
       height:100%;
@@ -212,7 +210,6 @@
       align-content:start;
     }
 
-    /* 2x2 menu buttons */
     .menuView{
       width:100%;
       display:grid;
@@ -282,7 +279,7 @@
     .tileTitle{ font-size:34px; font-weight:900; line-height:1.05; text-shadow:0 10px 18px rgba(0,0,0,.35); }
     .sub{ display:block; margin-top:8px; font-size:16px; font-weight:800; color:rgba(255,255,255,.92); }
 
-    /* Preview area */
+    /* PREVIEW LAYOUT */
     .previewBar{
       width:100%;
       display:grid;
@@ -330,11 +327,17 @@
       padding:56px 18px 18px;
       display:flex;
       flex-direction:column;
-      justify-content:flex-start; /* IMPORTANT: avoid vertical centering */
+      justify-content:center;
       gap:12px;
       background:#fff;
       color:#103b25;
     }
+
+    /* KEEP YOUR EDIT: prevents hidden CashPot rows */
+    .previewCard.cash .previewData{
+      justify-content:flex-start;
+    }
+
     .previewMeta{
       font-size:14px;
       font-weight:900;
@@ -345,7 +348,8 @@
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      align-items:flex-start;
+      align-items:center;
+      width:100%;
     }
     .ball{
       min-width:44px;
@@ -397,15 +401,12 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    /* =========================
-       CASH POT: show 4 draws using right-side space
-       (left column: newest two, right column: next two)
-       ========================= */
+    /* CASH POT: 4 draws in 2 columns (fill DOWN first, then right) */
     .cpList{
       display:grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(2, auto);
-      grid-auto-flow: column;     /* fill DOWN first, then next column */
+      grid-auto-flow: column;
       column-gap: 22px;
       row-gap: 12px;
       width:100%;
@@ -484,54 +485,39 @@
     .cpColor.yellow{ background:linear-gradient(180deg,#fff2b8,#f2c300); color:#1a1a1a; }
     .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
 
-   /* =========================
-   YODECK EMBED WINDOW
-   1080 x 750 aspect ratio
-   ========================= */
+    /* YODECK EMBED (1080 x 750) */
+    .previewCard.yodeck{
+      grid-area: yodeck;
+      background:#000;
+      border:1px solid rgba(0,0,0,.18);
+      overflow:hidden;
+      border-radius:18px;
+      min-height: 750px; /* fixed window height you requested */
+    }
 
-.previewCard.yodeck{
-  grid-area: yodeck;
-  min-height: 780px;        /* gives space under lotto/super */
-  background:#000;
-  border:1px solid rgba(0,0,0,.18);
-  overflow:hidden;
-  border-radius:18px;
-}
+    .yodeckWrap{
+      position:absolute;
+      inset:0;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+    }
 
-/* Defines the actual window size ratio */
-.yodeckFrame{
-  width:100%;
-  height:100%;
-  background:#000;
-  overflow:hidden;
-  border-radius:16px;
+    .yodeckFrameShell{
+      width:100%;
+      height:100%;
+      background:#000;
+      overflow:hidden;
+      border-radius:18px;
+    }
 
-  /* THIS IS YOUR REQUESTED RATIO */
-  aspect-ratio: 1080 / 750;
-}
-
-/* Make iframe fill & crop (like object-fit: cover) */
-.yodeckFrame iframe{
-  width:100%;
-  height:100%;
-  border:0;
-  display:block;
-
-  /* Adjust if needed */
-  transform: scale(1.15);
-  transform-origin:center center;
-}
-
-    /* Small screens: stack lotto/super vertically */
-    @media (max-width: 900px){
-      .previewBar{
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "cash"
-          "lotto"
-          "super"
-          "yodeck";
-      }
+    .yodeckFrame{
+      width:100%;
+      height:100%;
+      border:0;
+      background:#000;
     }
 
     .pageView{
@@ -655,6 +641,20 @@
       object-fit:contain;
       filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));
     }
+
+    @media (max-width: 900px){
+      .previewBar{
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "cash"
+          "lotto"
+          "super"
+          "yodeck";
+      }
+      .previewCard.yodeck{
+        min-height: 750px;
+      }
+    }
   </style>
 </head>
 
@@ -688,7 +688,6 @@
       <div class="console">
 
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
-          <!-- 2x2 BUTTONS -->
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
               <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15">
@@ -731,7 +730,6 @@
             </div>
           </nav>
 
-          <!-- PREVIEWS BELOW BUTTONS -->
           <section class="previewBar" id="previewBar" aria-label="Game results shortlist previews">
 
             <div class="previewCard cash">
@@ -776,18 +774,21 @@
               </div>
             </div>
 
-            <!-- NEW: Yodeck embedded playlist under Lotto + Super Lotto -->
-           <!-- YODECK PROMO FEED -->
-<div class="previewCard yodeck">
-  <div class="yodeckFrame">
-    <iframe
-      title="SV_PLAYLIST_EF"
-      src="https://embed-player.yodeck.com/?uuid=64dd0e2d66944acb954679d5511ebc3f"
-      allow="autoplay; fullscreen; geolocation"
-      allowfullscreen>
-    </iframe>
-  </div>
-</div>
+            <!-- YODECK EMBED BELOW LOTTO + SUPERLOTTO -->
+            <div class="previewCard yodeck" aria-label="Yodeck playlist">
+              <div class="yodeckWrap">
+                <div class="yodeckFrameShell">
+                  <iframe
+                    class="yodeckFrame"
+                    title="SV_PLAYLIST_EF"
+                    src="https://embed-player.yodeck.com/?uuid=64dd0e2d66944acb954679d5511ebc3f"
+                    style="background-color:black;"
+                    allow="autoplay; fullscreen; geolocation"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+            </div>
 
           </section>
         </div>
@@ -954,7 +955,6 @@
       return String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     }
 
-    /* ---------- Standard Lotto/Super render ---------- */
     function renderStandard(el, game){
       const meta = el.querySelector('.previewMeta');
       const nums = el.querySelector('.previewNumbers');
@@ -998,11 +998,15 @@
       if (!t) return null;
       const m = String(t).match(/(\d{1,2}):(\d{2})(AM|PM)/i);
       if (!m) return null;
+
       let hh = parseInt(m[1],10);
       const mm = parseInt(m[2],10);
       const ap = m[3].toUpperCase();
+
+      // ✅ FIXED: PM must ADD 12 (except 12PM)
       if (ap === 'PM' && hh !== 12) hh += 12;
       if (ap === 'AM' && hh === 12) hh = 0;
+
       return hh*60 + mm;
     }
 
@@ -1031,16 +1035,14 @@
       const completed = enhanced.filter(d => d.mins <= nowMins);
       const upcoming  = enhanced.filter(d => d.mins >  nowMins);
 
-      // Prefer last 4 completed; if fewer, pad with upcoming
+      // Prefer last 4 completed; if not enough, pad with next upcoming
       let pick = completed.slice(-4);
       if (pick.length < 4){
         pick = pick.concat(upcoming.slice(0, 4 - pick.length));
       }
 
-      // Order newest-to-oldest so cpList fills:
-      // left column: newest two, right column: next two
+      // Display newest-first (so left column: newest two; right: next two)
       pick.sort((a,b) => b.mins - a.mins);
-
       return pick;
     }
 
