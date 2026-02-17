@@ -29,7 +29,6 @@
 
       --iframe-zoom: 1;
 
-      /* menu tile sizing */
       --tile-min-h: 140px;
       --tile-ideal-h: 18vh;
       --tile-max-h: 210px;
@@ -302,11 +301,10 @@
       min-height:220px;
     }
 
-    /* IMPORTANT: give the CASH card a bit more height so 4 rows always fit */
-    .previewCard.cash  { grid-area: cash;  min-height:280px; } /* was 240 */
+    /* a bit more height so 4 draws fit comfortably */
+    .previewCard.cash  { grid-area: cash;  min-height:280px; }
     .previewCard.lotto { grid-area: lotto; min-height:240px; }
     .previewCard.super { grid-area: super; min-height:240px; }
-    .previewCard.spare { grid-area: spare; min-height:220px; }
 
     .previewLabel{
       position:absolute;
@@ -335,10 +333,10 @@
       color:#103b25;
     }
 
-    /* KEY FIX: Cash Pot preview must NOT be vertically centered */
+    /* IMPORTANT: stop vertical centering so right column shows */
     .previewCard.cash .previewData{
-      justify-content:flex-start;  /* was center */
-      padding-bottom:70px;         /* reserve space for OPEN button */
+      justify-content:flex-start;
+      padding-bottom:70px; /* keep space for OPEN button */
     }
 
     .previewMeta{
@@ -347,14 +345,12 @@
       letter-spacing:.4px;
       opacity:.9;
     }
-
     .previewNumbers{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      align-items:center;
+      align-items:flex-start;
     }
-
     .ball{
       min-width:44px;
       height:44px;
@@ -370,7 +366,6 @@
         inset -2px -2px 0 rgba(0,0,0,.08),
         0 8px 18px rgba(0,0,0,.10);
     }
-
     .ball.plus{
       min-width:auto;
       padding:0 10px;
@@ -379,7 +374,6 @@
       background:linear-gradient(180deg,#fff2b8,#f2c300);
       color:#1a1a1a;
     }
-
     .previewNote{
       margin-top:4px;
       font-size:12px;
@@ -407,15 +401,12 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    /* CASH POT: 4 draws, arranged like:
-       LEFT column: newest, next-newest
-       RIGHT column: next, next
-    */
+    /* CASH POT: 4 draws; fill down the left column then right */
     .cpList{
       display:grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(2, auto);
-      grid-auto-flow: column; /* fill down the left column first */
+      grid-auto-flow: column;
       column-gap: 22px;
       row-gap: 12px;
       width:100%;
@@ -430,7 +421,6 @@
       flex-wrap:nowrap;
       justify-content:flex-start;
     }
-
     .cpTime{
       font-size:12px;
       font-weight:1000;
@@ -442,7 +432,6 @@
       color:#0b3f22;
       white-space:nowrap;
     }
-
     .cpNum{
       min-width:52px;
       height:52px;
@@ -459,7 +448,6 @@
         0 10px 18px rgba(0,0,0,.10);
       flex:0 0 auto;
     }
-
     .cpLabel{
       padding:10px 12px;
       border-radius:14px;
@@ -472,14 +460,12 @@
       white-space:nowrap;
       flex:0 0 auto;
     }
-
     .cpPlus{
       font-weight:1000;
       opacity:.8;
       margin:0 2px;
       flex:0 0 auto;
     }
-
     .cpColor{
       width:44px;
       height:44px;
@@ -497,7 +483,6 @@
       border:1px solid rgba(0,0,0,.12);
       flex:0 0 auto;
     }
-
     .cpColor.white{ background:linear-gradient(180deg,#ffffff,#e9eef3); color:#1a1a1a; }
     .cpColor.red{ background:linear-gradient(180deg,#ff6b6b,#d84040); color:#fff; }
     .cpColor.blue{ background:linear-gradient(180deg,#59a8ff,#2e6fd6); color:#fff; }
@@ -633,8 +618,12 @@
         grid-template-areas:
           "cash"
           "lotto"
-          "super"
-          "spare";
+          "super";
+      }
+      .cpList{
+        grid-template-columns:1fr; /* safety on small screens */
+        grid-template-rows:auto;
+        grid-auto-flow: row;
       }
     }
   </style>
@@ -668,8 +657,8 @@
 
     <div class="content">
       <div class="console">
-
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
+
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
               <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15">
@@ -910,7 +899,6 @@
       if (e.key === 'Escape') showMenu();
     });
 
-    /* ========= Preview Data Loader ========= */
     const previewTargets = [
       { key: 'cash_pot',    el: document.getElementById('pvCashPotData') },
       { key: 'lotto',       el: document.getElementById('pvLottoData') },
@@ -921,7 +909,6 @@
       return String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     }
 
-    /* ---------- Standard Lotto/Super render ---------- */
     function renderStandard(el, game){
       const meta = el.querySelector('.previewMeta');
       const nums = el.querySelector('.previewNumbers');
@@ -960,17 +947,58 @@
       note.textContent = jp ? `Next Jackpot: ${jp}` : stripHtml(game.note || '');
     }
 
-    /* ---------- Cash Pot helpers (time-aware) ---------- */
-    function parseTimeToMinutes(t){
+    /* ========= CASH POT TIME FIX =========
+       Handles:
+       - "8:30AM"
+       - "1PM" / "3PM" / "5PM"
+       - blank "at" (fallback by draw name)
+    */
+    const CASH_SCHEDULE_MINUTES = {
+      EARLYBIRD: 8*60 + 30,
+      MORNING: 10*60 + 30,
+      MIDDAY: 13*60 + 0,
+      MIDAFTERNOON: 15*60 + 0,
+      DRIVETIME: 17*60 + 0,
+      EVENING: 20*60 + 25
+    };
+
+    function parseTimeToMinutesFlexible(t){
       if (!t) return null;
-      const m = String(t).match(/(\d{1,2}):(\d{2})(AM|PM)/i);
-      if (!m) return null;
-      let hh = parseInt(m[1],10);
-      const mm = parseInt(m[2],10);
-      const ap = m[3].toUpperCase();
-      if (ap === 'PM' && hh !== 12) hh += 12;
-      if (ap === 'AM' && hh === 12) hh = 0;
-      return hh*60 + mm;
+      const s = String(t).replace(/\s+/g,'').toUpperCase();
+
+      // 8:30AM
+      let m = s.match(/^(\d{1,2}):(\d{2})(AM|PM)$/);
+      if (m){
+        let hh = parseInt(m[1],10);
+        const mm = parseInt(m[2],10);
+        const ap = m[3];
+        if (ap === 'PM' && hh !== 12) hh += 12;
+        if (ap === 'AM' && hh === 12) hh = 0;
+        return hh*60 + mm;
+      }
+
+      // 1PM, 12AM, 3PM
+      m = s.match(/^(\d{1,2})(AM|PM)$/);
+      if (m){
+        let hh = parseInt(m[1],10);
+        const ap = m[2];
+        if (ap === 'PM' && hh !== 12) hh += 12;
+        if (ap === 'AM' && hh === 12) hh = 0;
+        return hh*60;
+      }
+
+      return null;
+    }
+
+    function minutesToDisplay(mins){
+      if (mins == null) return '';
+      let hh = Math.floor(mins/60);
+      const mm = mins % 60;
+      const ap = hh >= 12 ? 'PM' : 'AM';
+      let h12 = hh % 12;
+      if (h12 === 0) h12 = 12;
+      const mm2 = String(mm).padStart(2,'0');
+      return `${h12}:${mm2}${ap}`;
     }
 
     function nowMinutesJamaica(){
@@ -985,17 +1013,18 @@
       return hh*60 + mm;
     }
 
-    // Picks 4 draws closest to "now":
-    // - Prefer 4 most recent COMPLETED
-    // - If fewer than 4 completed, pad with the NEXT upcoming
-    // - Return order newest -> oldest so grid shows:
-    //   LEFT column: newest, next-newest
-    //   RIGHT column: next, next
+    function drawMinutes(d){
+      const minsFromAt = parseTimeToMinutesFlexible(d?.at);
+      if (minsFromAt != null) return minsFromAt;
+      const key = String(d?.time || '').toUpperCase().trim();
+      return (key && key in CASH_SCHEDULE_MINUTES) ? CASH_SCHEDULE_MINUTES[key] : null;
+    }
+
     function pickFourCashPotDraws(draws){
       const nowMins = nowMinutesJamaica();
 
-      const enhanced = draws
-        .map(d => ({ ...d, mins: parseTimeToMinutes(d.at) }))
+      const enhanced = (Array.isArray(draws) ? draws : [])
+        .map(d => ({ ...d, mins: drawMinutes(d) }))
         .filter(d => d.mins != null)
         .sort((a,b) => a.mins - b.mins); // chronological
 
@@ -1010,10 +1039,9 @@
         pick = pick.concat(upcoming.slice(0, 4 - pick.length));
       }
 
-      // newest first
+      // newest first (so left column gets newest two)
       pick.sort((a,b) => b.mins - a.mins);
 
-      // If still < 4 (edge-case), just return what we have
       return pick.slice(0,4);
     }
 
@@ -1045,11 +1073,14 @@
           const row = document.createElement('div');
           row.className = 'cpRow';
 
+          const mins = drawMinutes(d);
+          const displayAt = d.at && String(d.at).trim() ? String(d.at).toUpperCase().replace(/\s+/g,'') : minutesToDisplay(mins);
+
           const time = document.createElement('div');
           time.className = 'cpTime';
           const bits = [
             stripHtml(d.time || ''),
-            d.at ? String(d.at).toUpperCase() : '',
+            displayAt,
             d.draw_no ? `#${stripHtml(d.draw_no)}` : ''
           ].filter(Boolean);
           time.textContent = bits.join('  ');
