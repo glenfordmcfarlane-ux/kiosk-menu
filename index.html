@@ -403,33 +403,22 @@
       -webkit-tap-highlight-color:transparent;
     }
 
- /* =========================
-   CASH POT: 2 results side-by-side
-   BUT keep the SAME inline row layout
-   ========================= */
-
-.cpList{
-  display:grid;
-  grid-template-columns: 1fr 1fr; /* 2 results across */
-  gap:14px;
-  margin-top:4px;
-  width:100%;
-}
-
-/* keep everything on ONE line like your first screenshot */
-.cpRow{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:nowrap;           /* IMPORTANT: don't stack */
-  justify-content:flex-start;
-}
-
-/* If screen is tight, allow wrap (optional safety) */
-@media (max-width: 520px){
-  .cpList{ grid-template-columns: 1fr; }
-  .cpRow{ flex-wrap:wrap; }
-}
+    /* =========================
+       CASH POT 2-ROW PREVIEW UI
+       ========================= */
+    .cpList{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:4px;
+      width:100%;
+    }
+    .cpRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
     .cpTime{
       font-size:12px;
       font-weight:1000;
@@ -1162,3 +1151,4 @@
   </script>
 </body>
 </html>
+
