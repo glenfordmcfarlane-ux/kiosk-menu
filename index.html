@@ -422,16 +422,17 @@
        CASH POT: 4 draws in 2 columns
        (fill DOWN first, then next column)
        ========================= */
-    .cpList{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(2, auto);
-      grid-auto-flow: column;     /* down first, then next column */
-      column-gap: 22px;
-      row-gap: 12px;
-      width:100%;
-      margin-top:4px;
-    }
+   .cpList{
+  display:grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr); /* IMPORTANT */
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
+  column-gap: 22px;
+  row-gap: 12px;
+  width:100%;
+  margin-top:4px;
+  align-items:start;
+}
     .cpRow{
       display:flex;
       align-items:center;
@@ -475,6 +476,21 @@
       color:#fff;
       box-shadow:0 10px 18px rgba(0,0,0,.14);
     }
+
+.cpRow{ min-width:0; } /* IMPORTANT: allows shrink inside grid column */
+
+.cpTime{
+  max-width: 220px;          /* prevents blowing out the column */
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.cpLabel{
+  max-width: 120px;          /* prevents blowing out the column */
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+    
 
 /* --- CASH POT: prevent right column being clipped --- */
 .previewCard.cash .previewNumbers{
