@@ -485,11 +485,11 @@
     .cpColor.black{ background:linear-gradient(180deg,#444,#111); color:#fff; }
 
     /* =========================
-       YODECK EMBED (fixed 1080 x 809)
+       YODECK EMBED (fixed 1080 x 750)
        ========================= */
     .previewCard.yodeck{
       grid-area:yodeck;
-      min-height: 860px;  /* ensures the fixed player has room */
+      min-height: 750px;  /* ensures the fixed player has room */
       background:#000;
       border:1px solid rgba(0,0,0,.18);
     }
@@ -506,7 +506,7 @@
 
     .yodeckFrameShell{
       width:1080px;
-      height:809px;           /* requested dims */
+      height:750px;           /* requested dims */
       border-radius:16px;
       overflow:hidden;
       box-shadow:0 14px 40px rgba(0,0,0,.35);
@@ -526,7 +526,7 @@
       .yodeckFrameShell{
         width:100%;
         height:auto;
-        aspect-ratio: 1080 / 809;
+        aspect-ratio: 1080 / 750;
       }
       .previewCard.yodeck{ min-height: 0; }
     }
