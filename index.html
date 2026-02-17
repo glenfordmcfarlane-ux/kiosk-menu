@@ -406,7 +406,9 @@
     /* CASH POT: show 4 draws using the empty right-side space */
 .cpList{
   display:grid;
-  grid-template-columns: 1fr 1fr;  /* LEFT column + RIGHT column */
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(2, auto); /* 2 rows per column */
+  grid-auto-flow: column;             /* KEY: fill down the column first */
   column-gap: 22px;
   row-gap: 12px;
   width:100%;
@@ -996,28 +998,31 @@
       return hh*60 + mm;
     }
 
-   function pickFourCashPotDraws(draws){
+  function pickFourCashPotDraws(draws){
   const nowMins = nowMinutesJamaica();
-  const enhanced = draws.map(d => ({
-    ...d,
-    mins: parseTimeToMinutes(d.at)
-  })).filter(d => d.mins != null);
+
+  const enhanced = draws
+    .map(d => ({ ...d, mins: parseTimeToMinutes(d.at) }))
+    .filter(d => d.mins != null)
+    .sort((a,b) => a.mins - b.mins); // chronological
 
   if (!enhanced.length) return draws.slice(0,4);
 
   const completed = enhanced.filter(d => d.mins <= nowMins);
+  const upcoming  = enhanced.filter(d => d.mins >  nowMins);
 
-  // Case A: at least 4 completed -> show last 4 completed
-  if (completed.length >= 4) return completed.slice(-4);
+  // Prefer last 4 completed
+  let pick = completed.slice(-4);
 
-  // Case B: some completed -> include upcoming to make 4
-  if (completed.length > 0){
-    const upcoming = enhanced.filter(d => d.mins > nowMins);
-    return completed.slice(-4).concat(upcoming.slice(0, 4 - completed.length));
+  // If fewer than 4 completed, pad with next upcoming
+  if (pick.length < 4){
+    pick = pick.concat(upcoming.slice(0, 4 - pick.length));
   }
 
-  // Case C: none completed yet -> show first 4 upcoming
-  return enhanced.slice(0,4);
+  // Display latest-first: EVENING, DRIVETIME, MIDAFTERNOON, MIDDAY
+  pick.sort((a,b) => b.mins - a.mins);
+
+  return pick;
 }
 
     function renderCashPot(el, cash){
