@@ -905,19 +905,34 @@
     }
 
     function showPage(url, label, zoom=1){
-      menuShell.style.display = 'none';
-      pageView.style.display = 'block';
-      cookieMask.style.display = 'flex';
-      topMask.style.display = 'flex';
-      headerTitle.textContent = String(label || 'PAGE').toUpperCase();
-      menuBtn.setAttribute('aria-pressed', 'false');
 
-      applyZoom(zoom);
-      showLoading(true);
+  menuShell.style.display = 'none';
+  pageView.style.display = 'block';
 
-      const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
-      frame.src = url + bust;
-    }
+  // ✅ Detect if this is the Cash Pot Meanings site
+  const isMeanings = url.includes('cashpot-meanings-kiosk');
+
+  if (isMeanings) {
+    // Do NOT overlay masks for meanings page
+    cookieMask.style.display = 'none';
+    topMask.style.display = 'none';
+
+    zoom = 1.0; // prevent cropping
+  } else {
+    // Keep masks for Supreme Ventures pages
+    cookieMask.style.display = 'flex';
+    topMask.style.display = 'flex';
+  }
+
+  headerTitle.textContent = String(label || 'PAGE').toUpperCase();
+  menuBtn.setAttribute('aria-pressed', 'false');
+
+  applyZoom(zoom);
+  showLoading(true);
+
+  const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
+  frame.src = url + bust;
+}
 
     frame.addEventListener('load', () => {
       showLoading(false);
