@@ -705,7 +705,6 @@
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
-              <!-- ✅ UPDATED: Latest Results now points to results.supremeventures.com, and masks are disabled for it -->
               <a class="tile" href="#" data-url="https://results.supremeventures.com/" data-zoom="1.00">
                 <span class="dot"></span>
                 <div class="tileContent">
@@ -790,7 +789,6 @@
               </div>
             </div>
 
-            <!-- YODECK EMBED (below Lotto + Super) -->
             <div class="previewCard yodeck">
               <div class="yodeckWrap" aria-label="SV playlist">
                 <iframe
@@ -834,6 +832,26 @@
   </div>
 
   <script>
+    /* =========================================================
+       ✅ CACHE-BUST / VERSION LOCK (Android kiosk friendly)
+       - Bump APP_VERSION any time you publish changes
+       - Kiosk will auto-redirect to ?v=APP_VERSION
+    ========================================================== */
+    const APP_VERSION = "2026-03-05-01"; // <-- bump this when you deploy
+
+    (function forceVersionedUrl(){
+      try{
+        const u = new URL(window.location.href);
+        if (u.searchParams.get("v") !== APP_VERSION) {
+          u.searchParams.set("v", APP_VERSION);
+          window.location.replace(u.toString());
+        }
+      }catch(e){
+        // If URL() fails for any reason, do nothing.
+      }
+    })();
+    /* ========================================================= */
+
     const pageView    = document.getElementById('pageView');
     const frameWrap   = document.getElementById('frameWrap');
     const frame       = document.getElementById('frame');
@@ -905,9 +923,6 @@
       loadPreviewData();
     }
 
-    // ✅ UPDATED: masks are OFF for:
-    // - Cash Pot Meanings site
-    // - results.supremeventures.com dashboard (Latest Results)
     function showPage(url, label, zoom=1){
       menuShell.style.display = 'none';
       pageView.style.display = 'block';
@@ -921,8 +936,6 @@
       if (noMasks) {
         cookieMask.style.display = 'none';
         topMask.style.display = 'none';
-
-        // prevent cropping for meanings; dashboard usually works best at 1.0
         if (isMeanings) zoom = 1.0;
       } else {
         cookieMask.style.display = 'flex';
