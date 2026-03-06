@@ -705,7 +705,7 @@
         <div class="menuShell" id="menuShell" aria-label="Menu + game previews">
           <nav class="menuView" id="menuView" aria-label="Main menu">
             <div class="tileSlot">
-              <a class="tile" href="#" data-url="https://results.supremeventures.com/" data-zoom="1.00">
+              <a class="tile" href="#" data-url="https://supremeventures.com/latest-results/" data-zoom="1.15">
                 <span class="dot"></span>
                 <div class="tileContent">
                   <div class="tileTitle">LATEST RESULTS</div>
@@ -789,6 +789,7 @@
               </div>
             </div>
 
+            <!-- YODECK EMBED (below Lotto + Super) -->
             <div class="previewCard yodeck">
               <div class="yodeckWrap" aria-label="SV playlist">
                 <iframe
@@ -832,26 +833,6 @@
   </div>
 
   <script>
-    /* =========================================================
-       ✅ CACHE-BUST / VERSION LOCK (Android kiosk friendly)
-       - Bump APP_VERSION any time you publish changes
-       - Kiosk will auto-redirect to ?v=APP_VERSION
-    ========================================================== */
-    const APP_VERSION = "2026-03-05-01"; // <-- bump this when you deploy
-
-    (function forceVersionedUrl(){
-      try{
-        const u = new URL(window.location.href);
-        if (u.searchParams.get("v") !== APP_VERSION) {
-          u.searchParams.set("v", APP_VERSION);
-          window.location.replace(u.toString());
-        }
-      }catch(e){
-        // If URL() fails for any reason, do nothing.
-      }
-    })();
-    /* ========================================================= */
-
     const pageView    = document.getElementById('pageView');
     const frameWrap   = document.getElementById('frameWrap');
     const frame       = document.getElementById('frame');
@@ -924,33 +905,34 @@
     }
 
     function showPage(url, label, zoom=1){
-      menuShell.style.display = 'none';
-      pageView.style.display = 'block';
 
-      const u = String(url || '');
+  menuShell.style.display = 'none';
+  pageView.style.display = 'block';
 
-      const isMeanings = u.includes('cashpot-meanings-kiosk');
-      const isLatestResultsDashboard = u.includes('results.supremeventures.com');
-      const noMasks = isMeanings || isLatestResultsDashboard;
+  // ✅ Detect if this is the Cash Pot Meanings site
+  const isMeanings = url.includes('cashpot-meanings-kiosk');
 
-      if (noMasks) {
-        cookieMask.style.display = 'none';
-        topMask.style.display = 'none';
-        if (isMeanings) zoom = 1.0;
-      } else {
-        cookieMask.style.display = 'flex';
-        topMask.style.display = 'flex';
-      }
+  if (isMeanings) {
+    // Do NOT overlay masks for meanings page
+    cookieMask.style.display = 'none';
+    topMask.style.display = 'none';
 
-      headerTitle.textContent = String(label || 'PAGE').toUpperCase();
-      menuBtn.setAttribute('aria-pressed', 'false');
+    zoom = 1.0; // prevent cropping
+  } else {
+    // Keep masks for Supreme Ventures pages
+    cookieMask.style.display = 'flex';
+    topMask.style.display = 'flex';
+  }
 
-      applyZoom(zoom);
-      showLoading(true);
+  headerTitle.textContent = String(label || 'PAGE').toUpperCase();
+  menuBtn.setAttribute('aria-pressed', 'false');
 
-      const bust = (u.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
-      frame.src = u + bust;
-    }
+  applyZoom(zoom);
+  showLoading(true);
+
+  const bust = (url.includes('?') ? '&' : '?') + 'kiosk=' + Date.now();
+  frame.src = url + bust;
+}
 
     frame.addEventListener('load', () => {
       showLoading(false);
@@ -1039,6 +1021,8 @@
     }
 
     /* ---------- Cash Pot helpers (time-aware 4 rows) ---------- */
+
+    // Schedule fallback (when JSON has no "at")
     const CASH_SCHEDULE_MINUTES = {
       EARLYBIRD: 8*60 + 30,
       MORNING: 10*60 + 30,
@@ -1050,24 +1034,31 @@
 
     function parseTimeToMinutes(t){
       if (!t) return null;
+
       const s = String(t).trim().toUpperCase();
 
+      // "8:30AM" / "08:30 AM"
       let m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
       if (m){
         let hh = parseInt(m[1],10);
         const mm = parseInt(m[2],10);
         const ap = m[3];
+
         if (ap === 'PM' && hh !== 12) hh += 12;
         if (ap === 'AM' && hh === 12) hh = 0;
+
         return hh*60 + mm;
       }
 
+      // "1PM" / "12AM" (no minutes)
       m = s.match(/^(\d{1,2})\s*(AM|PM)$/);
       if (m){
         let hh = parseInt(m[1],10);
         const ap = m[2];
+
         if (ap === 'PM' && hh !== 12) hh += 12;
         if (ap === 'AM' && hh === 12) hh = 0;
+
         return hh*60;
       }
 
@@ -1087,9 +1078,11 @@
     }
 
     function drawMinutes(d){
+      // 1) prefer explicit "at"
       const minsFromAt = parseTimeToMinutes(d?.at);
       if (minsFromAt != null) return minsFromAt;
 
+      // 2) fallback to draw name schedule (MIDDAY/MIDAFTERNOON/etc.)
       const key = String(d?.time || '').toUpperCase().trim();
       if (key && key in CASH_SCHEDULE_MINUTES) return CASH_SCHEDULE_MINUTES[key];
 
